@@ -1,6 +1,8 @@
-<title>CorteYa — Sketch dashboard barbería</title>
+<title>CorteYa — Panel de barbería</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-client.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script>
@@ -33,127 +35,90 @@
 
 <body class="bg-ink text-white font-body min-h-screen">
 
-  <div class="flex h-screen overflow-hidden">
+  <!-- LOGIN -->
+  <div id="login-screen" class="min-h-screen flex items-center justify-center px-5">
+    <form id="login-form" class="w-full max-w-xs border border-white/10 rounded-sm p-6">
+      <h1 class="font-display text-xl mb-1">CORTE<span class="text-gold">YA</span></h1>
+      <p class="text-white/50 text-sm mb-6">Panel de tu barbería</p>
+      <input id="login-email" type="email" placeholder="Correo" class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2.5 text-sm placeholder-white/40 focus:outline-none focus:border-gold mb-3">
+      <input id="login-password" type="password" placeholder="Contraseña" class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2.5 text-sm placeholder-white/40 focus:outline-none focus:border-gold mb-4">
+      <p id="login-error" class="hidden text-sm text-red-400 mb-3"></p>
+      <button type="submit" class="w-full bg-gold hover:bg-goldlight text-ink font-semibold py-3 rounded-sm transition">Iniciar sesión</button>
+    </form>
+  </div>
 
-    <!-- SIDEBAR -->
-    <aside class="w-60 shrink-0 border-r border-white/10 flex flex-col">
-      <div class="h-16 flex items-center px-6 border-b border-white/10">
+  <div id="dashboard-app" class="hidden flex flex-col md:flex-row h-screen overflow-hidden">
+
+    <!-- SIDEBAR (barra inferior en móvil, columna lateral en escritorio) -->
+    <aside class="fixed bottom-0 inset-x-0 z-20 h-16 border-t border-white/10 bg-ink
+                  md:static md:z-auto md:h-auto md:w-60 md:shrink-0 md:border-t-0 md:border-r md:flex md:flex-col">
+      <div class="hidden md:flex h-16 items-center px-6 border-b border-white/10">
         <a href="index.html" class="font-display text-lg">CORTE<span class="text-gold">YA</span></a>
       </div>
-      <nav class="flex-1 px-3 py-4 space-y-1">
-        <button onclick="showView('resumen')" class="nav-item active w-full flex items-center gap-3 px-3 py-2.5 rounded-sm text-sm font-medium transition text-left">
+      <nav class="h-full flex items-stretch md:h-auto md:flex-1 md:flex-col md:px-3 md:py-4 md:space-y-1">
+        <button onclick="showView('resumen', this)" class="nav-item active flex-1 flex flex-col items-center justify-center gap-0.5 text-[10px] md:flex-none md:flex-row md:items-center md:justify-start md:gap-3 md:px-3 md:py-2.5 md:text-sm rounded-sm font-medium transition md:w-full md:text-left">
           <span>🏠</span> Resumen
         </button>
-        <button onclick="showView('calendario')" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-sm text-sm font-medium transition text-left text-white/60">
+        <button onclick="showView('calendario', this)" class="nav-item text-white/60 flex-1 flex flex-col items-center justify-center gap-0.5 text-[10px] md:flex-none md:flex-row md:items-center md:justify-start md:gap-3 md:px-3 md:py-2.5 md:text-sm rounded-sm font-medium transition md:w-full md:text-left">
           <span>📅</span> Calendario
         </button>
-        <button onclick="showView('servicios')" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-sm text-sm font-medium transition text-left text-white/60">
+        <button onclick="showView('servicios', this)" class="nav-item text-white/60 flex-1 flex flex-col items-center justify-center gap-0.5 text-[10px] md:flex-none md:flex-row md:items-center md:justify-start md:gap-3 md:px-3 md:py-2.5 md:text-sm rounded-sm font-medium transition md:w-full md:text-left">
           <span>✂️</span> Servicios
         </button>
-        <button onclick="showView('barberos')" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-sm text-sm font-medium transition text-left text-white/60">
+        <button onclick="showView('barberos', this)" class="nav-item text-white/60 flex-1 flex flex-col items-center justify-center gap-0.5 text-[10px] md:flex-none md:flex-row md:items-center md:justify-start md:gap-3 md:px-3 md:py-2.5 md:text-sm rounded-sm font-medium transition md:w-full md:text-left">
           <span>👤</span> Barberos
         </button>
       </nav>
-      <div class="p-3 border-t border-white/10">
+      <div class="hidden md:block p-3 border-t border-white/10">
         <div class="flex items-center gap-2 px-3 py-2 text-sm text-white/60">
           <img src="https://placehold.co/28x28/1D1D20/D9A441?text=BC" class="w-7 h-7 rounded-sm">
-          Barbería Clásica
+          <span id="sidebar-nombre">Cargando…</span>
         </div>
       </div>
     </aside>
 
     <!-- MAIN -->
     <main class="flex-1 overflow-y-auto">
-      <header class="h-16 border-b border-white/10 flex items-center justify-between px-8 sticky top-0 bg-ink z-10">
-        <p class="font-mono text-xs text-white/40">Viernes, 28 de agosto</p>
-        <span class="text-xs border border-white/15 rounded-sm px-3 py-1.5 text-white/60">Cerrar sesión</span>
+      <header class="h-16 border-b border-white/10 flex items-center justify-between px-4 md:px-8 sticky top-0 bg-ink z-10">
+        <p id="header-fecha" class="font-mono text-xs text-white/40"></p>
+        <button onclick="handleLogout()" class="text-xs border border-white/15 rounded-sm px-3 py-1.5 text-white/60 hover:border-white/30 transition">Cerrar sesión</button>
       </header>
 
-      <div class="p-8 max-w-5xl">
+      <div class="p-4 pb-24 md:p-8 md:pb-8 max-w-5xl">
 
         <!-- RESUMEN -->
         <section id="view-resumen" class="view active">
           <h1 class="font-display text-2xl mb-6">Resumen del día</h1>
-          <div class="grid grid-cols-4 gap-4 mb-8">
+          <div class="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4 mb-8">
             <div class="border border-white/10 rounded-sm p-4">
               <p class="font-mono text-[11px] tracking-widest uppercase text-white/40 mb-2">Citas hoy</p>
-              <p class="font-display text-3xl text-gold">12</p>
+              <p id="stat-citas" class="font-display text-2xl md:text-3xl text-gold">—</p>
             </div>
             <div class="border border-white/10 rounded-sm p-4">
               <p class="font-mono text-[11px] tracking-widest uppercase text-white/40 mb-2">Ingresos hoy</p>
-              <p class="font-display text-3xl text-gold">$96.000</p>
+              <p id="stat-ingresos" class="font-display text-2xl md:text-3xl text-gold">—</p>
             </div>
             <div class="border border-white/10 rounded-sm p-4">
               <p class="font-mono text-[11px] tracking-widest uppercase text-white/40 mb-2">Ocupación</p>
-              <p class="font-display text-3xl text-gold">78%</p>
+              <p id="stat-ocupacion" class="font-display text-2xl md:text-3xl text-gold">—</p>
             </div>
             <div class="border border-white/10 rounded-sm p-4">
               <p class="font-mono text-[11px] tracking-widest uppercase text-white/40 mb-2">Próxima cita</p>
-              <p class="font-display text-xl text-gold">15:30</p>
+              <p id="stat-proxima" class="font-display text-xl text-gold">—</p>
             </div>
           </div>
 
           <p class="font-mono text-[11px] tracking-widest uppercase text-white/40 mb-3">Agenda de hoy</p>
-          <div class="border border-white/10 rounded-sm divide-y divide-white/10">
-            <div class="flex items-center gap-4 px-4 py-3">
-              <span class="font-mono text-sm text-gold w-14">14:00</span>
-              <span class="flex-1 text-sm">Juan Pérez — Corte clásico</span>
-              <span class="text-xs text-white/50">Tomás</span>
-              <span class="text-xs bg-green-500/15 text-green-400 px-2 py-0.5 rounded-sm">Confirmada</span>
-            </div>
-            <div class="flex items-center gap-4 px-4 py-3">
-              <span class="font-mono text-sm text-gold w-14">14:45</span>
-              <span class="flex-1 text-sm">Matías Rojas — Corte + Barba</span>
-              <span class="text-xs text-white/50">Nico</span>
-              <span class="text-xs bg-green-500/15 text-green-400 px-2 py-0.5 rounded-sm">Confirmada</span>
-            </div>
-            <div class="flex items-center gap-4 px-4 py-3">
-              <span class="font-mono text-sm text-gold w-14">15:30</span>
-              <span class="flex-1 text-sm">Diego Soto — Afeitado clásico</span>
-              <span class="text-xs text-white/50">Tomás</span>
-              <span class="text-xs bg-gold/15 text-gold px-2 py-0.5 rounded-sm">Próxima</span>
-            </div>
-            <div class="flex items-center gap-4 px-4 py-3">
-              <span class="font-mono text-sm text-white/30 w-14">16:15</span>
-              <span class="flex-1 text-sm text-white/40">Disponible</span>
-            </div>
+          <div id="agenda-hoy" class="border border-white/10 rounded-sm divide-y divide-white/10">
+            <p class="px-4 py-6 text-sm text-white/40 text-center">Cargando…</p>
           </div>
         </section>
 
         <!-- CALENDARIO -->
         <section id="view-calendario" class="view">
           <h1 class="font-display text-2xl mb-6">Calendario — hoy</h1>
-          <div class="border border-white/10 rounded-sm overflow-hidden">
-            <div class="grid grid-cols-4 border-b border-white/10">
-              <div class="p-3 font-mono text-[11px] text-white/40">HORA</div>
-              <div class="p-3 text-sm font-medium border-l border-white/10">Tomás</div>
-              <div class="p-3 text-sm font-medium border-l border-white/10">Nico</div>
-              <div class="p-3 text-sm font-medium border-l border-white/10">Caro</div>
-            </div>
-            <div class="grid grid-cols-4 border-b border-white/5">
-              <div class="p-3 font-mono text-xs text-white/40">14:00</div>
-              <div class="p-2 border-l border-white/5"><div class="bg-gold/15 border border-gold/40 rounded-sm px-2 py-1.5 text-xs">Juan Pérez</div></div>
-              <div class="p-2 border-l border-white/5"></div>
-              <div class="p-2 border-l border-white/5"><div class="bg-gold/15 border border-gold/40 rounded-sm px-2 py-1.5 text-xs">Felipe Díaz</div></div>
-            </div>
-            <div class="grid grid-cols-4 border-b border-white/5">
-              <div class="p-3 font-mono text-xs text-white/40">14:45</div>
-              <div class="p-2 border-l border-white/5"></div>
-              <div class="p-2 border-l border-white/5"><div class="bg-gold/15 border border-gold/40 rounded-sm px-2 py-1.5 text-xs">Matías Rojas</div></div>
-              <div class="p-2 border-l border-white/5"></div>
-            </div>
-            <div class="grid grid-cols-4 border-b border-white/5">
-              <div class="p-3 font-mono text-xs text-white/40">15:30</div>
-              <div class="p-2 border-l border-white/5"><div class="bg-gold/15 border border-gold/40 rounded-sm px-2 py-1.5 text-xs">Diego Soto</div></div>
-              <div class="p-2 border-l border-white/5"></div>
-              <div class="p-2 border-l border-white/5"></div>
-            </div>
-            <div class="grid grid-cols-4">
-              <div class="p-3 font-mono text-xs text-white/40">16:15</div>
-              <div class="p-2 border-l border-white/5"></div>
-              <div class="p-2 border-l border-white/5"></div>
-              <div class="p-2 border-l border-white/5"></div>
-            </div>
+          <div id="calendario-tabla" class="border border-white/10 rounded-sm overflow-x-auto">
+            <p class="text-white/40 text-sm text-center py-8">Cargando…</p>
           </div>
         </section>
 
@@ -161,33 +126,10 @@
         <section id="view-servicios" class="view">
           <div class="flex items-center justify-between mb-6">
             <h1 class="font-display text-2xl">Servicios y precios</h1>
-            <span class="text-xs border border-white/15 rounded-sm px-3 py-1.5 text-white/60">+ Agregar servicio</span>
+            <button onclick="addServicio()" class="text-xs border border-white/15 rounded-sm px-3 py-1.5 text-white/60 hover:border-white/30 transition">+ Agregar servicio</button>
           </div>
-          <div class="border border-white/10 rounded-sm divide-y divide-white/10">
-            <div class="flex items-center px-4 py-3">
-              <span class="flex-1 text-sm font-medium">Corte clásico</span>
-              <span class="text-xs text-white/50 w-20">30 min</span>
-              <span class="font-mono text-sm text-gold w-24 text-right">$8.000</span>
-              <span class="text-xs text-white/40 ml-6">Editar</span>
-            </div>
-            <div class="flex items-center px-4 py-3">
-              <span class="flex-1 text-sm font-medium">Corte + Barba</span>
-              <span class="text-xs text-white/50 w-20">45 min</span>
-              <span class="font-mono text-sm text-gold w-24 text-right">$12.000</span>
-              <span class="text-xs text-white/40 ml-6">Editar</span>
-            </div>
-            <div class="flex items-center px-4 py-3">
-              <span class="flex-1 text-sm font-medium">Afeitado clásico</span>
-              <span class="text-xs text-white/50 w-20">20 min</span>
-              <span class="font-mono text-sm text-gold w-24 text-right">$6.000</span>
-              <span class="text-xs text-white/40 ml-6">Editar</span>
-            </div>
-            <div class="flex items-center px-4 py-3">
-              <span class="flex-1 text-sm font-medium">Corte niño</span>
-              <span class="text-xs text-white/50 w-20">25 min</span>
-              <span class="font-mono text-sm text-gold w-24 text-right">$6.500</span>
-              <span class="text-xs text-white/40 ml-6">Editar</span>
-            </div>
+          <div id="servicios-lista" class="border border-white/10 rounded-sm divide-y divide-white/10">
+            <p class="px-4 py-6 text-sm text-white/40 text-center">Cargando…</p>
           </div>
         </section>
 
@@ -195,27 +137,10 @@
         <section id="view-barberos" class="view">
           <div class="flex items-center justify-between mb-6">
             <h1 class="font-display text-2xl">Barberos</h1>
-            <span class="text-xs border border-white/15 rounded-sm px-3 py-1.5 text-white/60">+ Agregar barbero</span>
+            <button onclick="addBarbero()" class="text-xs border border-white/15 rounded-sm px-3 py-1.5 text-white/60 hover:border-white/30 transition">+ Agregar barbero</button>
           </div>
-          <div class="grid grid-cols-3 gap-4">
-            <div class="border border-white/10 rounded-sm p-4">
-              <img src="https://placehold.co/48x48/1D1D20/D9A441?text=T" class="w-12 h-12 rounded-sm mb-3">
-              <p class="text-sm font-medium">Tomás Vega</p>
-              <p class="text-xs text-white/50 mb-2">Corte y barba</p>
-              <span class="text-xs bg-green-500/15 text-green-400 px-2 py-0.5 rounded-sm">Disponible</span>
-            </div>
-            <div class="border border-white/10 rounded-sm p-4">
-              <img src="https://placehold.co/48x48/1D1D20/D9A441?text=N" class="w-12 h-12 rounded-sm mb-3">
-              <p class="text-sm font-medium">Nico Fuentes</p>
-              <p class="text-xs text-white/50 mb-2">Especialista en fade</p>
-              <span class="text-xs bg-gold/15 text-gold px-2 py-0.5 rounded-sm">Ocupado</span>
-            </div>
-            <div class="border border-white/10 rounded-sm p-4">
-              <img src="https://placehold.co/48x48/1D1D20/D9A441?text=C" class="w-12 h-12 rounded-sm mb-3">
-              <p class="text-sm font-medium">Carolina Muñoz</p>
-              <p class="text-xs text-white/50 mb-2">Corte clásico</p>
-              <span class="text-xs bg-green-500/15 text-green-400 px-2 py-0.5 rounded-sm">Disponible</span>
-            </div>
+          <div id="barberos-lista" class="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-4">
+            <p class="col-span-2 md:col-span-3 text-white/40 text-sm text-center py-6">Cargando…</p>
           </div>
         </section>
 
@@ -224,15 +149,220 @@
   </div>
 
   <script>
-    function showView(name) {
+    const state = { barbershopId: null, barbershopName: '' };
+
+    // ---------- utilidades ----------
+    function santiagoDateParts(offsetDays) {
+      const fmt = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Santiago', year: 'numeric', month: '2-digit', day: '2-digit' });
+      const parts = fmt.formatToParts(new Date()).reduce((acc, p) => (acc[p.type] = p.value, acc), {});
+      const base = new Date(Date.UTC(+parts.year, +parts.month - 1, +parts.day));
+      base.setUTCDate(base.getUTCDate() + offsetDays);
+      return { iso: base.toISOString().slice(0, 10), dateObj: base };
+    }
+    function clp(n) { return '$' + Number(n).toLocaleString('es-CL'); }
+    function timeToMinutes(t) { const [h, m] = t.split(':').map(Number); return h * 60 + m; }
+    function minutesToTime(mins) { return String(Math.floor(mins / 60)).padStart(2, '0') + ':' + String(mins % 60).padStart(2, '0'); }
+    function diffMinutes(t1, t2) { return timeToMinutes(t2) - timeToMinutes(t1); }
+
+    // ---------- login ----------
+    document.getElementById('login-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('login-email').value.trim();
+      const password = document.getElementById('login-password').value;
+      const errorEl = document.getElementById('login-error');
+      errorEl.classList.add('hidden');
+
+      const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+      if (error) {
+        errorEl.textContent = 'Correo o contraseña incorrectos.';
+        errorEl.classList.remove('hidden');
+        return;
+      }
+      await loadOwnerBarbershop(data.user.id);
+    });
+
+    async function loadOwnerBarbershop(userId) {
+      const { data: shop, error } = await supabaseClient.from('barbershops').select('*').eq('owner_id', userId).single();
+      if (error || !shop) {
+        document.getElementById('login-error').textContent = 'Esta cuenta no tiene una barbería asociada.';
+        document.getElementById('login-error').classList.remove('hidden');
+        await supabaseClient.auth.signOut();
+        return;
+      }
+      state.barbershopId = shop.id;
+      state.barbershopName = shop.name;
+      document.getElementById('sidebar-nombre').textContent = shop.name;
+      document.getElementById('header-fecha').textContent =
+        new Intl.DateTimeFormat('es-CL', { timeZone: 'America/Santiago', weekday: 'long', day: 'numeric', month: 'long' }).format(new Date());
+      document.getElementById('login-screen').classList.add('hidden');
+      document.getElementById('dashboard-app').classList.remove('hidden');
+      loadResumen();
+    }
+
+    async function handleLogout() {
+      await supabaseClient.auth.signOut();
+      document.getElementById('dashboard-app').classList.add('hidden');
+      document.getElementById('login-screen').classList.remove('hidden');
+      document.getElementById('login-email').value = '';
+      document.getElementById('login-password').value = '';
+    }
+
+    (async function checkExistingSession() {
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if (session?.user) await loadOwnerBarbershop(session.user.id);
+    })();
+
+    // ---------- navegación ----------
+    function showView(name, btn) {
       document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
       document.getElementById('view-' + name).classList.add('active');
       document.querySelectorAll('.nav-item').forEach(n => {
-        n.classList.remove('active', 'text-white/60');
+        n.classList.remove('active');
         n.classList.add('text-white/60');
       });
-      event.currentTarget.classList.add('active');
-      event.currentTarget.classList.remove('text-white/60');
+      btn.classList.add('active');
+      btn.classList.remove('text-white/60');
+
+      const loaders = { resumen: loadResumen, calendario: loadCalendario, servicios: loadServicios, barberos: loadBarberos };
+      loaders[name]?.();
+    }
+
+    // ---------- Resumen ----------
+    async function loadResumen() {
+      const todayIso = santiagoDateParts(0).iso;
+      const { data: bookings } = await supabaseClient
+        .from('bookings')
+        .select('*, services(name, price_clp, duration_minutes), barbers(name)')
+        .eq('barbershop_id', state.barbershopId)
+        .eq('booking_date', todayIso)
+        .eq('status', 'confirmed')
+        .order('start_time');
+      const rows = bookings || [];
+
+      document.getElementById('stat-citas').textContent = rows.length;
+      document.getElementById('stat-ingresos').textContent = clp(rows.reduce((sum, b) => sum + (b.services?.price_clp || 0), 0));
+
+      const { data: barbers } = await supabaseClient.from('barbers').select('id').eq('barbershop_id', state.barbershopId).eq('active', true);
+      const weekday = santiagoDateParts(0).dateObj.getUTCDay();
+      const barberIds = (barbers || []).map(b => b.id);
+      const { data: horas } = barberIds.length
+        ? await supabaseClient.from('barber_working_hours').select('start_time,end_time').eq('weekday', weekday).in('barber_id', barberIds)
+        : { data: [] };
+      const totalWorkMinutes = (horas || []).reduce((sum, h) => sum + diffMinutes(h.start_time, h.end_time), 0);
+      const bookedMinutes = rows.reduce((sum, b) => sum + (b.services?.duration_minutes || 0), 0);
+      document.getElementById('stat-ocupacion').textContent = totalWorkMinutes > 0 ? Math.round((bookedMinutes / totalWorkMinutes) * 100) + '%' : '—';
+
+      const nowSantiago = new Intl.DateTimeFormat('en-GB', { timeZone: 'America/Santiago', hour: '2-digit', minute: '2-digit', hour12: false }).format(new Date());
+      const proxima = rows.find(b => b.start_time.slice(0, 5) >= nowSantiago);
+      document.getElementById('stat-proxima').textContent = proxima ? proxima.start_time.slice(0, 5) : '—';
+
+      const agendaEl = document.getElementById('agenda-hoy');
+      agendaEl.innerHTML = rows.length ? rows.map(b => `
+        <div class="flex flex-wrap items-center gap-x-4 gap-y-1 px-4 py-3">
+          <span class="font-mono text-sm text-gold w-14">${b.start_time.slice(0, 5)}</span>
+          <span class="flex-1 min-w-[140px] text-sm">${b.customer_name} — ${b.services?.name || ''}</span>
+          <span class="text-xs text-white/50">${b.barbers?.name || ''}</span>
+          <span class="text-xs bg-green-500/15 text-green-400 px-2 py-0.5 rounded-sm">Confirmada</span>
+        </div>
+      `).join('') : '<p class="px-4 py-6 text-sm text-white/40 text-center">Sin citas para hoy.</p>';
+    }
+
+    // ---------- Calendario ----------
+    async function loadCalendario() {
+      const container = document.getElementById('calendario-tabla');
+      const todayIso = santiagoDateParts(0).iso;
+      const weekday = santiagoDateParts(0).dateObj.getUTCDay();
+
+      const { data: barbers } = await supabaseClient.from('barbers').select('id,name').eq('barbershop_id', state.barbershopId).eq('active', true).order('name');
+      if (!barbers || !barbers.length) {
+        container.innerHTML = '<p class="text-white/40 text-sm text-center py-8">Agrega barberos para ver el calendario.</p>';
+        return;
+      }
+      const barberIds = barbers.map(b => b.id);
+      const { data: horas } = await supabaseClient.from('barber_working_hours').select('barber_id,start_time,end_time').eq('weekday', weekday).in('barber_id', barberIds);
+      const { data: bookings } = await supabaseClient.from('bookings').select('start_time,barber_id,customer_name')
+        .eq('barbershop_id', state.barbershopId).eq('booking_date', todayIso).eq('status', 'confirmed');
+
+      if (!horas || !horas.length) {
+        container.innerHTML = '<p class="text-white/40 text-sm text-center py-8">Nadie trabaja hoy.</p>';
+        return;
+      }
+      const minStart = horas.reduce((min, h) => h.start_time < min ? h.start_time : min, horas[0].start_time);
+      const maxEnd = horas.reduce((max, h) => h.end_time > max ? h.end_time : max, horas[0].end_time);
+
+      const slots = [];
+      for (let m = timeToMinutes(minStart); m < timeToMinutes(maxEnd); m += 30) slots.push(minutesToTime(m));
+
+      const cols = `90px repeat(${barbers.length}, minmax(110px, 1fr))`;
+      const minWidth = 90 + barbers.length * 110;
+      const header = `<div class="grid border-b border-white/10" style="grid-template-columns:${cols}; min-width:${minWidth}px;">
+        <div class="p-3 font-mono text-[11px] text-white/40">HORA</div>
+        ${barbers.map(b => `<div class="p-3 text-sm font-medium border-l border-white/10">${b.name}</div>`).join('')}
+      </div>`;
+      const rows = slots.map(slot => `
+        <div class="grid border-b border-white/5" style="grid-template-columns:${cols}; min-width:${minWidth}px;">
+          <div class="p-3 font-mono text-xs text-white/40">${slot}</div>
+          ${barbers.map(b => {
+            const booking = (bookings || []).find(bk => bk.barber_id === b.id && bk.start_time.slice(0, 5) === slot);
+            return `<div class="p-2 border-l border-white/5">${booking ? `<div class="bg-gold/15 border border-gold/40 rounded-sm px-2 py-1.5 text-xs">${booking.customer_name}</div>` : ''}</div>`;
+          }).join('')}
+        </div>
+      `).join('');
+      container.innerHTML = header + rows;
+    }
+
+    // ---------- Servicios ----------
+    async function loadServicios() {
+      const { data } = await supabaseClient.from('services').select('*').eq('barbershop_id', state.barbershopId).eq('active', true).order('created_at');
+      document.getElementById('servicios-lista').innerHTML = (data && data.length) ? data.map(s => `
+        <div class="flex flex-wrap items-center gap-2 px-4 py-3">
+          <span class="flex-1 min-w-[120px] text-sm font-medium">${s.name}</span>
+          <span class="text-xs text-white/50 w-20">${s.duration_minutes} min</span>
+          <span class="font-mono text-sm text-gold w-24 text-right">${clp(s.price_clp)}</span>
+          <button onclick="deleteServicio('${s.id}')" class="text-xs text-white/40 ml-auto md:ml-6 hover:text-red-400 transition">Eliminar</button>
+        </div>
+      `).join('') : '<p class="px-4 py-6 text-sm text-white/40 text-center">Sin servicios todavía.</p>';
+    }
+
+    async function addServicio() {
+      const name = prompt('Nombre del servicio:');
+      if (!name) return;
+      const duration = parseInt(prompt('Duración en minutos:', '30'), 10);
+      const price = parseInt(prompt('Precio en pesos:', '8000'), 10);
+      if (!duration || !price) { alert('Duración y precio deben ser números.'); return; }
+      const { error } = await supabaseClient.from('services').insert({ barbershop_id: state.barbershopId, name, duration_minutes: duration, price_clp: price });
+      if (error) { alert('Error: ' + error.message); return; }
+      loadServicios();
+    }
+
+    async function deleteServicio(id) {
+      if (!confirm('¿Eliminar este servicio?')) return;
+      await supabaseClient.from('services').update({ active: false }).eq('id', id);
+      loadServicios();
+    }
+
+    // ---------- Barberos ----------
+    async function loadBarberos() {
+      const { data } = await supabaseClient.from('barbers').select('*').eq('barbershop_id', state.barbershopId).order('created_at');
+      document.getElementById('barberos-lista').innerHTML = (data && data.length) ? data.map(b => `
+        <div class="border border-white/10 rounded-sm p-4">
+          <img src="${b.photo_url || 'https://placehold.co/48x48/1D1D20/D9A441?text=' + encodeURIComponent(b.name.charAt(0))}" class="w-12 h-12 rounded-sm mb-3">
+          <p class="text-sm font-medium">${b.name}</p>
+          <p class="text-xs text-white/50 mb-2">${b.specialty || ''}</p>
+          <span class="text-xs ${b.active ? 'bg-green-500/15 text-green-400' : 'bg-white/10 text-white/40'} px-2 py-0.5 rounded-sm">${b.active ? 'Disponible' : 'Inactivo'}</span>
+        </div>
+      `).join('') : '<p class="col-span-2 md:col-span-3 text-white/40 text-sm text-center py-6">Sin barberos todavía.</p>';
+    }
+
+    async function addBarbero() {
+      const name = prompt('Nombre del barbero:');
+      if (!name) return;
+      const specialty = prompt('Especialidad (opcional):', '') || null;
+      const { data, error } = await supabaseClient.from('barbers').insert({ barbershop_id: state.barbershopId, name, specialty }).select().single();
+      if (error) { alert('Error: ' + error.message); return; }
+      const horario = [1, 2, 3, 4, 5, 6].map(weekday => ({ barber_id: data.id, weekday, start_time: '10:00', end_time: '20:00' }));
+      await supabaseClient.from('barber_working_hours').insert(horario);
+      loadBarberos();
     }
   </script>
 

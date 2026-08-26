@@ -1,6 +1,8 @@
-<title>CorteYa — Sketch app cliente</title>
+<title>CorteYa — App cliente</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-client.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script>
@@ -91,30 +93,7 @@
             </div>
 
             <div id="buscar-lista" class="flex-1 overflow-y-auto px-5 space-y-3 pb-4">
-              <button onclick="showScreen('screen-detalle')" class="w-full text-left flex gap-3 border border-white/10 rounded-sm p-3 hover:border-gold/50 transition">
-                <img src="https://placehold.co/80x80/1D1D20/D9A441?text=BC" class="w-16 h-16 rounded-sm object-cover shrink-0">
-                <div class="min-w-0">
-                  <p class="font-display text-sm truncate">Barbería Clásica</p>
-                  <p class="text-xs text-white/50 mt-0.5">⭐ 4.8 · 0.4 km</p>
-                  <p class="text-xs text-gold mt-1.5">Hoy 15:30 disponible</p>
-                </div>
-              </button>
-              <button onclick="showScreen('screen-detalle')" class="w-full text-left flex gap-3 border border-white/10 rounded-sm p-3 hover:border-gold/50 transition">
-                <img src="https://placehold.co/80x80/1D1D20/D9A441?text=EC" class="w-16 h-16 rounded-sm object-cover shrink-0">
-                <div class="min-w-0">
-                  <p class="font-display text-sm truncate">El Corte Studio</p>
-                  <p class="text-xs text-white/50 mt-0.5">⭐ 4.6 · 0.8 km</p>
-                  <p class="text-xs text-gold mt-1.5">Hoy 16:00 disponible</p>
-                </div>
-              </button>
-              <button onclick="showScreen('screen-detalle')" class="w-full text-left flex gap-3 border border-white/10 rounded-sm p-3 hover:border-gold/50 transition">
-                <img src="https://placehold.co/80x80/1D1D20/D9A441?text=BR" class="w-16 h-16 rounded-sm object-cover shrink-0">
-                <div class="min-w-0">
-                  <p class="font-display text-sm truncate">Barbería Rey</p>
-                  <p class="text-xs text-white/50 mt-0.5">⭐ 4.9 · 1.1 km</p>
-                  <p class="text-xs text-gold mt-1.5">Mañana 10:00 disponible</p>
-                </div>
-              </button>
+              <p class="text-white/40 text-sm text-center py-8">Cargando barberías…</p>
             </div>
 
             <div id="buscar-mapa" class="hidden flex-1 px-5 pb-4">
@@ -131,38 +110,7 @@
 
                 <div class="absolute w-3 h-3 rounded-full bg-blue-400 ring-4 ring-blue-400/25" style="top:47%; left:44%;"></div>
 
-                <button onclick="togglePin('pin1')" class="absolute leading-none" style="top:30%; left:18%;">
-                  <span class="text-2xl" style="filter:drop-shadow(0 2px 3px rgba(0,0,0,0.6))">📍</span>
-                </button>
-                <div id="pin1" class="hidden absolute w-40 bg-ink border border-gold/40 rounded-sm p-2.5 shadow-xl z-10" style="top:8%; left:2%;">
-                  <button onclick="showScreen('screen-detalle')" class="text-left w-full">
-                    <p class="font-display text-xs">Barbería Clásica</p>
-                    <p class="text-[11px] text-white/50 mt-0.5">⭐ 4.8 · 0.4 km</p>
-                    <p class="text-[11px] text-gold mt-1">Hoy 15:30 disponible</p>
-                  </button>
-                </div>
-
-                <button onclick="togglePin('pin2')" class="absolute leading-none" style="top:58%; left:58%;">
-                  <span class="text-2xl" style="filter:drop-shadow(0 2px 3px rgba(0,0,0,0.6))">📍</span>
-                </button>
-                <div id="pin2" class="hidden absolute w-40 bg-ink border border-gold/40 rounded-sm p-2.5 shadow-xl z-10" style="top:36%; left:38%;">
-                  <button onclick="showScreen('screen-detalle')" class="text-left w-full">
-                    <p class="font-display text-xs">El Corte Studio</p>
-                    <p class="text-[11px] text-white/50 mt-0.5">⭐ 4.6 · 0.8 km</p>
-                    <p class="text-[11px] text-gold mt-1">Hoy 16:00 disponible</p>
-                  </button>
-                </div>
-
-                <button onclick="togglePin('pin3')" class="absolute leading-none" style="top:18%; left:68%;">
-                  <span class="text-2xl" style="filter:drop-shadow(0 2px 3px rgba(0,0,0,0.6))">📍</span>
-                </button>
-                <div id="pin3" class="hidden absolute w-40 bg-ink border border-gold/40 rounded-sm p-2.5 shadow-xl z-10" style="top:2%; left:44%;">
-                  <button onclick="showScreen('screen-detalle')" class="text-left w-full">
-                    <p class="font-display text-xs">Barbería Rey</p>
-                    <p class="text-[11px] text-white/50 mt-0.5">⭐ 4.9 · 1.1 km</p>
-                    <p class="text-[11px] text-gold mt-1">Mañana 10:00 disponible</p>
-                  </button>
-                </div>
+                <div id="mapa-pines"></div>
               </div>
             </div>
 
@@ -178,40 +126,18 @@
         <div id="screen-detalle" class="screen hidden">
           <div class="h-full flex flex-col">
             <div class="relative h-40 shrink-0">
-              <img src="https://placehold.co/375x160/1D1D20/D9A441?text=Barber%C3%ADa+Cl%C3%A1sica" class="w-full h-full object-cover">
+              <img id="detalle-imagen" src="https://placehold.co/375x160/1D1D20/D9A441?text=..." class="w-full h-full object-cover">
               <button onclick="showScreen('screen-buscar')" class="absolute top-3 left-3 w-8 h-8 rounded-full bg-ink/80 flex items-center justify-center text-sm">←</button>
             </div>
             <div class="flex-1 overflow-y-auto px-5 pt-4 pb-4">
-              <h2 class="font-display text-lg">Barbería Clásica</h2>
-              <p class="text-xs text-white/50 mt-1">⭐ 4.8 (132) · Av. Providencia 1234 · Abierto hasta 20:00</p>
+              <h2 id="detalle-nombre" class="font-display text-lg">Cargando…</h2>
+              <p id="detalle-info" class="text-xs text-white/50 mt-1"></p>
 
               <p class="font-mono text-[11px] tracking-widest uppercase text-gold mt-6 mb-3">Servicios</p>
-              <div class="space-y-2">
-                <div class="flex items-center justify-between border border-white/10 rounded-sm px-3 py-2.5">
-                  <div>
-                    <p class="text-sm font-medium">Corte clásico</p>
-                    <p class="text-xs text-white/40">30 min</p>
-                  </div>
-                  <span class="font-mono text-sm text-gold">$8.000</span>
-                </div>
-                <div class="flex items-center justify-between border border-white/10 rounded-sm px-3 py-2.5">
-                  <div>
-                    <p class="text-sm font-medium">Corte + Barba</p>
-                    <p class="text-xs text-white/40">45 min</p>
-                  </div>
-                  <span class="font-mono text-sm text-gold">$12.000</span>
-                </div>
-                <div class="flex items-center justify-between border border-white/10 rounded-sm px-3 py-2.5">
-                  <div>
-                    <p class="text-sm font-medium">Afeitado clásico</p>
-                    <p class="text-xs text-white/40">20 min</p>
-                  </div>
-                  <span class="font-mono text-sm text-gold">$6.000</span>
-                </div>
-              </div>
+              <div id="detalle-servicios" class="space-y-2"></div>
             </div>
             <div class="p-4 border-t border-white/10 shrink-0">
-              <button onclick="showScreen('screen-agendar')" class="w-full bg-gold hover:bg-goldlight text-ink font-semibold py-3 rounded-sm transition">Reservar</button>
+              <button onclick="onReservarClick()" class="w-full bg-gold hover:bg-goldlight text-ink font-semibold py-3 rounded-sm transition">Reservar</button>
             </div>
           </div>
         </div>
@@ -226,38 +152,25 @@
             <div class="flex-1 overflow-y-auto px-5 pb-4 space-y-6">
               <div>
                 <p class="font-mono text-[11px] tracking-widest uppercase text-gold mb-3">Barbero</p>
-                <div class="flex gap-2">
-                  <span class="text-xs border border-gold bg-gold/10 text-gold px-3 py-2 rounded-sm">Cualquiera</span>
-                  <span class="text-xs border border-white/15 text-white/70 px-3 py-2 rounded-sm">Tomás</span>
-                  <span class="text-xs border border-white/15 text-white/70 px-3 py-2 rounded-sm">Nico</span>
-                </div>
+                <div id="agendar-barberos" class="flex gap-2 flex-wrap"></div>
               </div>
               <div>
                 <p class="font-mono text-[11px] tracking-widest uppercase text-gold mb-3">Fecha</p>
-                <div class="flex gap-2">
-                  <span class="text-xs border border-gold bg-gold/10 text-gold px-3 py-2 rounded-sm">Hoy</span>
-                  <span class="text-xs border border-white/15 text-white/70 px-3 py-2 rounded-sm">Mañana</span>
-                  <span class="text-xs border border-white/15 text-white/70 px-3 py-2 rounded-sm">Vie 28</span>
-                </div>
+                <div id="agendar-fechas" class="flex gap-2"></div>
               </div>
               <div>
                 <p class="font-mono text-[11px] tracking-widest uppercase text-gold mb-3">Hora</p>
-                <div class="grid grid-cols-4 gap-2">
-                  <span class="text-xs text-center border border-white/15 text-white/70 py-2 rounded-sm">14:00</span>
-                  <span class="text-xs text-center border border-white/15 text-white/70 py-2 rounded-sm">14:30</span>
-                  <span class="text-xs text-center border border-gold bg-gold/10 text-gold py-2 rounded-sm">15:30</span>
-                  <span class="text-xs text-center border border-white/15 text-white/70 py-2 rounded-sm">16:00</span>
-                  <span class="text-xs text-center border border-white/15 text-white/70 py-2 rounded-sm">16:30</span>
-                  <span class="text-xs text-center border border-white/15 text-white/70 py-2 rounded-sm">17:00</span>
+                <div id="agendar-horas" class="grid grid-cols-4 gap-2">
+                  <p class="col-span-4 text-white/40 text-xs text-center py-4">Elige barbero y fecha</p>
                 </div>
               </div>
             </div>
             <div class="p-4 border-t border-white/10 shrink-0">
               <div class="flex items-center justify-between text-sm mb-3">
-                <span class="text-white/60">Corte clásico · 15:30</span>
-                <span class="font-mono text-gold">$8.000</span>
+                <span id="agendar-resumen" class="text-white/60">Elige un horario</span>
+                <span id="agendar-precio" class="font-mono text-gold"></span>
               </div>
-              <button onclick="showScreen('screen-pago')" class="w-full bg-gold hover:bg-goldlight text-ink font-semibold py-3 rounded-sm transition">Continuar a pago</button>
+              <button onclick="onContinuarClick()" class="w-full bg-gold hover:bg-goldlight text-ink font-semibold py-3 rounded-sm transition">Continuar</button>
             </div>
           </div>
         </div>
@@ -267,30 +180,27 @@
           <div id="pago-form" class="h-full flex flex-col">
             <div class="flex items-center gap-3 px-5 pt-2 pb-4 shrink-0">
               <button onclick="showScreen('screen-agendar')" class="text-sm">←</button>
-              <h2 class="font-display text-base">Pago</h2>
+              <h2 class="font-display text-base">Confirmar reserva</h2>
             </div>
             <div class="flex-1 overflow-y-auto px-5 pb-4 space-y-6">
               <div>
-                <p class="font-mono text-[11px] tracking-widest uppercase text-gold mb-3">Método de pago</p>
+                <p class="font-mono text-[11px] tracking-widest uppercase text-gold mb-3">Tus datos</p>
                 <div class="space-y-2">
-                  <div class="flex items-center justify-between border border-gold bg-gold/10 rounded-sm px-3 py-2.5">
-                    <span class="text-sm">💳 Visa terminada en 4242</span>
-                    <span class="text-gold text-sm">●</span>
-                  </div>
-                  <div class="text-sm text-white/50 border border-white/15 rounded-sm px-3 py-2.5">+ Agregar método de pago</div>
+                  <input id="input-nombre" type="text" placeholder="Nombre" class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2.5 text-sm placeholder-white/40 focus:outline-none focus:border-gold">
+                  <input id="input-telefono" type="tel" placeholder="Teléfono (ej: +56 9 1234 5678)" class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2.5 text-sm placeholder-white/40 focus:outline-none focus:border-gold">
+                  <input id="input-email" type="email" placeholder="Correo (opcional)" class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2.5 text-sm placeholder-white/40 focus:outline-none focus:border-gold">
+                  <input id="input-honeypot" type="text" name="website" tabindex="-1" autocomplete="off" class="hidden">
                 </div>
               </div>
               <div>
                 <p class="font-mono text-[11px] tracking-widest uppercase text-gold mb-3">Resumen</p>
-                <div class="border border-white/10 rounded-sm p-3 space-y-2 text-sm">
-                  <div class="flex justify-between text-white/70"><span>Barbería Clásica</span><span>Hoy, 15:30</span></div>
-                  <div class="flex justify-between text-white/70"><span>Corte clásico</span><span class="font-mono">$8.000</span></div>
-                  <div class="flex justify-between font-semibold pt-2 border-t border-white/10"><span>Total</span><span class="font-mono text-gold">$8.000</span></div>
-                </div>
+                <div id="pago-resumen" class="border border-white/10 rounded-sm p-3 space-y-2 text-sm"></div>
+                <p class="text-white/40 text-xs mt-3">Pagas directo en la barbería. No se cobra nada ahora.</p>
               </div>
+              <p id="pago-error" class="hidden text-sm text-red-400"></p>
             </div>
             <div class="p-4 border-t border-white/10 shrink-0">
-              <button onclick="document.getElementById('pago-form').classList.add('hidden'); document.getElementById('pago-exito').classList.remove('hidden')" class="w-full bg-gold hover:bg-goldlight text-ink font-semibold py-3 rounded-sm transition">Confirmar y pagar</button>
+              <button id="btn-confirmar" onclick="submitBooking()" class="w-full bg-gold hover:bg-goldlight text-ink font-semibold py-3 rounded-sm transition">Confirmar reserva</button>
             </div>
           </div>
 
@@ -299,8 +209,8 @@
               <circle cx="12" cy="12" r="9"/><path d="M8 12.3l2.6 2.6L16 9.5"/>
             </svg>
             <h2 class="font-display text-xl mb-2">Reserva confirmada</h2>
-            <p class="text-white/60 text-sm mb-8">Barbería Clásica · Hoy 15:30<br>Corte clásico · $8.000</p>
-            <button onclick="showScreen('screen-buscar')" class="w-full bg-gold hover:bg-goldlight text-ink font-semibold py-3 rounded-sm transition">Volver al inicio</button>
+            <p id="exito-detalle" class="text-white/60 text-sm mb-8"></p>
+            <button onclick="resetAndGoHome()" class="w-full bg-gold hover:bg-goldlight text-ink font-semibold py-3 rounded-sm transition">Volver al inicio</button>
           </div>
         </div>
 
@@ -312,12 +222,29 @@
   </div>
 
   <script>
+    const state = {
+      allBarbershops: [],
+      barbershopId: null,
+      barbershopName: '',
+      barbershopAddress: '',
+      services: [],
+      barbers: [],
+      selectedService: null,
+      selectedBarberId: 'any',
+      selectedDate: null,
+      selectedSlot: null,
+      slotsMap: {},
+      candidateBarberIds: [],
+    };
+
+    // ---------- navegación ----------
     function showScreen(id) {
       document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
       document.getElementById(id).classList.remove('hidden');
       if (id === 'screen-pago') {
         document.getElementById('pago-form').classList.remove('hidden');
         document.getElementById('pago-exito').classList.add('hidden');
+        document.getElementById('pago-error').classList.add('hidden');
       }
     }
 
@@ -335,11 +262,342 @@
       document.getElementById('tab-mapa').classList.toggle('border-transparent', isLista);
     }
 
-    function togglePin(id) {
-      const wasOpen = !document.getElementById(id).classList.contains('hidden');
-      ['pin1', 'pin2', 'pin3'].forEach(p => document.getElementById(p).classList.add('hidden'));
-      if (!wasOpen) document.getElementById(id).classList.remove('hidden');
+    function toggleMapPin(id) {
+      const wasOpen = !document.getElementById(id)?.classList.contains('hidden');
+      ['pin0', 'pin1', 'pin2'].forEach(p => document.getElementById(p)?.classList.add('hidden'));
+      if (!wasOpen) document.getElementById(id)?.classList.remove('hidden');
     }
+
+    // ---------- utilidades de fecha (siempre en hora de Santiago, nunca la del navegador) ----------
+    function santiagoDateParts(offsetDays) {
+      const fmt = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Santiago', year: 'numeric', month: '2-digit', day: '2-digit' });
+      const parts = fmt.formatToParts(new Date()).reduce((acc, p) => (acc[p.type] = p.value, acc), {});
+      const base = new Date(Date.UTC(+parts.year, +parts.month - 1, +parts.day));
+      base.setUTCDate(base.getUTCDate() + offsetDays);
+      const iso = base.toISOString().slice(0, 10);
+      return { iso, dateObj: base };
+    }
+
+    function formatWeekdayShort(dateObj) {
+      const wd = new Intl.DateTimeFormat('es-CL', { weekday: 'short', timeZone: 'UTC' }).format(dateObj).replace('.', '');
+      return wd.charAt(0).toUpperCase() + wd.slice(1) + ' ' + dateObj.getUTCDate();
+    }
+
+    function formatFechaLabel(iso) {
+      if (iso === santiagoDateParts(0).iso) return 'Hoy';
+      if (iso === santiagoDateParts(1).iso) return 'Mañana';
+      return iso;
+    }
+
+    function clp(n) {
+      return '$' + Number(n).toLocaleString('es-CL');
+    }
+
+    // ---------- pantalla Buscar ----------
+    const PIN_SLOTS = [
+      { btn: 'top:30%; left:18%;', popup: 'top:8%; left:2%;' },
+      { btn: 'top:58%; left:58%;', popup: 'top:36%; left:38%;' },
+      { btn: 'top:18%; left:68%;', popup: 'top:2%; left:44%;' },
+    ];
+
+    async function loadBarbershops() {
+      const listEl = document.getElementById('buscar-lista');
+      const { data, error } = await supabaseClient
+        .from('barbershops')
+        .select('id, name, address, rating, image_url');
+
+      if (error || !data || data.length === 0) {
+        listEl.innerHTML = '<p class="text-white/40 text-sm text-center py-8">No hay barberías disponibles todavía.</p>';
+        document.getElementById('mapa-pines').innerHTML = '';
+        return;
+      }
+
+      state.allBarbershops = data;
+
+      listEl.innerHTML = data.map(b => `
+        <button onclick="selectBarbershop('${b.id}')" class="w-full text-left flex gap-3 border border-white/10 rounded-sm p-3 hover:border-gold/50 transition">
+          <img src="${b.image_url || 'https://placehold.co/80x80/1D1D20/D9A441?text=' + encodeURIComponent(b.name.slice(0, 2).toUpperCase())}" class="w-16 h-16 rounded-sm object-cover shrink-0">
+          <div class="min-w-0">
+            <p class="font-display text-sm truncate">${b.name}</p>
+            <p class="text-xs text-white/50 mt-0.5">⭐ ${b.rating ?? '—'}</p>
+            <p class="text-xs text-gold mt-1.5">${b.address || ''}</p>
+          </div>
+        </button>
+      `).join('');
+
+      document.getElementById('mapa-pines').innerHTML = data.slice(0, 3).map((b, i) => {
+        const slot = PIN_SLOTS[i];
+        const pinId = 'pin' + i;
+        return `
+          <button onclick="toggleMapPin('${pinId}')" class="absolute leading-none" style="${slot.btn}">
+            <span class="text-2xl" style="filter:drop-shadow(0 2px 3px rgba(0,0,0,0.6))">📍</span>
+          </button>
+          <div id="${pinId}" class="hidden absolute w-40 bg-ink border border-gold/40 rounded-sm p-2.5 shadow-xl z-10" style="${slot.popup}">
+            <button onclick="selectBarbershop('${b.id}')" class="text-left w-full">
+              <p class="font-display text-xs">${b.name}</p>
+              <p class="text-[11px] text-white/50 mt-0.5">⭐ ${b.rating ?? '—'}</p>
+              <p class="text-[11px] text-gold mt-1">${b.address || ''}</p>
+            </button>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // ---------- pantalla Detalle ----------
+    function selectBarbershop(id) {
+      const shop = state.allBarbershops.find(b => b.id === id);
+      state.barbershopId = id;
+      state.barbershopName = shop.name;
+      state.barbershopAddress = shop.address;
+      showScreen('screen-detalle');
+      loadBarbershopDetail();
+    }
+
+    async function loadBarbershopDetail() {
+      document.getElementById('detalle-nombre').textContent = state.barbershopName;
+      document.getElementById('detalle-info').textContent = state.barbershopAddress || '';
+      document.getElementById('detalle-imagen').src = 'https://placehold.co/375x160/1D1D20/D9A441?text=' + encodeURIComponent(state.barbershopName);
+
+      const [{ data: services }, { data: barbers }] = await Promise.all([
+        supabaseClient.from('services').select('*').eq('barbershop_id', state.barbershopId).eq('active', true),
+        supabaseClient.from('barbers').select('*').eq('barbershop_id', state.barbershopId).eq('active', true),
+      ]);
+      state.services = services || [];
+      state.barbers = barbers || [];
+      state.selectedService = null;
+
+      document.getElementById('detalle-servicios').innerHTML = state.services.map(s => `
+        <button onclick="selectService('${s.id}')" data-service-id="${s.id}" class="servicio-item w-full flex items-center justify-between border border-white/10 rounded-sm px-3 py-2.5 text-left transition">
+          <div>
+            <p class="text-sm font-medium">${s.name}</p>
+            <p class="text-xs text-white/40">${s.duration_minutes} min</p>
+          </div>
+          <span class="font-mono text-sm text-gold">${clp(s.price_clp)}</span>
+        </button>
+      `).join('');
+    }
+
+    function selectService(id) {
+      state.selectedService = state.services.find(s => s.id === id);
+      document.querySelectorAll('.servicio-item').forEach(el => {
+        const active = el.dataset.serviceId === id;
+        el.classList.toggle('border-gold', active);
+        el.classList.toggle('bg-gold/10', active);
+        el.classList.toggle('border-white/10', !active);
+      });
+    }
+
+    function onReservarClick() {
+      if (!state.selectedService && state.services.length) {
+        selectService(state.services[0].id);
+      }
+      if (!state.selectedService) return;
+      state.selectedBarberId = 'any';
+      state.selectedDate = null;
+      state.selectedSlot = null;
+      showScreen('screen-agendar');
+      loadAgendarScreen();
+    }
+
+    // ---------- pantalla Agendar ----------
+    function loadAgendarScreen() {
+      const barberChips = ['<button data-barber-id="any" onclick="selectBarber(\'any\')" class="chip-barbero text-xs border px-3 py-2 rounded-sm border-gold bg-gold/10 text-gold">Cualquiera</button>']
+        .concat(state.barbers.map(b => `<button data-barber-id="${b.id}" onclick="selectBarber('${b.id}')" class="chip-barbero text-xs border px-3 py-2 rounded-sm border-white/15 text-white/70">${b.name}</button>`));
+      document.getElementById('agendar-barberos').innerHTML = barberChips.join('');
+
+      const dias = [0, 1, 2].map(o => santiagoDateParts(o));
+      const labels = ['Hoy', 'Mañana', formatWeekdayShort(dias[2].dateObj)];
+      document.getElementById('agendar-fechas').innerHTML = dias.map((d, i) => `
+        <button data-date="${d.iso}" onclick="selectDate('${d.iso}')" class="chip-fecha text-xs border px-3 py-2 rounded-sm ${i === 0 ? 'border-gold bg-gold/10 text-gold' : 'border-white/15 text-white/70'}">${labels[i]}</button>
+      `).join('');
+
+      state.selectedBarberId = 'any';
+      state.selectedDate = dias[0].iso;
+      state.selectedSlot = null;
+      document.getElementById('agendar-resumen').textContent = 'Elige un horario';
+      document.getElementById('agendar-precio').textContent = '';
+      loadHoras();
+    }
+
+    function selectBarber(id) {
+      state.selectedBarberId = id;
+      state.selectedSlot = null;
+      document.querySelectorAll('.chip-barbero').forEach(el => {
+        const active = el.dataset.barberId === id;
+        el.classList.toggle('border-gold', active);
+        el.classList.toggle('bg-gold/10', active);
+        el.classList.toggle('text-gold', active);
+        el.classList.toggle('border-white/15', !active);
+        el.classList.toggle('text-white/70', !active);
+      });
+      loadHoras();
+    }
+
+    function selectDate(iso) {
+      state.selectedDate = iso;
+      state.selectedSlot = null;
+      document.querySelectorAll('.chip-fecha').forEach(el => {
+        const active = el.dataset.date === iso;
+        el.classList.toggle('border-gold', active);
+        el.classList.toggle('bg-gold/10', active);
+        el.classList.toggle('text-gold', active);
+        el.classList.toggle('border-white/15', !active);
+        el.classList.toggle('text-white/70', !active);
+      });
+      loadHoras();
+    }
+
+    async function fetchSlotsForBarber(barberId, dateIso, durationMinutes) {
+      const { data, error } = await supabaseClient.rpc('get_available_slots', {
+        p_barber_id: barberId,
+        p_date: dateIso,
+        p_service_duration_minutes: durationMinutes,
+      });
+      if (error) { console.error(error); return []; }
+      return data.map(r => r.slot_start);
+    }
+
+    async function loadHoras() {
+      const horasEl = document.getElementById('agendar-horas');
+      horasEl.innerHTML = '<p class="col-span-4 text-white/40 text-xs text-center py-4">Buscando horarios…</p>';
+      document.getElementById('agendar-resumen').textContent = 'Elige un horario';
+      document.getElementById('agendar-precio').textContent = '';
+
+      const duration = state.selectedService.duration_minutes;
+      const barberIds = state.selectedBarberId === 'any' ? state.barbers.map(b => b.id) : [state.selectedBarberId];
+      const results = await Promise.all(barberIds.map(id => fetchSlotsForBarber(id, state.selectedDate, duration)));
+
+      state.slotsMap = {};
+      results.forEach((slots, idx) => {
+        slots.forEach(slot => {
+          (state.slotsMap[slot] ||= []).push(barberIds[idx]);
+        });
+      });
+
+      const sorted = Object.keys(state.slotsMap).sort();
+      if (!sorted.length) {
+        horasEl.innerHTML = '<p class="col-span-4 text-white/40 text-xs text-center py-4">Sin horarios disponibles ese día.</p>';
+        return;
+      }
+      horasEl.innerHTML = sorted.map(s => `
+        <button data-slot="${s}" onclick="selectSlot('${s}')" class="chip-hora text-xs text-center border border-white/15 text-white/70 py-2 rounded-sm">${s.slice(0, 5)}</button>
+      `).join('');
+    }
+
+    function selectSlot(timeStr) {
+      state.selectedSlot = timeStr;
+      state.candidateBarberIds = state.slotsMap[timeStr] || [];
+      document.querySelectorAll('.chip-hora').forEach(el => {
+        const active = el.dataset.slot === timeStr;
+        el.classList.toggle('border-gold', active);
+        el.classList.toggle('bg-gold/10', active);
+        el.classList.toggle('text-gold', active);
+        el.classList.toggle('border-white/15', !active);
+        el.classList.toggle('text-white/70', !active);
+      });
+      document.getElementById('agendar-resumen').textContent = `${state.selectedService.name} · ${timeStr.slice(0, 5)}`;
+      document.getElementById('agendar-precio').textContent = clp(state.selectedService.price_clp);
+    }
+
+    function onContinuarClick() {
+      if (!state.selectedSlot) return;
+      showScreen('screen-pago');
+      renderPagoResumen();
+    }
+
+    // ---------- pantalla Confirmación ----------
+    function renderPagoResumen() {
+      const s = state.selectedService;
+      document.getElementById('pago-resumen').innerHTML = `
+        <div class="flex justify-between text-white/70"><span>${state.barbershopName}</span><span>${formatFechaLabel(state.selectedDate)}, ${state.selectedSlot.slice(0, 5)}</span></div>
+        <div class="flex justify-between text-white/70"><span>${s.name}</span><span class="font-mono">${clp(s.price_clp)}</span></div>
+        <div class="flex justify-between font-semibold pt-2 border-t border-white/10"><span>Total</span><span class="font-mono text-gold">${clp(s.price_clp)}</span></div>
+      `;
+    }
+
+    async function submitBooking() {
+      const errorEl = document.getElementById('pago-error');
+      errorEl.classList.add('hidden');
+
+      if (document.getElementById('input-honeypot').value) return;
+
+      const nombre = document.getElementById('input-nombre').value.trim();
+      const telefono = document.getElementById('input-telefono').value.trim();
+      const email = document.getElementById('input-email').value.trim();
+
+      if (!nombre || !telefono) {
+        errorEl.textContent = 'Ingresa tu nombre y teléfono.';
+        errorEl.classList.remove('hidden');
+        return;
+      }
+
+      const btn = document.getElementById('btn-confirmar');
+      btn.disabled = true;
+      btn.textContent = 'Reservando…';
+
+      const svc = state.selectedService;
+      const [h, m] = state.selectedSlot.split(':').map(Number);
+      const endTotal = h * 60 + m + svc.duration_minutes;
+      const endTime = `${String(Math.floor(endTotal / 60)).padStart(2, '0')}:${String(endTotal % 60).padStart(2, '0')}:00`;
+
+      const candidates = state.candidateBarberIds.length
+        ? state.candidateBarberIds
+        : (state.selectedBarberId !== 'any' ? [state.selectedBarberId] : []);
+
+      let lastError = null;
+      for (const barberId of candidates) {
+        const { error } = await supabaseClient.from('bookings').insert({
+          barbershop_id: state.barbershopId,
+          barber_id: barberId,
+          service_id: svc.id,
+          customer_name: nombre,
+          customer_phone: telefono,
+          customer_email: email || null,
+          booking_date: state.selectedDate,
+          start_time: state.selectedSlot,
+          end_time: endTime,
+        });
+        if (!error) {
+          document.getElementById('pago-form').classList.add('hidden');
+          document.getElementById('pago-exito').classList.remove('hidden');
+          document.getElementById('exito-detalle').innerHTML = `${state.barbershopName} · ${formatFechaLabel(state.selectedDate)} ${state.selectedSlot.slice(0, 5)}<br>${svc.name} · ${clp(svc.price_clp)}`;
+          return;
+        }
+        lastError = error;
+        if (error.code !== '23P01') break;
+      }
+
+      btn.disabled = false;
+      btn.textContent = 'Confirmar reserva';
+      if (lastError && lastError.code === '23P01') {
+        errorEl.textContent = 'Justo se ocupó ese horario. Elige otro.';
+        errorEl.classList.remove('hidden');
+        showScreen('screen-agendar');
+        loadHoras();
+      } else {
+        console.error(lastError);
+        errorEl.textContent = 'Algo salió mal. Intenta de nuevo.';
+        errorEl.classList.remove('hidden');
+      }
+    }
+
+    function resetAndGoHome() {
+      document.getElementById('pago-form').classList.remove('hidden');
+      document.getElementById('pago-exito').classList.add('hidden');
+      document.getElementById('btn-confirmar').disabled = false;
+      document.getElementById('btn-confirmar').textContent = 'Confirmar reserva';
+      document.getElementById('input-nombre').value = '';
+      document.getElementById('input-telefono').value = '';
+      document.getElementById('input-email').value = '';
+      state.selectedService = null;
+      state.selectedBarberId = 'any';
+      state.selectedDate = null;
+      state.selectedSlot = null;
+      state.candidateBarberIds = [];
+      showScreen('screen-buscar');
+    }
+
+    loadBarbershops();
   </script>
 
 </body>
