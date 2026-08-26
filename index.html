@@ -26,6 +26,8 @@
   html { scroll-behavior: smooth; }
   body { font-family: 'Inter', sans-serif; }
   .font-display { font-family: 'Space Grotesk', sans-serif; letter-spacing: -0.01em; }
+  .preview-slide { opacity: 0; transform: translateY(10px); transition: opacity 0.9s ease, transform 0.9s ease; }
+  .preview-slide.active { opacity: 1; transform: translateY(0); }
 </style>
 
 <body class="bg-ink text-white font-body">
@@ -70,10 +72,17 @@
         </a>
       </div>
     </div>
-    <div class="flex justify-center md:justify-end">
-      <a href="app-cliente.html" class="block w-full max-w-xs aspect-[375/780] border border-white/15 rounded-sm overflow-hidden hover:border-gold/50 transition">
-        <img src="screenshots/app-cliente-mapa.png" alt="Vista previa de la app CorteYa" class="w-full h-full object-cover">
-      </a>
+    <div class="relative flex justify-center md:justify-end">
+      <div class="absolute -inset-10 bg-gold/15 rounded-full blur-3xl"></div>
+      <div class="relative bg-panel rounded-lg p-4 sm:p-5">
+        <a href="app-cliente.html" class="preview-carousel relative block w-full max-w-xs aspect-[375/780] border border-white/20 rounded-sm overflow-hidden shadow-[0_25px_60px_-15px_rgba(0,0,0,0.7)] hover:border-gold/50 transition">
+          <img src="screenshots/app-cliente-lista.png" alt="Vista previa de la app CorteYa" class="preview-slide active absolute inset-0 w-full h-full object-cover">
+          <img src="screenshots/app-cliente-mapa.png" alt="" class="preview-slide absolute inset-0 w-full h-full object-cover">
+          <img src="screenshots/app-cliente-detalle.png" alt="" class="preview-slide absolute inset-0 w-full h-full object-cover">
+          <img src="screenshots/app-cliente-agendar.png" alt="" class="preview-slide absolute inset-0 w-full h-full object-cover">
+          <img src="screenshots/app-cliente-confirmacion.png" alt="" class="preview-slide absolute inset-0 w-full h-full object-cover">
+        </a>
+      </div>
     </div>
   </section>
 
@@ -124,9 +133,17 @@
   <!-- PARA BARBERIAS -->
   <section id="barberias" class="bg-panel border-y border-white/10">
     <div class="max-w-6xl mx-auto px-5 sm:px-8 py-20 md:py-24 grid md:grid-cols-2 gap-16 items-center">
-      <a href="dashboard-barberia.html" class="order-2 md:order-1 block border border-white/15 rounded-sm aspect-[4/3] overflow-hidden hover:border-gold/50 transition">
-        <img src="screenshots/dashboard-resumen.png" alt="Panel para barberías de CorteYa" class="w-full h-full object-cover">
-      </a>
+      <div class="relative order-2 md:order-1">
+        <div class="absolute -inset-10 bg-gold/10 rounded-full blur-3xl"></div>
+        <div class="relative bg-ink rounded-lg p-4 sm:p-5">
+          <a href="dashboard-barberia.html" class="preview-carousel relative block border border-white/20 rounded-sm aspect-[4/3] overflow-hidden shadow-[0_25px_60px_-15px_rgba(0,0,0,0.7)] hover:border-gold/50 transition">
+            <img src="screenshots/dashboard-resumen.png" alt="Panel para barberías de CorteYa" class="preview-slide active absolute inset-0 w-full h-full object-cover">
+            <img src="screenshots/dashboard-calendario.png" alt="" class="preview-slide absolute inset-0 w-full h-full object-cover">
+            <img src="screenshots/dashboard-servicios.png" alt="" class="preview-slide absolute inset-0 w-full h-full object-cover">
+            <img src="screenshots/dashboard-barberos.png" alt="" class="preview-slide absolute inset-0 w-full h-full object-cover">
+          </a>
+        </div>
+      </div>
       <div class="order-1 md:order-2">
         <h2 class="font-display text-2xl sm:text-3xl mb-6">¿Tienes una barbería?</h2>
         <ul class="space-y-4 mb-8">
@@ -218,6 +235,19 @@
       } catch {
         errorEl.classList.remove('hidden');
       }
+    });
+  </script>
+
+  <script>
+    document.querySelectorAll('.preview-carousel').forEach(carousel => {
+      const slides = carousel.querySelectorAll('.preview-slide');
+      if (slides.length < 2) return;
+      let current = 0;
+      setInterval(() => {
+        slides[current].classList.remove('active');
+        current = (current + 1) % slides.length;
+        slides[current].classList.add('active');
+      }, 3200);
     });
   </script>
 
