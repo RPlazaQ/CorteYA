@@ -1,0 +1,269 @@
+<title>CorteYa — Agenda tu corte cerca de ti</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          ink: '#0B0B0C',
+          panel: '#151517',
+          gold: '#D9A441',
+          goldlight: '#E8C27A',
+        },
+        fontFamily: {
+          display: ['Space Grotesk', 'sans-serif'],
+          body: ['Inter', 'sans-serif'],
+          mono: ['JetBrains Mono', 'monospace'],
+        }
+      }
+    }
+  }
+</script>
+<style>
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Inter', sans-serif; }
+  .font-display { font-family: 'Space Grotesk', sans-serif; letter-spacing: -0.01em; }
+</style>
+
+<body class="bg-ink text-white font-body">
+
+  <!-- NAV -->
+  <header class="sticky top-0 z-50 bg-ink/90 backdrop-blur border-b border-white/10">
+    <div class="max-w-6xl mx-auto px-5 sm:px-8 h-16 flex items-center justify-between">
+      <a href="#" class="font-display text-xl tracking-wide">CORTE<span class="text-gold">YA</span></a>
+      <nav class="hidden md:flex items-center gap-8 text-sm text-white/80">
+        <a href="#como-funciona" class="hover:text-white transition">Cómo funciona</a>
+        <a href="#barberias" class="hover:text-white transition">Para barberías</a>
+        <a href="#faq" class="hover:text-white transition">Preguntas</a>
+      </nav>
+      <a href="#lista-espera" class="bg-gold hover:bg-goldlight text-ink text-sm font-semibold px-4 py-2 rounded-sm transition">
+        Únete a la lista
+      </a>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="max-w-6xl mx-auto px-5 sm:px-8 pt-16 pb-20 md:pt-24 md:pb-28 grid md:grid-cols-2 gap-16 items-center">
+    <div>
+      <p class="flex items-center gap-3 font-mono text-xs tracking-[0.15em] uppercase text-gold mb-7">
+        <span class="w-6 h-px bg-gold"></span> Chile — próximamente
+      </p>
+      <h1 class="font-display text-4xl sm:text-5xl md:text-6xl leading-[1.05] mb-6">
+        Encuentra tu barbería.<br>
+        Agenda. Paga.<br>
+        <span class="text-gold">Todo en segundos.</span>
+      </h1>
+      <p class="text-white/70 text-lg mb-8 max-w-md">
+        Sin llamadas, sin esperar respuesta por WhatsApp. Busca la barbería más cercana, elige tu hora y paga desde el celular.
+      </p>
+      <div class="flex flex-col sm:flex-row gap-4">
+        <a href="#lista-espera" onclick="document.querySelector('#tipo-cliente').checked=true"
+           class="bg-gold hover:bg-goldlight text-ink text-center font-semibold px-6 py-3.5 rounded-sm transition">
+          Quiero agendar mi corte
+        </a>
+        <a href="#lista-espera" onclick="document.querySelector('#tipo-barberia').checked=true"
+           class="border border-white/30 hover:border-white text-center font-semibold px-6 py-3.5 rounded-sm transition">
+          Tengo una barbería
+        </a>
+      </div>
+    </div>
+    <div class="flex justify-center md:justify-end">
+      <div class="w-full max-w-xs aspect-[3/4] border border-white/15 rounded-sm flex flex-col items-center justify-center gap-5 p-8">
+        <svg class="w-10 h-10 text-gold" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3">
+          <circle cx="6" cy="6" r="2.4"/>
+          <circle cx="6" cy="18" r="2.4"/>
+          <path d="M8 7.6L19.5 18.5M8 16.4L19.5 5.5M9.6 12H15"/>
+        </svg>
+        <p class="text-xs tracking-widest uppercase text-white/35 text-center">Vista de la app<br>en desarrollo</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROBLEMA -->
+  <section class="bg-panel border-y border-white/10">
+    <div class="max-w-6xl mx-auto px-5 sm:px-8 py-16 md:py-20">
+      <h2 class="font-display text-2xl sm:text-3xl mb-12">¿Te suena familiar?</h2>
+      <div class="grid sm:grid-cols-3 gap-10 sm:gap-8">
+        <div class="text-center sm:border-l sm:border-white/15 sm:pl-8 first:border-0 first:pl-0">
+          <span class="text-2xl block mb-4">📵</span>
+          <p class="text-white/75 font-semibold leading-relaxed">Llamas o escribes por WhatsApp y esperas media hora por respuesta.</p>
+        </div>
+        <div class="text-center sm:border-l sm:border-white/15 sm:pl-8">
+          <span class="text-2xl block mb-4">🚶</span>
+          <p class="text-white/75 font-semibold leading-relaxed">Llegas a la barbería y está llena, o cerrada, o el barbero no está.</p>
+        </div>
+        <div class="text-center sm:border-l sm:border-white/15 sm:pl-8">
+          <span class="text-2xl block mb-4">💸</span>
+          <p class="text-white/75 font-semibold leading-relaxed">Solo aceptan efectivo y tienes que correr a buscar un cajero.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMO FUNCIONA -->
+  <section id="como-funciona" class="max-w-6xl mx-auto px-5 sm:px-8 py-20 md:py-24">
+    <h2 class="font-display text-2xl sm:text-3xl mb-4">Cómo funciona</h2>
+    <p class="text-white/60 mb-14 max-w-lg">Tres pasos, menos de un minuto.</p>
+    <div class="grid sm:grid-cols-3 gap-10 sm:gap-8">
+      <div class="text-center sm:border-l sm:border-white/15 sm:pl-8 first:border-0 first:pl-0">
+        <span class="text-2xl block mb-4">📍</span>
+        <h3 class="font-display text-lg mb-2">Busca cerca de ti</h3>
+        <p class="text-white/60 leading-relaxed">Ve las barberías disponibles según tu ubicación, con horarios en tiempo real.</p>
+      </div>
+      <div class="text-center sm:border-l sm:border-white/15 sm:pl-8">
+        <span class="text-2xl block mb-4">🕐</span>
+        <h3 class="font-display text-lg mb-2">Elige tu hora</h3>
+        <p class="text-white/60 leading-relaxed">Selecciona el barbero, el servicio y el horario que más te acomode.</p>
+      </div>
+      <div class="text-center sm:border-l sm:border-white/15 sm:pl-8">
+        <span class="text-2xl block mb-4">💳</span>
+        <h3 class="font-display text-lg mb-2">Paga y listo</h3>
+        <p class="text-white/60 leading-relaxed">Confirma y paga desde la app. Llegas, te sientas, te cortas.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- PARA BARBERIAS -->
+  <section id="barberias" class="bg-panel border-y border-white/10">
+    <div class="max-w-6xl mx-auto px-5 sm:px-8 py-20 md:py-24 grid md:grid-cols-2 gap-16 items-center">
+      <div class="order-2 md:order-1 border border-white/15 rounded-sm aspect-[4/3] flex flex-col items-center justify-center gap-5 p-8">
+        <svg class="w-10 h-10 text-gold" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3">
+          <rect x="4" y="5" width="16" height="15" rx="1"/><path d="M4 9.5h16M8 3v3.5M16 3v3.5"/>
+          <path d="M8.5 13l2 2 4-4.5"/>
+        </svg>
+        <p class="text-xs tracking-widest uppercase text-white/35 text-center">Panel para barberías<br>en desarrollo</p>
+      </div>
+      <div class="order-1 md:order-2">
+        <h2 class="font-display text-2xl sm:text-3xl mb-6">¿Tienes una barbería?</h2>
+        <ul class="space-y-4 mb-8">
+          <li class="flex gap-3 items-start">
+            <svg class="w-5 h-5 text-gold shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M5 12l4 4 10-10"/>
+            </svg>
+            <span class="text-white/80">Llega a clientes nuevos en tu zona sin gastar en publicidad.</span>
+          </li>
+          <li class="flex gap-3 items-start">
+            <svg class="w-5 h-5 text-gold shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M5 12l4 4 10-10"/>
+            </svg>
+            <span class="text-white/80">Agenda siempre ordenada, sin doble reserva ni cuadernos.</span>
+          </li>
+          <li class="flex gap-3 items-start">
+            <svg class="w-5 h-5 text-gold shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M5 12l4 4 10-10"/>
+            </svg>
+            <span class="text-white/80">El cliente paga al agendar — menos "no shows", menos plantón.</span>
+          </li>
+        </ul>
+        <a href="#lista-espera" onclick="document.querySelector('#tipo-barberia').checked=true"
+           class="inline-block bg-gold hover:bg-goldlight text-ink font-semibold px-6 py-3 rounded-sm transition">
+          Quiero registrar mi barbería
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- LISTA DE ESPERA -->
+  <section id="lista-espera" class="max-w-2xl mx-auto px-5 sm:px-8 py-20 md:py-24">
+    <h2 class="font-display text-2xl sm:text-3xl mb-3 text-center">Sé de los primeros en probarla</h2>
+    <p class="text-white/60 mb-10 text-center">Aún estamos construyendo CorteYa. Déjanos tu correo y te avisamos apenas esté disponible en tu ciudad.</p>
+
+    <form id="waitlist-form" action="https://formspree.io/f/xnpaegbe" method="POST" class="border border-white/15 rounded-sm p-6 sm:p-8">
+      <div class="grid sm:grid-cols-2 gap-4 mb-4">
+        <label class="flex items-center gap-2 border border-white/15 rounded-sm px-4 py-3 cursor-pointer has-[:checked]:border-gold">
+          <input type="radio" name="tipo" id="tipo-cliente" value="cliente" checked class="accent-gold">
+          <span class="text-sm">Soy cliente</span>
+        </label>
+        <label class="flex items-center gap-2 border border-white/15 rounded-sm px-4 py-3 cursor-pointer has-[:checked]:border-gold">
+          <input type="radio" name="tipo" id="tipo-barberia" value="barberia" class="accent-gold">
+          <span class="text-sm">Tengo una barbería</span>
+        </label>
+      </div>
+      <div class="grid sm:grid-cols-2 gap-4 mb-4">
+        <input type="text" name="nombre" placeholder="Nombre" required
+               class="border border-white/15 rounded-sm px-4 py-3 text-sm placeholder-white/40 focus:outline-none focus:border-gold bg-transparent">
+        <input type="text" name="comuna" placeholder="Comuna / ciudad" required
+               class="border border-white/15 rounded-sm px-4 py-3 text-sm placeholder-white/40 focus:outline-none focus:border-gold bg-transparent">
+      </div>
+      <input type="email" name="email" placeholder="Tu correo electrónico" required
+             class="w-full border border-white/15 rounded-sm px-4 py-3 text-sm placeholder-white/40 focus:outline-none focus:border-gold bg-transparent mb-5">
+      <button type="submit" class="w-full bg-gold hover:bg-goldlight text-ink font-semibold px-6 py-3.5 rounded-sm transition">
+        Unirme a la lista de espera
+      </button>
+      <p id="waitlist-error" class="hidden text-sm text-red-400 mt-3">
+        Algo salió mal. Intenta de nuevo o escríbenos directo.
+      </p>
+    </form>
+    <div id="waitlist-success" class="hidden border border-gold/40 rounded-sm p-10 text-center">
+      <svg class="w-8 h-8 text-gold mx-auto mb-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <circle cx="12" cy="12" r="9"/><path d="M8 12.3l2.6 2.6L16 9.5"/>
+      </svg>
+      <h3 class="font-display text-xl mb-2">Quedaste registrado</h3>
+      <p class="text-white/60 text-sm">Te avisaremos por correo apenas CorteYa esté disponible en tu comuna.</p>
+    </div>
+  </section>
+
+  <script>
+    const waitlistForm = document.getElementById('waitlist-form');
+    waitlistForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const errorEl = document.getElementById('waitlist-error');
+      errorEl.classList.add('hidden');
+      try {
+        const response = await fetch(waitlistForm.action, {
+          method: 'POST',
+          body: new FormData(waitlistForm),
+          headers: { 'Accept': 'application/json' }
+        });
+        if (response.ok) {
+          waitlistForm.classList.add('hidden');
+          document.getElementById('waitlist-success').classList.remove('hidden');
+        } else {
+          errorEl.classList.remove('hidden');
+        }
+      } catch {
+        errorEl.classList.remove('hidden');
+      }
+    });
+  </script>
+
+  <!-- FAQ -->
+  <section id="faq" class="bg-panel border-y border-white/10">
+    <div class="max-w-3xl mx-auto px-5 sm:px-8 py-20 md:py-24">
+      <h2 class="font-display text-2xl sm:text-3xl mb-12">Preguntas frecuentes</h2>
+      <div class="divide-y divide-white/10 border-t border-b border-white/10">
+        <details class="group py-5">
+          <summary class="cursor-pointer font-semibold list-none flex justify-between items-center gap-4">
+            ¿Cuánto cuesta usar CorteYa?
+            <span class="text-gold group-open:rotate-45 transition shrink-0">+</span>
+          </summary>
+          <p class="text-white/60 text-sm mt-3">Para clientes es gratis. Solo pagas el precio del corte al agendar.</p>
+        </details>
+        <details class="group py-5">
+          <summary class="cursor-pointer font-semibold list-none flex justify-between items-center gap-4">
+            ¿En qué ciudades va a estar disponible?
+            <span class="text-gold group-open:rotate-45 transition shrink-0">+</span>
+          </summary>
+          <p class="text-white/60 text-sm mt-3">Lanzamos primero en una ciudad piloto en Chile. Si dejas tu comuna en el formulario, priorizamos según la demanda.</p>
+        </details>
+        <details class="group py-5">
+          <summary class="cursor-pointer font-semibold list-none flex justify-between items-center gap-4">
+            Tengo una barbería, ¿qué costo tiene?
+            <span class="text-gold group-open:rotate-45 transition shrink-0">+</span>
+          </summary>
+          <p class="text-white/60 text-sm mt-3">Aún estamos definiendo el modelo con las primeras barberías interesadas. Regístrate y te contactamos antes del lanzamiento.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="max-w-6xl mx-auto px-5 sm:px-8 py-10 flex flex-col sm:flex-row items-center justify-between gap-4 text-white/40 text-sm">
+    <span class="font-display text-white/70">CORTE<span class="text-gold">YA</span></span>
+    <span>&copy; 2026 CorteYa. Proyecto en validación.</span>
+  </footer>
+
+</body>
