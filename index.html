@@ -26,7 +26,7 @@
   html { scroll-behavior: smooth; }
   body { font-family: 'Inter', sans-serif; }
   .font-display { font-family: 'Space Grotesk', sans-serif; letter-spacing: -0.01em; }
-  .preview-slide { opacity: 0; transform: translateY(10px); transition: opacity 0.9s ease, transform 0.9s ease; }
+  .preview-slide { opacity: 0; transform: translateY(10px); transition: opacity 0.45s ease, transform 0.45s ease; }
   .preview-slide.active { opacity: 1; transform: translateY(0); }
 </style>
 
@@ -247,8 +247,9 @@
       let current = 0;
       setInterval(() => {
         slides[current].classList.remove('active');
-        current = (current + 1) % slides.length;
-        slides[current].classList.add('active');
+        const next = (current + 1) % slides.length;
+        setTimeout(() => slides[next].classList.add('active'), 500);
+        current = next;
       }, 3200);
     });
   </script>
