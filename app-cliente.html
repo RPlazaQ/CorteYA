@@ -1,0 +1,247 @@
+<title>CorteYa — Sketch app cliente</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          ink: '#0B0B0C',
+          panel: '#151517',
+          panel2: '#1D1D20',
+          gold: '#D9A441',
+          goldlight: '#E8C27A',
+        },
+        fontFamily: {
+          display: ['Space Grotesk', 'sans-serif'],
+          body: ['Inter', 'sans-serif'],
+          mono: ['JetBrains Mono', 'monospace'],
+        }
+      }
+    }
+  }
+</script>
+<style>
+  body { font-family: 'Inter', sans-serif; }
+  .font-display { font-family: 'Space Grotesk', sans-serif; letter-spacing: -0.01em; }
+  .screen { position: absolute; inset: 0; }
+</style>
+
+<body class="bg-neutral-950 text-white font-body min-h-screen">
+
+  <div class="max-w-6xl mx-auto px-5 py-8">
+    <a href="index.html" class="font-mono text-xs text-white/40 hover:text-gold transition">← CorteYa</a>
+    <h1 class="font-display text-2xl mt-3 mb-1">Sketch — App cliente</h1>
+    <p class="text-white/50 text-sm mb-10">Flujo: buscar → ver barbería → agendar → pagar. Navega haciendo click dentro de la pantalla.</p>
+
+    <div class="flex justify-center">
+      <!-- PHONE FRAME -->
+      <div class="relative w-[375px] h-[780px] rounded-[2.25rem] border-[6px] border-neutral-800 bg-ink overflow-hidden shadow-2xl">
+
+        <!-- status bar -->
+        <div class="h-9 flex items-center justify-center">
+          <span class="font-mono text-[11px] text-white/40">9:41</span>
+        </div>
+
+        <!-- SCREEN 1: BUSCAR -->
+        <div id="screen-buscar" class="screen">
+          <div class="h-full flex flex-col">
+            <div class="px-5 pb-3">
+              <p class="font-mono text-[11px] tracking-widest uppercase text-gold mb-1">Providencia, Santiago</p>
+              <h2 class="font-display text-xl">Encuentra tu barbería</h2>
+            </div>
+            <div class="px-5 mb-4">
+              <div class="flex items-center gap-2 border border-white/15 rounded-sm px-3 py-2.5">
+                <span class="text-white/40 text-sm">🔍</span>
+                <span class="text-white/40 text-sm">Buscar barbería o servicio</span>
+              </div>
+            </div>
+            <div class="px-5 mb-4 flex gap-2 overflow-x-auto">
+              <span class="shrink-0 text-xs font-medium bg-gold text-ink px-3 py-1.5 rounded-sm">Cerca de ti</span>
+              <span class="shrink-0 text-xs font-medium border border-white/15 text-white/70 px-3 py-1.5 rounded-sm">Disponible hoy</span>
+              <span class="shrink-0 text-xs font-medium border border-white/15 text-white/70 px-3 py-1.5 rounded-sm">Mejor calificadas</span>
+            </div>
+
+            <div class="flex-1 overflow-y-auto px-5 space-y-3 pb-4">
+              <button onclick="showScreen('screen-detalle')" class="w-full text-left flex gap-3 border border-white/10 rounded-sm p-3 hover:border-gold/50 transition">
+                <img src="https://placehold.co/80x80/1D1D20/D9A441?text=BC" class="w-16 h-16 rounded-sm object-cover shrink-0">
+                <div class="min-w-0">
+                  <p class="font-display text-sm truncate">Barbería Clásica</p>
+                  <p class="text-xs text-white/50 mt-0.5">⭐ 4.8 · 0.4 km</p>
+                  <p class="text-xs text-gold mt-1.5">Hoy 15:30 disponible</p>
+                </div>
+              </button>
+              <button onclick="showScreen('screen-detalle')" class="w-full text-left flex gap-3 border border-white/10 rounded-sm p-3 hover:border-gold/50 transition">
+                <img src="https://placehold.co/80x80/1D1D20/D9A441?text=EC" class="w-16 h-16 rounded-sm object-cover shrink-0">
+                <div class="min-w-0">
+                  <p class="font-display text-sm truncate">El Corte Studio</p>
+                  <p class="text-xs text-white/50 mt-0.5">⭐ 4.6 · 0.8 km</p>
+                  <p class="text-xs text-gold mt-1.5">Hoy 16:00 disponible</p>
+                </div>
+              </button>
+              <button onclick="showScreen('screen-detalle')" class="w-full text-left flex gap-3 border border-white/10 rounded-sm p-3 hover:border-gold/50 transition">
+                <img src="https://placehold.co/80x80/1D1D20/D9A441?text=BR" class="w-16 h-16 rounded-sm object-cover shrink-0">
+                <div class="min-w-0">
+                  <p class="font-display text-sm truncate">Barbería Rey</p>
+                  <p class="text-xs text-white/50 mt-0.5">⭐ 4.9 · 1.1 km</p>
+                  <p class="text-xs text-gold mt-1.5">Mañana 10:00 disponible</p>
+                </div>
+              </button>
+            </div>
+
+            <div class="h-16 border-t border-white/10 flex items-center justify-around shrink-0">
+              <span class="flex flex-col items-center gap-0.5 text-gold text-[10px] font-medium"><span class="text-base">🔍</span>Buscar</span>
+              <span class="flex flex-col items-center gap-0.5 text-white/40 text-[10px] font-medium"><span class="text-base">📅</span>Reservas</span>
+              <span class="flex flex-col items-center gap-0.5 text-white/40 text-[10px] font-medium"><span class="text-base">👤</span>Perfil</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- SCREEN 2: DETALLE BARBERÍA -->
+        <div id="screen-detalle" class="screen hidden">
+          <div class="h-full flex flex-col">
+            <div class="relative h-40 shrink-0">
+              <img src="https://placehold.co/375x160/1D1D20/D9A441?text=Barber%C3%ADa+Cl%C3%A1sica" class="w-full h-full object-cover">
+              <button onclick="showScreen('screen-buscar')" class="absolute top-3 left-3 w-8 h-8 rounded-full bg-ink/80 flex items-center justify-center text-sm">←</button>
+            </div>
+            <div class="flex-1 overflow-y-auto px-5 pt-4 pb-4">
+              <h2 class="font-display text-lg">Barbería Clásica</h2>
+              <p class="text-xs text-white/50 mt-1">⭐ 4.8 (132) · Av. Providencia 1234 · Abierto hasta 20:00</p>
+
+              <p class="font-mono text-[11px] tracking-widest uppercase text-gold mt-6 mb-3">Servicios</p>
+              <div class="space-y-2">
+                <div class="flex items-center justify-between border border-white/10 rounded-sm px-3 py-2.5">
+                  <div>
+                    <p class="text-sm font-medium">Corte clásico</p>
+                    <p class="text-xs text-white/40">30 min</p>
+                  </div>
+                  <span class="font-mono text-sm text-gold">$8.000</span>
+                </div>
+                <div class="flex items-center justify-between border border-white/10 rounded-sm px-3 py-2.5">
+                  <div>
+                    <p class="text-sm font-medium">Corte + Barba</p>
+                    <p class="text-xs text-white/40">45 min</p>
+                  </div>
+                  <span class="font-mono text-sm text-gold">$12.000</span>
+                </div>
+                <div class="flex items-center justify-between border border-white/10 rounded-sm px-3 py-2.5">
+                  <div>
+                    <p class="text-sm font-medium">Afeitado clásico</p>
+                    <p class="text-xs text-white/40">20 min</p>
+                  </div>
+                  <span class="font-mono text-sm text-gold">$6.000</span>
+                </div>
+              </div>
+            </div>
+            <div class="p-4 border-t border-white/10 shrink-0">
+              <button onclick="showScreen('screen-agendar')" class="w-full bg-gold hover:bg-goldlight text-ink font-semibold py-3 rounded-sm transition">Reservar</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- SCREEN 3: AGENDAR -->
+        <div id="screen-agendar" class="screen hidden">
+          <div class="h-full flex flex-col">
+            <div class="flex items-center gap-3 px-5 pt-2 pb-4 shrink-0">
+              <button onclick="showScreen('screen-detalle')" class="text-sm">←</button>
+              <h2 class="font-display text-base">Agendar hora</h2>
+            </div>
+            <div class="flex-1 overflow-y-auto px-5 pb-4 space-y-6">
+              <div>
+                <p class="font-mono text-[11px] tracking-widest uppercase text-gold mb-3">Barbero</p>
+                <div class="flex gap-2">
+                  <span class="text-xs border border-gold bg-gold/10 text-gold px-3 py-2 rounded-sm">Cualquiera</span>
+                  <span class="text-xs border border-white/15 text-white/70 px-3 py-2 rounded-sm">Tomás</span>
+                  <span class="text-xs border border-white/15 text-white/70 px-3 py-2 rounded-sm">Nico</span>
+                </div>
+              </div>
+              <div>
+                <p class="font-mono text-[11px] tracking-widest uppercase text-gold mb-3">Fecha</p>
+                <div class="flex gap-2">
+                  <span class="text-xs border border-gold bg-gold/10 text-gold px-3 py-2 rounded-sm">Hoy</span>
+                  <span class="text-xs border border-white/15 text-white/70 px-3 py-2 rounded-sm">Mañana</span>
+                  <span class="text-xs border border-white/15 text-white/70 px-3 py-2 rounded-sm">Vie 28</span>
+                </div>
+              </div>
+              <div>
+                <p class="font-mono text-[11px] tracking-widest uppercase text-gold mb-3">Hora</p>
+                <div class="grid grid-cols-4 gap-2">
+                  <span class="text-xs text-center border border-white/15 text-white/70 py-2 rounded-sm">14:00</span>
+                  <span class="text-xs text-center border border-white/15 text-white/70 py-2 rounded-sm">14:30</span>
+                  <span class="text-xs text-center border border-gold bg-gold/10 text-gold py-2 rounded-sm">15:30</span>
+                  <span class="text-xs text-center border border-white/15 text-white/70 py-2 rounded-sm">16:00</span>
+                  <span class="text-xs text-center border border-white/15 text-white/70 py-2 rounded-sm">16:30</span>
+                  <span class="text-xs text-center border border-white/15 text-white/70 py-2 rounded-sm">17:00</span>
+                </div>
+              </div>
+            </div>
+            <div class="p-4 border-t border-white/10 shrink-0">
+              <div class="flex items-center justify-between text-sm mb-3">
+                <span class="text-white/60">Corte clásico · 15:30</span>
+                <span class="font-mono text-gold">$8.000</span>
+              </div>
+              <button onclick="showScreen('screen-pago')" class="w-full bg-gold hover:bg-goldlight text-ink font-semibold py-3 rounded-sm transition">Continuar a pago</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- SCREEN 4: PAGO / CONFIRMACIÓN -->
+        <div id="screen-pago" class="screen hidden">
+          <div id="pago-form" class="h-full flex flex-col">
+            <div class="flex items-center gap-3 px-5 pt-2 pb-4 shrink-0">
+              <button onclick="showScreen('screen-agendar')" class="text-sm">←</button>
+              <h2 class="font-display text-base">Pago</h2>
+            </div>
+            <div class="flex-1 overflow-y-auto px-5 pb-4 space-y-6">
+              <div>
+                <p class="font-mono text-[11px] tracking-widest uppercase text-gold mb-3">Método de pago</p>
+                <div class="space-y-2">
+                  <div class="flex items-center justify-between border border-gold bg-gold/10 rounded-sm px-3 py-2.5">
+                    <span class="text-sm">💳 Visa terminada en 4242</span>
+                    <span class="text-gold text-sm">●</span>
+                  </div>
+                  <div class="text-sm text-white/50 border border-white/15 rounded-sm px-3 py-2.5">+ Agregar método de pago</div>
+                </div>
+              </div>
+              <div>
+                <p class="font-mono text-[11px] tracking-widest uppercase text-gold mb-3">Resumen</p>
+                <div class="border border-white/10 rounded-sm p-3 space-y-2 text-sm">
+                  <div class="flex justify-between text-white/70"><span>Barbería Clásica</span><span>Hoy, 15:30</span></div>
+                  <div class="flex justify-between text-white/70"><span>Corte clásico</span><span class="font-mono">$8.000</span></div>
+                  <div class="flex justify-between font-semibold pt-2 border-t border-white/10"><span>Total</span><span class="font-mono text-gold">$8.000</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="p-4 border-t border-white/10 shrink-0">
+              <button onclick="document.getElementById('pago-form').classList.add('hidden'); document.getElementById('pago-exito').classList.remove('hidden')" class="w-full bg-gold hover:bg-goldlight text-ink font-semibold py-3 rounded-sm transition">Confirmar y pagar</button>
+            </div>
+          </div>
+
+          <div id="pago-exito" class="hidden h-full flex flex-col items-center justify-center px-8 text-center">
+            <svg class="w-12 h-12 text-gold mb-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+              <circle cx="12" cy="12" r="9"/><path d="M8 12.3l2.6 2.6L16 9.5"/>
+            </svg>
+            <h2 class="font-display text-xl mb-2">Reserva confirmada</h2>
+            <p class="text-white/60 text-sm mb-8">Barbería Clásica · Hoy 15:30<br>Corte clásico · $8.000</p>
+            <button onclick="showScreen('screen-buscar')" class="w-full bg-gold hover:bg-goldlight text-ink font-semibold py-3 rounded-sm transition">Volver al inicio</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function showScreen(id) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+      document.getElementById(id).classList.remove('hidden');
+      if (id === 'screen-pago') {
+        document.getElementById('pago-form').classList.remove('hidden');
+        document.getElementById('pago-exito').classList.add('hidden');
+      }
+    }
+  </script>
+
+</body>

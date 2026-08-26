@@ -1,0 +1,239 @@
+<title>CorteYa — Sketch dashboard barbería</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          ink: '#0B0B0C',
+          panel: '#151517',
+          panel2: '#1D1D20',
+          gold: '#D9A441',
+          goldlight: '#E8C27A',
+        },
+        fontFamily: {
+          display: ['Space Grotesk', 'sans-serif'],
+          body: ['Inter', 'sans-serif'],
+          mono: ['JetBrains Mono', 'monospace'],
+        }
+      }
+    }
+  }
+</script>
+<style>
+  body { font-family: 'Inter', sans-serif; }
+  .font-display { font-family: 'Space Grotesk', sans-serif; letter-spacing: -0.01em; }
+  .view { display: none; }
+  .view.active { display: block; }
+  .nav-item.active { color: #D9A441; background: rgba(217,164,65,0.1); }
+</style>
+
+<body class="bg-ink text-white font-body min-h-screen">
+
+  <div class="flex h-screen overflow-hidden">
+
+    <!-- SIDEBAR -->
+    <aside class="w-60 shrink-0 border-r border-white/10 flex flex-col">
+      <div class="h-16 flex items-center px-6 border-b border-white/10">
+        <a href="index.html" class="font-display text-lg">CORTE<span class="text-gold">YA</span></a>
+      </div>
+      <nav class="flex-1 px-3 py-4 space-y-1">
+        <button onclick="showView('resumen')" class="nav-item active w-full flex items-center gap-3 px-3 py-2.5 rounded-sm text-sm font-medium transition text-left">
+          <span>🏠</span> Resumen
+        </button>
+        <button onclick="showView('calendario')" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-sm text-sm font-medium transition text-left text-white/60">
+          <span>📅</span> Calendario
+        </button>
+        <button onclick="showView('servicios')" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-sm text-sm font-medium transition text-left text-white/60">
+          <span>✂️</span> Servicios
+        </button>
+        <button onclick="showView('barberos')" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-sm text-sm font-medium transition text-left text-white/60">
+          <span>👤</span> Barberos
+        </button>
+      </nav>
+      <div class="p-3 border-t border-white/10">
+        <div class="flex items-center gap-2 px-3 py-2 text-sm text-white/60">
+          <img src="https://placehold.co/28x28/1D1D20/D9A441?text=BC" class="w-7 h-7 rounded-sm">
+          Barbería Clásica
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="flex-1 overflow-y-auto">
+      <header class="h-16 border-b border-white/10 flex items-center justify-between px-8 sticky top-0 bg-ink z-10">
+        <p class="font-mono text-xs text-white/40">Viernes, 28 de agosto</p>
+        <span class="text-xs border border-white/15 rounded-sm px-3 py-1.5 text-white/60">Cerrar sesión</span>
+      </header>
+
+      <div class="p-8 max-w-5xl">
+
+        <!-- RESUMEN -->
+        <section id="view-resumen" class="view active">
+          <h1 class="font-display text-2xl mb-6">Resumen del día</h1>
+          <div class="grid grid-cols-4 gap-4 mb-8">
+            <div class="border border-white/10 rounded-sm p-4">
+              <p class="font-mono text-[11px] tracking-widest uppercase text-white/40 mb-2">Citas hoy</p>
+              <p class="font-display text-3xl text-gold">12</p>
+            </div>
+            <div class="border border-white/10 rounded-sm p-4">
+              <p class="font-mono text-[11px] tracking-widest uppercase text-white/40 mb-2">Ingresos hoy</p>
+              <p class="font-display text-3xl text-gold">$96.000</p>
+            </div>
+            <div class="border border-white/10 rounded-sm p-4">
+              <p class="font-mono text-[11px] tracking-widest uppercase text-white/40 mb-2">Ocupación</p>
+              <p class="font-display text-3xl text-gold">78%</p>
+            </div>
+            <div class="border border-white/10 rounded-sm p-4">
+              <p class="font-mono text-[11px] tracking-widest uppercase text-white/40 mb-2">Próxima cita</p>
+              <p class="font-display text-xl text-gold">15:30</p>
+            </div>
+          </div>
+
+          <p class="font-mono text-[11px] tracking-widest uppercase text-white/40 mb-3">Agenda de hoy</p>
+          <div class="border border-white/10 rounded-sm divide-y divide-white/10">
+            <div class="flex items-center gap-4 px-4 py-3">
+              <span class="font-mono text-sm text-gold w-14">14:00</span>
+              <span class="flex-1 text-sm">Juan Pérez — Corte clásico</span>
+              <span class="text-xs text-white/50">Tomás</span>
+              <span class="text-xs bg-green-500/15 text-green-400 px-2 py-0.5 rounded-sm">Confirmada</span>
+            </div>
+            <div class="flex items-center gap-4 px-4 py-3">
+              <span class="font-mono text-sm text-gold w-14">14:45</span>
+              <span class="flex-1 text-sm">Matías Rojas — Corte + Barba</span>
+              <span class="text-xs text-white/50">Nico</span>
+              <span class="text-xs bg-green-500/15 text-green-400 px-2 py-0.5 rounded-sm">Confirmada</span>
+            </div>
+            <div class="flex items-center gap-4 px-4 py-3">
+              <span class="font-mono text-sm text-gold w-14">15:30</span>
+              <span class="flex-1 text-sm">Diego Soto — Afeitado clásico</span>
+              <span class="text-xs text-white/50">Tomás</span>
+              <span class="text-xs bg-gold/15 text-gold px-2 py-0.5 rounded-sm">Próxima</span>
+            </div>
+            <div class="flex items-center gap-4 px-4 py-3">
+              <span class="font-mono text-sm text-white/30 w-14">16:15</span>
+              <span class="flex-1 text-sm text-white/40">Disponible</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- CALENDARIO -->
+        <section id="view-calendario" class="view">
+          <h1 class="font-display text-2xl mb-6">Calendario — hoy</h1>
+          <div class="border border-white/10 rounded-sm overflow-hidden">
+            <div class="grid grid-cols-4 border-b border-white/10">
+              <div class="p-3 font-mono text-[11px] text-white/40">HORA</div>
+              <div class="p-3 text-sm font-medium border-l border-white/10">Tomás</div>
+              <div class="p-3 text-sm font-medium border-l border-white/10">Nico</div>
+              <div class="p-3 text-sm font-medium border-l border-white/10">Caro</div>
+            </div>
+            <div class="grid grid-cols-4 border-b border-white/5">
+              <div class="p-3 font-mono text-xs text-white/40">14:00</div>
+              <div class="p-2 border-l border-white/5"><div class="bg-gold/15 border border-gold/40 rounded-sm px-2 py-1.5 text-xs">Juan Pérez</div></div>
+              <div class="p-2 border-l border-white/5"></div>
+              <div class="p-2 border-l border-white/5"><div class="bg-gold/15 border border-gold/40 rounded-sm px-2 py-1.5 text-xs">Felipe Díaz</div></div>
+            </div>
+            <div class="grid grid-cols-4 border-b border-white/5">
+              <div class="p-3 font-mono text-xs text-white/40">14:45</div>
+              <div class="p-2 border-l border-white/5"></div>
+              <div class="p-2 border-l border-white/5"><div class="bg-gold/15 border border-gold/40 rounded-sm px-2 py-1.5 text-xs">Matías Rojas</div></div>
+              <div class="p-2 border-l border-white/5"></div>
+            </div>
+            <div class="grid grid-cols-4 border-b border-white/5">
+              <div class="p-3 font-mono text-xs text-white/40">15:30</div>
+              <div class="p-2 border-l border-white/5"><div class="bg-gold/15 border border-gold/40 rounded-sm px-2 py-1.5 text-xs">Diego Soto</div></div>
+              <div class="p-2 border-l border-white/5"></div>
+              <div class="p-2 border-l border-white/5"></div>
+            </div>
+            <div class="grid grid-cols-4">
+              <div class="p-3 font-mono text-xs text-white/40">16:15</div>
+              <div class="p-2 border-l border-white/5"></div>
+              <div class="p-2 border-l border-white/5"></div>
+              <div class="p-2 border-l border-white/5"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SERVICIOS -->
+        <section id="view-servicios" class="view">
+          <div class="flex items-center justify-between mb-6">
+            <h1 class="font-display text-2xl">Servicios y precios</h1>
+            <span class="text-xs border border-white/15 rounded-sm px-3 py-1.5 text-white/60">+ Agregar servicio</span>
+          </div>
+          <div class="border border-white/10 rounded-sm divide-y divide-white/10">
+            <div class="flex items-center px-4 py-3">
+              <span class="flex-1 text-sm font-medium">Corte clásico</span>
+              <span class="text-xs text-white/50 w-20">30 min</span>
+              <span class="font-mono text-sm text-gold w-24 text-right">$8.000</span>
+              <span class="text-xs text-white/40 ml-6">Editar</span>
+            </div>
+            <div class="flex items-center px-4 py-3">
+              <span class="flex-1 text-sm font-medium">Corte + Barba</span>
+              <span class="text-xs text-white/50 w-20">45 min</span>
+              <span class="font-mono text-sm text-gold w-24 text-right">$12.000</span>
+              <span class="text-xs text-white/40 ml-6">Editar</span>
+            </div>
+            <div class="flex items-center px-4 py-3">
+              <span class="flex-1 text-sm font-medium">Afeitado clásico</span>
+              <span class="text-xs text-white/50 w-20">20 min</span>
+              <span class="font-mono text-sm text-gold w-24 text-right">$6.000</span>
+              <span class="text-xs text-white/40 ml-6">Editar</span>
+            </div>
+            <div class="flex items-center px-4 py-3">
+              <span class="flex-1 text-sm font-medium">Corte niño</span>
+              <span class="text-xs text-white/50 w-20">25 min</span>
+              <span class="font-mono text-sm text-gold w-24 text-right">$6.500</span>
+              <span class="text-xs text-white/40 ml-6">Editar</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- BARBEROS -->
+        <section id="view-barberos" class="view">
+          <div class="flex items-center justify-between mb-6">
+            <h1 class="font-display text-2xl">Barberos</h1>
+            <span class="text-xs border border-white/15 rounded-sm px-3 py-1.5 text-white/60">+ Agregar barbero</span>
+          </div>
+          <div class="grid grid-cols-3 gap-4">
+            <div class="border border-white/10 rounded-sm p-4">
+              <img src="https://placehold.co/48x48/1D1D20/D9A441?text=T" class="w-12 h-12 rounded-sm mb-3">
+              <p class="text-sm font-medium">Tomás Vega</p>
+              <p class="text-xs text-white/50 mb-2">Corte y barba</p>
+              <span class="text-xs bg-green-500/15 text-green-400 px-2 py-0.5 rounded-sm">Disponible</span>
+            </div>
+            <div class="border border-white/10 rounded-sm p-4">
+              <img src="https://placehold.co/48x48/1D1D20/D9A441?text=N" class="w-12 h-12 rounded-sm mb-3">
+              <p class="text-sm font-medium">Nico Fuentes</p>
+              <p class="text-xs text-white/50 mb-2">Especialista en fade</p>
+              <span class="text-xs bg-gold/15 text-gold px-2 py-0.5 rounded-sm">Ocupado</span>
+            </div>
+            <div class="border border-white/10 rounded-sm p-4">
+              <img src="https://placehold.co/48x48/1D1D20/D9A441?text=C" class="w-12 h-12 rounded-sm mb-3">
+              <p class="text-sm font-medium">Carolina Muñoz</p>
+              <p class="text-xs text-white/50 mb-2">Corte clásico</p>
+              <span class="text-xs bg-green-500/15 text-green-400 px-2 py-0.5 rounded-sm">Disponible</span>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <script>
+    function showView(name) {
+      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+      document.getElementById('view-' + name).classList.add('active');
+      document.querySelectorAll('.nav-item').forEach(n => {
+        n.classList.remove('active', 'text-white/60');
+        n.classList.add('text-white/60');
+      });
+      event.currentTarget.classList.add('active');
+      event.currentTarget.classList.remove('text-white/60');
+    }
+  </script>
+
+</body>
