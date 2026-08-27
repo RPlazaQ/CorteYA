@@ -106,6 +106,7 @@ declare
   v_weekday int := extract(dow from p_date);
   v_start   time;
   v_end     time;
+  v_now     timestamp := now() at time zone 'America/Santiago';
 begin
   select start_time, end_time into v_start, v_end
   from barber_working_hours
@@ -129,16 +130,18 @@ begin
     (p_date + v_end - make_interval(mins => p_service_duration_minutes))::timestamp,
     make_interval(mins => p_slot_interval_minutes)
   ) as gs
-  where not exists (
-    select 1 from bookings b
-    where b.barber_id = p_barber_id
-      and b.status = 'confirmed'
-      and b.time_range && tsrange(
-            p_date + gs::time,
-            p_date + gs::time + make_interval(mins => p_service_duration_minutes),
-            '[)'
-          )
-  );
+  -- si la fecha consultada es hoy, no ofrecer horas que ya pasaron
+  where (p_date > v_now::date or gs::time >= v_now::time)
+    and not exists (
+      select 1 from bookings b
+      where b.barber_id = p_barber_id
+        and b.status = 'confirmed'
+        and b.time_range && tsrange(
+              p_date + gs::time,
+              p_date + gs::time + make_interval(mins => p_service_duration_minutes),
+              '[)'
+            )
+    );
 end;
 $$;
 
@@ -202,6 +205,11 @@ create policy "guest can create a booking" on bookings
     status = 'confirmed'
     and booking_date >= (now() at time zone 'America/Santiago')::date
     and booking_date <  (now() at time zone 'America/Santiago')::date + 30
+    -- si la reserva es para hoy, la hora no puede ser una que ya pasó
+    and (
+      booking_date > (now() at time zone 'America/Santiago')::date
+      or start_time >= (now() at time zone 'America/Santiago')::time
+    )
   );
 create policy "owner reads own bookings" on bookings
   for select using (barbershop_id in (select id from barbershops where owner_id = auth.uid()));
