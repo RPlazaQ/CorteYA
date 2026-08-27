@@ -545,7 +545,7 @@
       const endTime = `${String(Math.floor(endTotal / 60)).padStart(2, '0')}:${String(endTotal % 60).padStart(2, '0')}:00`;
 
       const candidates = state.candidateBarberIds.length
-        ? state.candidateBarberIds
+        ? state.candidateBarberIds.slice().sort(() => Math.random() - 0.5)
         : (state.selectedBarberId !== 'any' ? [state.selectedBarberId] : []);
 
       let lastError = null;
