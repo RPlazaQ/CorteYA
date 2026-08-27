@@ -160,6 +160,9 @@
       return { iso: base.toISOString().slice(0, 10), dateObj: base };
     }
     function clp(n) { return '$' + Number(n).toLocaleString('es-CL'); }
+    function escapeHtml(str) {
+      return String(str ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    }
     function timeToMinutes(t) { const [h, m] = t.split(':').map(Number); return h * 60 + m; }
     function minutesToTime(mins) { return String(Math.floor(mins / 60)).padStart(2, '0') + ':' + String(mins % 60).padStart(2, '0'); }
     function diffMinutes(t1, t2) { return timeToMinutes(t2) - timeToMinutes(t1); }
@@ -260,8 +263,8 @@
       agendaEl.innerHTML = rows.length ? rows.map(b => `
         <div class="flex flex-wrap items-center gap-x-4 gap-y-1 px-4 py-3">
           <span class="font-mono text-sm text-gold w-14">${b.start_time.slice(0, 5)}</span>
-          <span class="flex-1 min-w-[140px] text-sm">${b.customer_name} — ${b.services?.name || ''}</span>
-          <span class="text-xs text-white/50">${b.barbers?.name || ''}</span>
+          <span class="flex-1 min-w-[140px] text-sm">${escapeHtml(b.customer_name)} — ${escapeHtml(b.services?.name)}</span>
+          <span class="text-xs text-white/50">${escapeHtml(b.barbers?.name)}</span>
           <span class="text-xs bg-green-500/15 text-green-400 px-2 py-0.5 rounded-sm">Confirmada</span>
         </div>
       `).join('') : '<p class="px-4 py-6 text-sm text-white/40 text-center">Sin citas para hoy.</p>';
@@ -297,14 +300,14 @@
       const minWidth = 90 + barbers.length * 110;
       const header = `<div class="grid border-b border-white/10" style="grid-template-columns:${cols}; min-width:${minWidth}px;">
         <div class="p-3 font-mono text-[11px] text-white/40">HORA</div>
-        ${barbers.map(b => `<div class="p-3 text-sm font-medium border-l border-white/10">${b.name}</div>`).join('')}
+        ${barbers.map(b => `<div class="p-3 text-sm font-medium border-l border-white/10">${escapeHtml(b.name)}</div>`).join('')}
       </div>`;
       const rows = slots.map(slot => `
         <div class="grid border-b border-white/5" style="grid-template-columns:${cols}; min-width:${minWidth}px;">
           <div class="p-3 font-mono text-xs text-white/40">${slot}</div>
           ${barbers.map(b => {
             const booking = (bookings || []).find(bk => bk.barber_id === b.id && bk.start_time.slice(0, 5) === slot);
-            return `<div class="p-2 border-l border-white/5">${booking ? `<div class="bg-gold/15 border border-gold/40 rounded-sm px-2 py-1.5 text-xs">${booking.customer_name}</div>` : ''}</div>`;
+            return `<div class="p-2 border-l border-white/5">${booking ? `<div class="bg-gold/15 border border-gold/40 rounded-sm px-2 py-1.5 text-xs">${escapeHtml(booking.customer_name)}</div>` : ''}</div>`;
           }).join('')}
         </div>
       `).join('');
@@ -316,7 +319,7 @@
       const { data } = await supabaseClient.from('services').select('*').eq('barbershop_id', state.barbershopId).eq('active', true).order('created_at');
       document.getElementById('servicios-lista').innerHTML = (data && data.length) ? data.map(s => `
         <div class="flex flex-wrap items-center gap-2 px-4 py-3">
-          <span class="flex-1 min-w-[120px] text-sm font-medium">${s.name}</span>
+          <span class="flex-1 min-w-[120px] text-sm font-medium">${escapeHtml(s.name)}</span>
           <span class="text-xs text-white/50 w-20">${s.duration_minutes} min</span>
           <span class="font-mono text-sm text-gold w-24 text-right">${clp(s.price_clp)}</span>
           <button onclick="deleteServicio('${s.id}')" class="text-xs text-white/40 ml-auto md:ml-6 hover:text-red-400 transition">Eliminar</button>
@@ -347,8 +350,8 @@
       document.getElementById('barberos-lista').innerHTML = (data && data.length) ? data.map(b => `
         <div class="border border-white/10 rounded-sm p-4">
           <img src="${b.photo_url || 'https://placehold.co/48x48/1D1D20/D9A441?text=' + encodeURIComponent(b.name.charAt(0))}" class="w-12 h-12 rounded-sm mb-3">
-          <p class="text-sm font-medium">${b.name}</p>
-          <p class="text-xs text-white/50 mb-2">${b.specialty || ''}</p>
+          <p class="text-sm font-medium">${escapeHtml(b.name)}</p>
+          <p class="text-xs text-white/50 mb-2">${escapeHtml(b.specialty)}</p>
           <span class="text-xs ${b.active ? 'bg-green-500/15 text-green-400' : 'bg-white/10 text-white/40'} px-2 py-0.5 rounded-sm">${b.active ? 'Disponible' : 'Inactivo'}</span>
         </div>
       `).join('') : '<p class="col-span-2 md:col-span-3 text-white/40 text-sm text-center py-6">Sin barberos todavía.</p>';

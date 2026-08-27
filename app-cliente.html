@@ -186,9 +186,9 @@
               <div>
                 <p class="font-mono text-[11px] tracking-widest uppercase text-gold mb-3">Tus datos</p>
                 <div class="space-y-2">
-                  <input id="input-nombre" type="text" placeholder="Nombre" class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2.5 text-sm placeholder-white/40 focus:outline-none focus:border-gold">
-                  <input id="input-telefono" type="tel" placeholder="Teléfono (ej: +56 9 1234 5678)" class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2.5 text-sm placeholder-white/40 focus:outline-none focus:border-gold">
-                  <input id="input-email" type="email" placeholder="Correo (opcional)" class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2.5 text-sm placeholder-white/40 focus:outline-none focus:border-gold">
+                  <input id="input-nombre" type="text" maxlength="80" placeholder="Nombre" class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2.5 text-sm placeholder-white/40 focus:outline-none focus:border-gold">
+                  <input id="input-telefono" type="tel" maxlength="15" placeholder="Teléfono (ej: +56 9 1234 5678)" class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2.5 text-sm placeholder-white/40 focus:outline-none focus:border-gold">
+                  <input id="input-email" type="email" maxlength="120" placeholder="Correo (opcional)" class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2.5 text-sm placeholder-white/40 focus:outline-none focus:border-gold">
                   <input id="input-honeypot" type="text" name="website" tabindex="-1" autocomplete="off" class="hidden">
                 </div>
               </div>
@@ -293,6 +293,10 @@
       return '$' + Number(n).toLocaleString('es-CL');
     }
 
+    function escapeHtml(str) {
+      return String(str ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    }
+
     // ---------- pantalla Buscar ----------
     const PIN_SLOTS = [
       { btn: 'top:30%; left:18%;', popup: 'top:8%; left:2%;' },
@@ -318,9 +322,9 @@
         <button onclick="selectBarbershop('${b.id}')" class="w-full text-left flex gap-3 border border-white/10 rounded-sm p-3 hover:border-gold/50 transition">
           <img src="${b.image_url || 'https://placehold.co/80x80/1D1D20/D9A441?text=' + encodeURIComponent(b.name.slice(0, 2).toUpperCase())}" class="w-16 h-16 rounded-sm object-cover shrink-0">
           <div class="min-w-0">
-            <p class="font-display text-sm truncate">${b.name}</p>
+            <p class="font-display text-sm truncate">${escapeHtml(b.name)}</p>
             <p class="text-xs text-white/50 mt-0.5">⭐ ${b.rating ?? '—'}</p>
-            <p class="text-xs text-gold mt-1.5">${b.address || ''}</p>
+            <p class="text-xs text-gold mt-1.5">${escapeHtml(b.address)}</p>
           </div>
         </button>
       `).join('');
@@ -334,9 +338,9 @@
           </button>
           <div id="${pinId}" class="hidden absolute w-40 bg-ink border border-gold/40 rounded-sm p-2.5 shadow-xl z-10" style="${slot.popup}">
             <button onclick="selectBarbershop('${b.id}')" class="text-left w-full">
-              <p class="font-display text-xs">${b.name}</p>
+              <p class="font-display text-xs">${escapeHtml(b.name)}</p>
               <p class="text-[11px] text-white/50 mt-0.5">⭐ ${b.rating ?? '—'}</p>
-              <p class="text-[11px] text-gold mt-1">${b.address || ''}</p>
+              <p class="text-[11px] text-gold mt-1">${escapeHtml(b.address)}</p>
             </button>
           </div>
         `;
@@ -369,7 +373,7 @@
       document.getElementById('detalle-servicios').innerHTML = state.services.map(s => `
         <button onclick="selectService('${s.id}')" data-service-id="${s.id}" class="servicio-item w-full flex items-center justify-between border border-white/10 rounded-sm px-3 py-2.5 text-left transition">
           <div>
-            <p class="text-sm font-medium">${s.name}</p>
+            <p class="text-sm font-medium">${escapeHtml(s.name)}</p>
             <p class="text-xs text-white/40">${s.duration_minutes} min</p>
           </div>
           <span class="font-mono text-sm text-gold">${clp(s.price_clp)}</span>
@@ -402,7 +406,7 @@
     // ---------- pantalla Agendar ----------
     function loadAgendarScreen() {
       const barberChips = ['<button data-barber-id="any" onclick="selectBarber(\'any\')" class="chip-barbero text-xs border px-3 py-2 rounded-sm border-gold bg-gold/10 text-gold">Cualquiera</button>']
-        .concat(state.barbers.map(b => `<button data-barber-id="${b.id}" onclick="selectBarber('${b.id}')" class="chip-barbero text-xs border px-3 py-2 rounded-sm border-white/15 text-white/70">${b.name}</button>`));
+        .concat(state.barbers.map(b => `<button data-barber-id="${b.id}" onclick="selectBarber('${b.id}')" class="chip-barbero text-xs border px-3 py-2 rounded-sm border-white/15 text-white/70">${escapeHtml(b.name)}</button>`));
       document.getElementById('agendar-barberos').innerHTML = barberChips.join('');
 
       const dias = [0, 1, 2].map(o => santiagoDateParts(o));
@@ -509,8 +513,8 @@
     function renderPagoResumen() {
       const s = state.selectedService;
       document.getElementById('pago-resumen').innerHTML = `
-        <div class="flex justify-between text-white/70"><span>${state.barbershopName}</span><span>${formatFechaLabel(state.selectedDate)}, ${state.selectedSlot.slice(0, 5)}</span></div>
-        <div class="flex justify-between text-white/70"><span>${s.name}</span><span class="font-mono">${clp(s.price_clp)}</span></div>
+        <div class="flex justify-between text-white/70"><span>${escapeHtml(state.barbershopName)}</span><span>${formatFechaLabel(state.selectedDate)}, ${state.selectedSlot.slice(0, 5)}</span></div>
+        <div class="flex justify-between text-white/70"><span>${escapeHtml(s.name)}</span><span class="font-mono">${clp(s.price_clp)}</span></div>
         <div class="flex justify-between font-semibold pt-2 border-t border-white/10"><span>Total</span><span class="font-mono text-gold">${clp(s.price_clp)}</span></div>
       `;
     }
@@ -560,7 +564,7 @@
         if (!error) {
           document.getElementById('pago-form').classList.add('hidden');
           document.getElementById('pago-exito').classList.remove('hidden');
-          document.getElementById('exito-detalle').innerHTML = `${state.barbershopName} · ${formatFechaLabel(state.selectedDate)} ${state.selectedSlot.slice(0, 5)}<br>${svc.name} · ${clp(svc.price_clp)}`;
+          document.getElementById('exito-detalle').innerHTML = `${escapeHtml(state.barbershopName)} · ${formatFechaLabel(state.selectedDate)} ${state.selectedSlot.slice(0, 5)}<br>${escapeHtml(svc.name)} · ${clp(svc.price_clp)}`;
           return;
         }
         lastError = error;

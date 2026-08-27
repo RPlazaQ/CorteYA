@@ -1,0 +1,10 @@
+.DS_Store
+.env
+credentials.json
+token.json
+gmail_accounts.json
+leads-barberias-providencia.csv
+gmaps-leads-espanol.md
+*.xls
+*.xlsx
+*.pdf
