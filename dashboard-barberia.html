@@ -116,7 +116,14 @@
 
         <!-- CALENDARIO -->
         <section id="view-calendario" class="view">
-          <h1 class="font-display text-2xl mb-6">Calendario — hoy</h1>
+          <div class="flex items-center justify-between mb-6 gap-3 flex-wrap">
+            <h1 class="font-display text-2xl">Calendario</h1>
+            <div class="flex items-center gap-3">
+              <button onclick="cambiarDiaCalendario(-1)" class="border border-white/15 rounded-sm w-8 h-8 flex items-center justify-center text-white/60 hover:border-white/30 transition">‹</button>
+              <span id="calendario-fecha-label" class="font-mono text-xs text-white/60 w-28 text-center"></span>
+              <button onclick="cambiarDiaCalendario(1)" class="border border-white/15 rounded-sm w-8 h-8 flex items-center justify-center text-white/60 hover:border-white/30 transition">›</button>
+            </div>
+          </div>
           <div id="calendario-tabla" class="border border-white/10 rounded-sm overflow-x-auto">
             <p class="text-white/40 text-sm text-center py-8">Cargando…</p>
           </div>
@@ -149,7 +156,7 @@
   </div>
 
   <script>
-    const state = { barbershopId: null, barbershopName: '' };
+    const state = { barbershopId: null, barbershopName: '', calendarioOffset: 0 };
 
     // ---------- utilidades ----------
     function santiagoDateParts(offsetDays) {
@@ -271,10 +278,27 @@
     }
 
     // ---------- Calendario ----------
+    function cambiarDiaCalendario(delta) {
+      const next = state.calendarioOffset + delta;
+      if (next < 0 || next > 29) return;
+      state.calendarioOffset = next;
+      loadCalendario();
+    }
+
+    function formatFechaCalendario(dateObj, offset) {
+      if (offset === 0) return 'Hoy';
+      if (offset === 1) return 'Mañana';
+      const wd = new Intl.DateTimeFormat('es-CL', { weekday: 'short', timeZone: 'UTC' }).format(dateObj).replace('.', '');
+      const mo = new Intl.DateTimeFormat('es-CL', { month: 'short', timeZone: 'UTC' }).format(dateObj).replace('.', '');
+      return `${wd.charAt(0).toUpperCase() + wd.slice(1)} ${dateObj.getUTCDate()} ${mo}`;
+    }
+
     async function loadCalendario() {
       const container = document.getElementById('calendario-tabla');
-      const todayIso = santiagoDateParts(0).iso;
-      const weekday = santiagoDateParts(0).dateObj.getUTCDay();
+      const offset = state.calendarioOffset;
+      const { iso: todayIso, dateObj } = santiagoDateParts(offset);
+      const weekday = dateObj.getUTCDay();
+      document.getElementById('calendario-fecha-label').textContent = formatFechaCalendario(dateObj, offset);
 
       const { data: barbers } = await supabaseClient.from('barbers').select('id,name').eq('barbershop_id', state.barbershopId).eq('active', true).order('name');
       if (!barbers || !barbers.length) {
@@ -287,7 +311,7 @@
         .eq('barbershop_id', state.barbershopId).eq('booking_date', todayIso).eq('status', 'confirmed');
 
       if (!horas || !horas.length) {
-        container.innerHTML = '<p class="text-white/40 text-sm text-center py-8">Nadie trabaja hoy.</p>';
+        container.innerHTML = '<p class="text-white/40 text-sm text-center py-8">Nadie trabaja ese día.</p>';
         return;
       }
       const minStart = horas.reduce((min, h) => h.start_time < min ? h.start_time : min, horas[0].start_time);
