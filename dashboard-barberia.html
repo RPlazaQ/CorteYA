@@ -307,7 +307,7 @@
       }
       const barberIds = barbers.map(b => b.id);
       const { data: horas } = await supabaseClient.from('barber_working_hours').select('barber_id,start_time,end_time').eq('weekday', weekday).in('barber_id', barberIds);
-      const { data: bookings } = await supabaseClient.from('bookings').select('start_time,barber_id,customer_name')
+      const { data: bookings } = await supabaseClient.from('bookings').select('start_time,barber_id,customer_name,services(name,duration_minutes)')
         .eq('barbershop_id', state.barbershopId).eq('booking_date', todayIso).eq('status', 'confirmed');
 
       if (!horas || !horas.length) {
@@ -316,26 +316,42 @@
       }
       const minStart = horas.reduce((min, h) => h.start_time < min ? h.start_time : min, horas[0].start_time);
       const maxEnd = horas.reduce((max, h) => h.end_time > max ? h.end_time : max, horas[0].end_time);
+      const ROW_MINUTES = 30;
 
       const slots = [];
-      for (let m = timeToMinutes(minStart); m < timeToMinutes(maxEnd); m += 30) slots.push(minutesToTime(m));
+      for (let m = timeToMinutes(minStart); m < timeToMinutes(maxEnd); m += ROW_MINUTES) slots.push(minutesToTime(m));
 
       const cols = `90px repeat(${barbers.length}, minmax(110px, 1fr))`;
       const minWidth = 90 + barbers.length * 110;
-      const header = `<div class="grid border-b border-white/10" style="grid-template-columns:${cols}; min-width:${minWidth}px;">
-        <div class="p-3 font-mono text-[11px] text-white/40">HORA</div>
-        ${barbers.map(b => `<div class="p-3 text-sm font-medium border-l border-white/10">${escapeHtml(b.name)}</div>`).join('')}
-      </div>`;
-      const rows = slots.map(slot => `
-        <div class="grid border-b border-white/5" style="grid-template-columns:${cols}; min-width:${minWidth}px;">
-          <div class="p-3 font-mono text-xs text-white/40">${slot}</div>
-          ${barbers.map(b => {
-            const booking = (bookings || []).find(bk => bk.barber_id === b.id && bk.start_time.slice(0, 5) === slot);
-            return `<div class="p-2 border-l border-white/5">${booking ? `<div class="bg-gold/15 border border-gold/40 rounded-sm px-2 py-1.5 text-xs">${escapeHtml(booking.customer_name)}</div>` : ''}</div>`;
-          }).join('')}
-        </div>
-      `).join('');
-      container.innerHTML = header + rows;
+      const barberCol = {};
+      barbers.forEach((b, i) => { barberCol[b.id] = i + 2; });
+
+      let cells = `<div class="p-3 font-mono text-[11px] text-white/40 border-b border-white/10" style="grid-column:1; grid-row:1;">HORA</div>`;
+      barbers.forEach((b, i) => {
+        cells += `<div class="p-3 text-sm font-medium border-b border-l border-white/10" style="grid-column:${i + 2}; grid-row:1;">${escapeHtml(b.name)}</div>`;
+      });
+      slots.forEach((slot, r) => {
+        const row = r + 2;
+        cells += `<div class="p-3 font-mono text-xs text-white/40 border-b border-white/5" style="grid-column:1; grid-row:${row};">${slot}</div>`;
+        barbers.forEach((b, i) => {
+          cells += `<div class="border-b border-l border-white/5" style="grid-column:${i + 2}; grid-row:${row};"></div>`;
+        });
+      });
+
+      (bookings || []).forEach(bk => {
+        const col = barberCol[bk.barber_id];
+        if (!col) return;
+        const startMin = timeToMinutes(bk.start_time.slice(0, 5));
+        const row = Math.round((startMin - timeToMinutes(minStart)) / ROW_MINUTES) + 2;
+        const rowSpan = Math.max(1, Math.ceil((bk.services?.duration_minutes || ROW_MINUTES) / ROW_MINUTES));
+        cells += `
+          <div class="m-0.5 p-1.5 bg-gold/15 border border-gold/40 rounded-sm overflow-hidden" style="grid-column:${col}; grid-row:${row} / span ${rowSpan};">
+            <p class="text-xs font-medium truncate">${escapeHtml(bk.customer_name)}</p>
+            <p class="text-[11px] text-white/50 truncate">${escapeHtml(bk.services?.name)}</p>
+          </div>`;
+      });
+
+      container.innerHTML = `<div class="grid" style="grid-template-columns:${cols}; min-width:${minWidth}px;">${cells}</div>`;
     }
 
     // ---------- Servicios ----------
