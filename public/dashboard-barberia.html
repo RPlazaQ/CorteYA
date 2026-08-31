@@ -226,11 +226,12 @@
 
     // ---------- compartir link de agendamiento ----------
     async function compartirAgenda() {
-      const link = `${location.origin}/app-cliente.html?barberia=${encodeURIComponent(state.barbershopSlug)}`;
+      const link = `https://corteya.app/agenda/${encodeURIComponent(state.barbershopSlug)}`;
       const btn = document.getElementById('btn-compartir');
       const original = btn.textContent;
+      const esMovil = window.matchMedia('(pointer: coarse)').matches;
 
-      if (navigator.share) {
+      if (esMovil && navigator.share) {
         try {
           await navigator.share({ title: `Agenda tu hora en ${state.barbershopName}`, url: link });
         } catch (e) { /* el usuario cerró el share sheet, no hacer nada */ }

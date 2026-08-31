@@ -1,5 +1,11 @@
 [build]
   publish = "public"
+  functions = "netlify/functions"
+
+[[redirects]]
+  from = "/agenda/*"
+  to = "/.netlify/functions/agenda-og?slug=:splat"
+  status = 200
 
 [[headers]]
   for = "/*"
