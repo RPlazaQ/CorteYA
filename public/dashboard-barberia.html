@@ -492,6 +492,38 @@
     }
 
     // ---------- Resumen ----------
+    // ---------- estado de una reserva ----------
+    const ESTADOS = {
+      confirmed:     { label: 'Confirmada',           pill: 'bg-blue-500/15 text-blue-400',     bloque: 'bg-blue-500/10 border-blue-500/40' },
+      rescheduled:   { label: 'Reagendada',           pill: 'bg-orange-500/15 text-orange-400', bloque: 'bg-orange-500/10 border-orange-500/40' },
+      paid_cash:     { label: 'Pagada efectivo',      pill: 'bg-green-500/15 text-green-400',   bloque: 'bg-green-500/10 border-green-500/40' },
+      paid_transfer: { label: 'Pagada transferencia', pill: 'bg-cyan-500/15 text-cyan-400',     bloque: 'bg-cyan-500/10 border-cyan-500/40' },
+      paid_card:     { label: 'Pagada tarjeta',       pill: 'bg-purple-500/15 text-purple-400', bloque: 'bg-purple-500/10 border-purple-500/40' },
+      cancelled:     { label: 'Cancelada',            pill: 'bg-red-500/15 text-red-400',       bloque: 'bg-red-500/10 border-red-500/40' },
+      no_show:       { label: 'No asistió',           pill: 'bg-white/10 text-white/50',        bloque: 'bg-white/5 border-white/20' },
+    };
+    function estadoDe(status) { return ESTADOS[status] || ESTADOS.confirmed; }
+    function opcionesEstado(status) {
+      return Object.entries(ESTADOS).map(([v, e]) => `<option value="${v}" ${v === status ? 'selected' : ''}>${e.label}</option>`).join('');
+    }
+    function renderSelectorEstado(bookingId, status, variant) {
+      const clase = variant === 'mini'
+        ? `estado-select w-full mt-0.5 text-[10px] bg-transparent border-0 focus:outline-none text-white/80`
+        : `estado-select text-xs px-2 py-0.5 rounded-sm border-0 ${estadoDe(status).pill} focus:outline-none`;
+      return `<select data-booking-id="${bookingId}" data-variant="${variant || ''}" onchange="cambiarEstadoReserva(this)" class="${clase}">${opcionesEstado(status)}</select>`;
+    }
+    async function cambiarEstadoReserva(select) {
+      const id = select.dataset.bookingId;
+      const status = select.value;
+      if (select.dataset.variant !== 'mini') {
+        select.className = `estado-select text-xs px-2 py-0.5 rounded-sm border-0 ${estadoDe(status).pill} focus:outline-none`;
+      }
+      const { error } = await supabaseClient.from('bookings').update({ status }).eq('id', id);
+      if (error) { alert('No se pudo actualizar el estado: ' + error.message); return; }
+      if (document.getElementById('view-resumen').classList.contains('active')) loadResumen();
+      if (document.getElementById('view-calendario').classList.contains('active')) loadCalendario();
+    }
+
     async function loadResumen() {
       const todayIso = santiagoDateParts(0).iso;
       const { data: bookings } = await supabaseClient
@@ -499,7 +531,7 @@
         .select('*, services(name, price_clp, duration_minutes), barbers(name)')
         .eq('barbershop_id', state.barbershopId)
         .eq('booking_date', todayIso)
-        .eq('status', 'confirmed')
+        .not('status', 'in', '(cancelled,no_show)')
         .order('start_time');
       const rows = bookings || [];
 
@@ -526,7 +558,7 @@
           <span class="font-mono text-sm text-gold w-14">${b.start_time.slice(0, 5)}</span>
           <span class="flex-1 min-w-[140px] text-sm">${escapeHtml(b.customer_name)} — ${escapeHtml(b.services?.name)}</span>
           <span class="text-xs text-white/50">${escapeHtml(b.barbers?.name)}</span>
-          <span class="text-xs bg-green-500/15 text-green-400 px-2 py-0.5 rounded-sm">Confirmada</span>
+          ${renderSelectorEstado(b.id, b.status)}
         </div>
       `).join('') : '<p class="px-4 py-6 text-sm text-white/40 text-center">Sin citas para hoy.</p>';
     }
@@ -564,8 +596,8 @@
       }
       const barberIds = barbers.map(b => b.id);
       const { data: horas } = await supabaseClient.from('barber_working_hours').select('barber_id,start_time,end_time').eq('weekday', weekday).in('barber_id', barberIds);
-      const { data: bookings } = await supabaseClient.from('bookings').select('start_time,barber_id,customer_name,services(name,duration_minutes)')
-        .eq('barbershop_id', state.barbershopId).eq('booking_date', todayIso).eq('status', 'confirmed');
+      const { data: bookings } = await supabaseClient.from('bookings').select('id,status,start_time,barber_id,customer_name,services(name,duration_minutes)')
+        .eq('barbershop_id', state.barbershopId).eq('booking_date', todayIso).not('status', 'in', '(cancelled,no_show)');
 
       if (!horas || !horas.length) {
         container.innerHTML = '<p class="text-white/40 text-sm text-center py-8">Nadie trabaja ese día.</p>';
@@ -602,9 +634,10 @@
         const row = Math.round((startMin - timeToMinutes(minStart)) / ROW_MINUTES) + 2;
         const rowSpan = Math.max(1, Math.ceil((bk.services?.duration_minutes || ROW_MINUTES) / ROW_MINUTES));
         cells += `
-          <div class="m-0.5 p-1.5 bg-gold/15 border border-gold/40 rounded-sm overflow-hidden" style="grid-column:${col}; grid-row:${row} / span ${rowSpan};">
+          <div class="m-0.5 p-1.5 border rounded-sm overflow-hidden ${estadoDe(bk.status).bloque}" style="grid-column:${col}; grid-row:${row} / span ${rowSpan};">
             <p class="text-xs font-medium truncate">${escapeHtml(bk.customer_name)}</p>
             <p class="text-[11px] text-white/50 truncate">${escapeHtml(bk.services?.name)}</p>
+            ${renderSelectorEstado(bk.id, bk.status, 'mini')}
           </div>`;
       });
 

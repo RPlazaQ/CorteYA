@@ -71,7 +71,7 @@ create table bookings (
   start_time      time not null,
   end_time        time not null check (end_time > start_time),
   status          text not null default 'confirmed'
-                   check (status in ('confirmed','cancelled','completed','no_show')),
+                   check (status in ('confirmed','rescheduled','paid_cash','paid_transfer','paid_card','completed','cancelled','no_show')),
   created_at      timestamptz not null default now(),
   notes           text,
   time_range tsrange generated always as (
@@ -83,11 +83,11 @@ create table bookings (
 -- de horario para el mismo barbero, sin importar qué tan rápido lleguen
 -- dos reservas casi al mismo tiempo.
 alter table bookings
-  add constraint no_overlapping_confirmed_bookings
+  add constraint no_overlapping_active_bookings
   exclude using gist (
     barber_id with =,
     time_range with &&
-  ) where (status = 'confirmed');
+  ) where (status not in ('cancelled','no_show'));
 
 -- ============ DISPONIBILIDAD (función) ============
 
@@ -136,7 +136,7 @@ begin
     and not exists (
       select 1 from bookings b
       where b.barber_id = p_barber_id
-        and b.status = 'confirmed'
+        and b.status not in ('cancelled','no_show')
         and b.time_range && tsrange(
               p_date + gs::time,
               p_date + gs::time + make_interval(mins => p_service_duration_minutes),
