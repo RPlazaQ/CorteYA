@@ -86,7 +86,10 @@
     <main class="flex-1 overflow-y-auto">
       <header class="h-16 border-b border-white/10 flex items-center justify-between px-4 md:px-8 sticky top-0 bg-ink z-10">
         <p id="header-fecha" class="font-mono text-xs text-white/40"></p>
-        <button onclick="handleLogout()" class="text-xs border border-white/15 rounded-sm px-3 py-1.5 text-white/60 hover:border-white/30 transition">Cerrar sesión</button>
+        <div class="flex items-center gap-2">
+          <button id="btn-compartir" onclick="compartirAgenda()" class="text-xs border border-gold text-gold rounded-sm px-3 py-1.5 hover:bg-gold/10 transition">🔗 Compartir agenda</button>
+          <button onclick="handleLogout()" class="text-xs border border-white/15 rounded-sm px-3 py-1.5 text-white/60 hover:border-white/30 transition">Cerrar sesión</button>
+        </div>
       </header>
 
       <div class="p-4 pb-24 md:p-8 md:pb-8 max-w-5xl">
@@ -221,6 +224,27 @@
     function minutesToTime(mins) { return String(Math.floor(mins / 60)).padStart(2, '0') + ':' + String(mins % 60).padStart(2, '0'); }
     function diffMinutes(t1, t2) { return timeToMinutes(t2) - timeToMinutes(t1); }
 
+    // ---------- compartir link de agendamiento ----------
+    async function compartirAgenda() {
+      const link = `${location.origin}/app-cliente.html?barberia=${encodeURIComponent(state.barbershopSlug)}`;
+      const btn = document.getElementById('btn-compartir');
+      const original = btn.textContent;
+
+      if (navigator.share) {
+        try {
+          await navigator.share({ title: `Agenda tu hora en ${state.barbershopName}`, url: link });
+        } catch (e) { /* el usuario cerró el share sheet, no hacer nada */ }
+        return;
+      }
+      try {
+        await navigator.clipboard.writeText(link);
+        btn.textContent = '✓ Link copiado';
+      } catch (e) {
+        btn.textContent = link;
+      }
+      setTimeout(() => { btn.textContent = original; }, 2500);
+    }
+
     // ---------- logo de la barbería ----------
     function initials(name) {
       return (name || '').trim().split(/\s+/).slice(0, 2).map(w => w[0]).join('').toUpperCase() || '?';
@@ -287,6 +311,7 @@
       }
       state.barbershopId = shop.id;
       state.barbershopName = shop.name;
+      state.barbershopSlug = shop.slug;
       state.barbershopImageUrl = shop.image_url || null;
       document.getElementById('sidebar-nombre').textContent = shop.name;
       updateSidebarLogo();

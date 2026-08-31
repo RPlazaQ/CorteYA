@@ -304,7 +304,7 @@
       const listEl = document.getElementById('buscar-lista');
       const { data, error } = await supabaseClient
         .from('barbershops')
-        .select('id, name, address, rating, image_url');
+        .select('id, name, address, rating, image_url, slug');
 
       if (error || !data || data.length === 0) {
         listEl.innerHTML = '<p class="text-white/40 text-sm text-center py-8">No hay barberías disponibles todavía.</p>';
@@ -341,6 +341,12 @@
           </div>
         `;
       }).join('');
+
+      const slugCompartido = new URLSearchParams(location.search).get('barberia');
+      if (slugCompartido) {
+        const shop = data.find(b => b.slug === slugCompartido);
+        if (shop) selectBarbershop(shop.id);
+      }
     }
 
     // ---------- pantalla Detalle ----------
