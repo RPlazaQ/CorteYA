@@ -125,7 +125,8 @@
             <h1 class="font-display text-2xl">Calendario</h1>
             <div class="flex items-center gap-3">
               <button onclick="cambiarDiaCalendario(-1)" class="border border-white/15 rounded-sm w-8 h-8 flex items-center justify-center text-white/60 hover:border-white/30 transition">‹</button>
-              <span id="calendario-fecha-label" class="font-mono text-xs text-white/60 w-28 text-center"></span>
+              <input id="calendario-fecha-input" type="date" onchange="seleccionarFechaCalendario(this.value)"
+                class="bg-transparent border border-white/15 rounded-sm px-2 py-1.5 text-xs text-white/80 text-center focus:outline-none focus:border-gold [color-scheme:dark] w-36">
               <button onclick="cambiarDiaCalendario(1)" class="border border-white/15 rounded-sm w-8 h-8 flex items-center justify-center text-white/60 hover:border-white/30 transition">›</button>
             </div>
           </div>
@@ -331,12 +332,12 @@
       loadCalendario();
     }
 
-    function formatFechaCalendario(dateObj, offset) {
-      if (offset === 0) return 'Hoy';
-      if (offset === 1) return 'Mañana';
-      const wd = new Intl.DateTimeFormat('es-CL', { weekday: 'short', timeZone: 'UTC' }).format(dateObj).replace('.', '');
-      const mo = new Intl.DateTimeFormat('es-CL', { month: 'short', timeZone: 'UTC' }).format(dateObj).replace('.', '');
-      return `${wd.charAt(0).toUpperCase() + wd.slice(1)} ${dateObj.getUTCDate()} ${mo}`;
+    function seleccionarFechaCalendario(iso) {
+      if (!iso) return;
+      const hoy = santiagoDateParts(0).iso;
+      const diffDays = Math.round((Date.parse(iso) - Date.parse(hoy)) / 86400000);
+      state.calendarioOffset = Math.max(0, Math.min(29, diffDays));
+      loadCalendario();
     }
 
     async function loadCalendario() {
@@ -344,7 +345,10 @@
       const offset = state.calendarioOffset;
       const { iso: todayIso, dateObj } = santiagoDateParts(offset);
       const weekday = dateObj.getUTCDay();
-      document.getElementById('calendario-fecha-label').textContent = formatFechaCalendario(dateObj, offset);
+      const fechaInput = document.getElementById('calendario-fecha-input');
+      fechaInput.min = santiagoDateParts(0).iso;
+      fechaInput.max = santiagoDateParts(29).iso;
+      fechaInput.value = todayIso;
 
       const { data: barbers } = await supabaseClient.from('barbers').select('id,name').eq('barbershop_id', state.barbershopId).eq('active', true).order('name');
       if (!barbers || !barbers.length) {

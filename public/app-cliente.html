@@ -156,7 +156,8 @@
               </div>
               <div>
                 <p class="font-mono text-[11px] tracking-widest uppercase text-gold mb-3">Fecha</p>
-                <div id="agendar-fechas" class="flex gap-2"></div>
+                <input id="agendar-fecha-input" type="date" onchange="selectDate(this.value)"
+                  class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2.5 text-sm text-white focus:outline-none focus:border-gold [color-scheme:dark]">
               </div>
               <div>
                 <p class="font-mono text-[11px] tracking-widest uppercase text-gold mb-3">Hora</p>
@@ -276,11 +277,6 @@
       base.setUTCDate(base.getUTCDate() + offsetDays);
       const iso = base.toISOString().slice(0, 10);
       return { iso, dateObj: base };
-    }
-
-    function formatWeekdayShort(dateObj) {
-      const wd = new Intl.DateTimeFormat('es-CL', { weekday: 'short', timeZone: 'UTC' }).format(dateObj).replace('.', '');
-      return wd.charAt(0).toUpperCase() + wd.slice(1) + ' ' + dateObj.getUTCDate();
     }
 
     function formatFechaLabel(iso) {
@@ -411,14 +407,15 @@
         .concat(state.barbers.map(b => `<button data-barber-id="${b.id}" onclick="selectBarber('${b.id}')" class="chip-barbero text-xs border px-3 py-2 rounded-sm border-white/15 text-white/70">${escapeHtml(b.name)}</button>`));
       document.getElementById('agendar-barberos').innerHTML = barberChips.join('');
 
-      const dias = [0, 1, 2].map(o => santiagoDateParts(o));
-      const labels = ['Hoy', 'Mañana', formatWeekdayShort(dias[2].dateObj)];
-      document.getElementById('agendar-fechas').innerHTML = dias.map((d, i) => `
-        <button data-date="${d.iso}" onclick="selectDate('${d.iso}')" class="chip-fecha text-xs border px-3 py-2 rounded-sm ${i === 0 ? 'border-gold bg-gold/10 text-gold' : 'border-white/15 text-white/70'}">${labels[i]}</button>
-      `).join('');
+      const hoy = santiagoDateParts(0);
+      const maxFecha = santiagoDateParts(29);
+      const fechaInput = document.getElementById('agendar-fecha-input');
+      fechaInput.min = hoy.iso;
+      fechaInput.max = maxFecha.iso;
+      fechaInput.value = hoy.iso;
 
       state.selectedBarberId = 'any';
-      state.selectedDate = dias[0].iso;
+      state.selectedDate = hoy.iso;
       state.selectedSlot = null;
       document.getElementById('agendar-resumen').textContent = 'Elige un horario';
       document.getElementById('agendar-precio').textContent = '';
@@ -440,16 +437,9 @@
     }
 
     function selectDate(iso) {
+      if (!iso) return;
       state.selectedDate = iso;
       state.selectedSlot = null;
-      document.querySelectorAll('.chip-fecha').forEach(el => {
-        const active = el.dataset.date === iso;
-        el.classList.toggle('border-gold', active);
-        el.classList.toggle('bg-gold/10', active);
-        el.classList.toggle('text-gold', active);
-        el.classList.toggle('border-white/15', !active);
-        el.classList.toggle('text-white/70', !active);
-      });
       loadHoras();
     }
 
