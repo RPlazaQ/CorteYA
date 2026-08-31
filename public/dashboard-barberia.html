@@ -137,6 +137,7 @@
               <button onclick="abrirModalCita()" class="text-xs border border-gold text-gold rounded-sm px-3 py-1.5 hover:bg-gold/10 transition">+ Agregar cita</button>
             </div>
           </div>
+          <div id="calendario-filtro-barberos" class="flex flex-wrap gap-2 mb-4"></div>
           <div id="calendario-tabla" class="border border-white/10 rounded-sm overflow-x-auto">
             <p class="text-white/40 text-sm text-center py-8">Cargando…</p>
           </div>
@@ -234,7 +235,7 @@
   </div>
 
   <script>
-    const state = { barbershopId: null, barbershopName: '', calendarioOffset: 0 };
+    const state = { barbershopId: null, barbershopName: '', calendarioOffset: 0, calendarioBarberosVisibles: null };
 
     // ---------- utilidades ----------
     function santiagoDateParts(offsetDays) {
@@ -474,6 +475,7 @@
       document.getElementById('login-screen').classList.remove('hidden');
       document.getElementById('login-email').value = '';
       document.getElementById('login-password').value = '';
+      state.calendarioBarberosVisibles = null;
     }
 
     (async function checkExistingSession() {
@@ -584,6 +586,49 @@
       loadCalendario();
     }
 
+    // ---------- filtro de barberos en Calendario (persistido por celular) ----------
+    function claveFiltroBarberos() {
+      return `corteya_calendario_barberos_${state.barbershopId}`;
+    }
+    function cargarFiltroBarberosGuardado(idsDisponibles) {
+      try {
+        const guardado = JSON.parse(localStorage.getItem(claveFiltroBarberos()) || 'null');
+        if (Array.isArray(guardado)) {
+          const filtrado = guardado.filter(id => idsDisponibles.includes(id));
+          if (filtrado.length) return filtrado;
+        }
+      } catch (e) { /* localStorage no disponible, seguir con el default */ }
+      return idsDisponibles.slice();
+    }
+    function guardarFiltroBarberos(ids) {
+      try { localStorage.setItem(claveFiltroBarberos(), JSON.stringify(ids)); } catch (e) { /* no pasa nada si no se puede guardar */ }
+    }
+    function renderFiltroBarberos(todosBarberos, idsDisponibles) {
+      const todosSeleccionados = state.calendarioBarberosVisibles.length === idsDisponibles.length;
+      document.getElementById('calendario-filtro-barberos').innerHTML = `
+        <button onclick='mostrarTodosBarberos(${JSON.stringify(idsDisponibles)})' class="text-xs border px-3 py-1.5 rounded-sm transition ${todosSeleccionados ? 'border-gold bg-gold/10 text-gold' : 'border-white/15 text-white/60'}">Todos</button>
+        ${todosBarberos.map(b => `
+          <button onclick="toggleBarberoFiltro('${b.id}')" class="text-xs border px-3 py-1.5 rounded-sm transition ${state.calendarioBarberosVisibles.includes(b.id) ? 'border-gold bg-gold/10 text-gold' : 'border-white/15 text-white/60'}">${escapeHtml(b.name)}</button>
+        `).join('')}
+      `;
+    }
+    function toggleBarberoFiltro(barberId) {
+      const idx = state.calendarioBarberosVisibles.indexOf(barberId);
+      if (idx >= 0) {
+        if (state.calendarioBarberosVisibles.length === 1) return;
+        state.calendarioBarberosVisibles.splice(idx, 1);
+      } else {
+        state.calendarioBarberosVisibles.push(barberId);
+      }
+      guardarFiltroBarberos(state.calendarioBarberosVisibles);
+      loadCalendario();
+    }
+    function mostrarTodosBarberos(idsDisponibles) {
+      state.calendarioBarberosVisibles = idsDisponibles.slice();
+      guardarFiltroBarberos(state.calendarioBarberosVisibles);
+      loadCalendario();
+    }
+
     async function loadCalendario() {
       const container = document.getElementById('calendario-tabla');
       const offset = state.calendarioOffset;
@@ -594,15 +639,27 @@
       fechaInput.max = santiagoDateParts(29).iso;
       fechaInput.value = todayIso;
 
-      const { data: barbers } = await supabaseClient.from('barbers').select('id,name').eq('barbershop_id', state.barbershopId).eq('active', true).order('name');
-      if (!barbers || !barbers.length) {
+      const { data: todosBarberos } = await supabaseClient.from('barbers').select('id,name').eq('barbershop_id', state.barbershopId).eq('active', true).order('name');
+      if (!todosBarberos || !todosBarberos.length) {
+        document.getElementById('calendario-filtro-barberos').innerHTML = '';
         container.innerHTML = '<p class="text-white/40 text-sm text-center py-8">Agrega barberos para ver el calendario.</p>';
         return;
       }
+
+      const idsDisponibles = todosBarberos.map(b => b.id);
+      if (!state.calendarioBarberosVisibles) {
+        state.calendarioBarberosVisibles = cargarFiltroBarberosGuardado(idsDisponibles);
+      } else {
+        state.calendarioBarberosVisibles = state.calendarioBarberosVisibles.filter(id => idsDisponibles.includes(id));
+        if (!state.calendarioBarberosVisibles.length) state.calendarioBarberosVisibles = idsDisponibles.slice();
+      }
+      renderFiltroBarberos(todosBarberos, idsDisponibles);
+
+      const barbers = todosBarberos.filter(b => state.calendarioBarberosVisibles.includes(b.id));
       const barberIds = barbers.map(b => b.id);
       const { data: horas } = await supabaseClient.from('barber_working_hours').select('barber_id,start_time,end_time').eq('weekday', weekday).in('barber_id', barberIds);
       const { data: bookings } = await supabaseClient.from('bookings').select('id,status,start_time,barber_id,customer_name,services(name,duration_minutes)')
-        .eq('barbershop_id', state.barbershopId).eq('booking_date', todayIso).not('status', 'in', '(cancelled,no_show)');
+        .eq('barbershop_id', state.barbershopId).eq('booking_date', todayIso).not('status', 'in', '(cancelled,no_show)').in('barber_id', barberIds);
 
       if (!horas || !horas.length) {
         container.innerHTML = '<p class="text-white/40 text-sm text-center py-8">Nadie trabaja ese día.</p>';
