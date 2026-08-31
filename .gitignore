@@ -4,7 +4,9 @@ credentials.json
 token.json
 gmail_accounts.json
 leads-barberias-providencia.csv
+leads-barberias-providencia.html
 gmaps-leads-espanol.md
+seguimiento-entrevistas-barberias.csv
 *.xls
 *.xlsx
 *.pdf

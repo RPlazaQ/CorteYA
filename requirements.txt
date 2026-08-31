@@ -1,0 +1,23 @@
+# Dependencias para las skills de CorteYa (.claude/skills/)
+# Instalar con: pip install -r requirements.txt
+
+# IA / LLM
+anthropic>=0.40.0
+
+# Google Services (Sheets, Gmail)
+google-auth>=2.36.0
+google-auth-oauthlib>=1.2.0
+google-api-python-client>=2.160.0
+gspread>=6.1.0
+
+# Extracción de leads y scraping
+apify-client>=1.8.0
+httpx>=0.28.0
+requests>=2.32.0
+html2text>=2024.2.0
+
+# Procesamiento de datos
+pandas>=2.2.0
+
+# Infraestructura
+python-dotenv>=1.0.0

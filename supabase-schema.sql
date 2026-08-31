@@ -2,7 +2,8 @@
 -- Pegar completo en Supabase: Dashboard del proyecto -> SQL Editor -> New query -> Run
 
 create extension if not exists pgcrypto;
-create extension if not exists btree_gist;
+create schema if not exists extensions;
+create extension if not exists btree_gist with schema extensions;
 
 -- ============ TABLAS ============
 
@@ -146,7 +147,7 @@ end;
 $$;
 
 revoke all on function get_available_slots from public;
-grant execute on function get_available_slots to anon, authenticated;
+grant execute on function get_available_slots to anon;
 
 -- ============ SEGURIDAD (RLS) ============
 
