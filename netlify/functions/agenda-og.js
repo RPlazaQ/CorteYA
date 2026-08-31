@@ -12,7 +12,8 @@ function escapeHtml(str) {
 }
 
 exports.handler = async (event) => {
-  const slug = event.queryStringParameters?.slug || '';
+  const pathSlug = decodeURIComponent((event.path || '').split('/').filter(Boolean).pop() || '');
+  const slug = pathSlug !== 'agenda-og' ? pathSlug : (event.queryStringParameters?.slug || '');
   let name = 'CorteYa';
   let imageUrl = DEFAULT_IMAGE;
 
