@@ -353,6 +353,7 @@
       state.barbershopId = id;
       state.barbershopName = shop.name;
       state.barbershopAddress = shop.address;
+      state.barbershopImageUrl = shop.image_url || null;
       showScreen('screen-detalle');
       loadBarbershopDetail();
     }
@@ -360,7 +361,8 @@
     async function loadBarbershopDetail() {
       document.getElementById('detalle-nombre').textContent = state.barbershopName;
       document.getElementById('detalle-info').textContent = state.barbershopAddress || '';
-      document.getElementById('detalle-imagen').src = 'https://placehold.co/375x160/1D1D20/D9A441?text=' + encodeURIComponent(state.barbershopName);
+      document.getElementById('detalle-imagen').src = state.barbershopImageUrl
+        || 'https://placehold.co/375x160/1D1D20/D9A441?text=' + encodeURIComponent(state.barbershopName);
 
       const [{ data: services }, { data: barbers }] = await Promise.all([
         supabaseClient.from('services').select('*').eq('barbershop_id', state.barbershopId).eq('active', true),

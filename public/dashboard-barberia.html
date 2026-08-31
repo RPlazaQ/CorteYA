@@ -71,9 +71,14 @@
       </nav>
       <div class="hidden md:block p-3 border-t border-white/10">
         <div class="flex items-center gap-2 px-3 py-2 text-sm text-white/60">
-          <img src="https://placehold.co/28x28/1D1D20/D9A441?text=BC" class="w-7 h-7 rounded-sm">
+          <label for="logo-upload" class="relative shrink-0 cursor-pointer group" title="Cambiar logo">
+            <img id="sidebar-logo" src="https://placehold.co/28x28/1D1D20/D9A441?text=..." class="w-7 h-7 rounded-sm object-cover">
+            <span class="absolute inset-0 rounded-sm bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center text-[9px] transition">✎</span>
+          </label>
+          <input id="logo-upload" type="file" accept="image/png,image/jpeg,image/webp" class="hidden">
           <span id="sidebar-nombre">Cargando…</span>
         </div>
+        <p id="logo-status" class="hidden text-[10px] text-white/40 mt-1 px-3"></p>
       </div>
     </aside>
 
@@ -174,6 +179,45 @@
     function minutesToTime(mins) { return String(Math.floor(mins / 60)).padStart(2, '0') + ':' + String(mins % 60).padStart(2, '0'); }
     function diffMinutes(t1, t2) { return timeToMinutes(t2) - timeToMinutes(t1); }
 
+    // ---------- logo de la barbería ----------
+    function initials(name) {
+      return (name || '').trim().split(/\s+/).slice(0, 2).map(w => w[0]).join('').toUpperCase() || '?';
+    }
+    function updateSidebarLogo() {
+      document.getElementById('sidebar-logo').src = state.barbershopImageUrl
+        || 'https://placehold.co/28x28/1D1D20/D9A441?text=' + encodeURIComponent(initials(state.barbershopName));
+    }
+    document.getElementById('logo-upload').addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const statusEl = document.getElementById('logo-status');
+      statusEl.textContent = 'Subiendo…';
+      statusEl.classList.remove('hidden');
+
+      const ext = (file.name.split('.').pop() || 'png').toLowerCase();
+      const path = `${state.barbershopId}/logo.${ext}`;
+      const { error: uploadError } = await supabaseClient.storage
+        .from('barbershop-logos')
+        .upload(path, file, { upsert: true, contentType: file.type });
+      if (uploadError) {
+        statusEl.textContent = 'No se pudo subir el logo (revisa que sea PNG/JPG/WEBP de menos de 2MB).';
+        return;
+      }
+
+      const { data: pub } = supabaseClient.storage.from('barbershop-logos').getPublicUrl(path);
+      const { error: updateError } = await supabaseClient
+        .from('barbershops').update({ image_url: pub.publicUrl }).eq('id', state.barbershopId);
+      if (updateError) {
+        statusEl.textContent = 'El logo se subió pero no se pudo guardar, intenta de nuevo.';
+        return;
+      }
+
+      state.barbershopImageUrl = pub.publicUrl + '?t=' + Date.now();
+      updateSidebarLogo();
+      statusEl.classList.add('hidden');
+      e.target.value = '';
+    });
+
     // ---------- login ----------
     document.getElementById('login-form').addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -201,7 +245,9 @@
       }
       state.barbershopId = shop.id;
       state.barbershopName = shop.name;
+      state.barbershopImageUrl = shop.image_url || null;
       document.getElementById('sidebar-nombre').textContent = shop.name;
+      updateSidebarLogo();
       document.getElementById('header-fecha').textContent =
         new Intl.DateTimeFormat('es-CL', { timeZone: 'America/Santiago', weekday: 'long', day: 'numeric', month: 'long' }).format(new Date());
       document.getElementById('login-screen').classList.add('hidden');
