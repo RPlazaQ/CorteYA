@@ -65,7 +65,7 @@ create table bookings (
   barber_id       uuid not null references barbers(id),
   service_id      uuid not null references services(id),
   customer_name   text not null,
-  customer_phone  text not null check (customer_phone ~ '^[+0-9 ()-]{8,15}$'),
+  customer_phone  text not null check (customer_phone ~ '^\+56 9 \d{4} \d{4}$'),
   customer_email  text,
   booking_date    date not null,
   start_time      time not null,

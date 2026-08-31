@@ -218,7 +218,12 @@
       <input id="cita-nombre" type="text" maxlength="80" required class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2 text-sm mb-3 focus:outline-none focus:border-gold">
 
       <label class="block text-xs text-white/60 mb-1">Teléfono</label>
-      <input id="cita-telefono" type="tel" maxlength="15" placeholder="+56 9 1234 5678" required class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2 text-sm mb-3 focus:outline-none focus:border-gold">
+      <div class="flex gap-2 mb-3">
+        <span class="shrink-0 flex items-center px-3 border border-white/15 rounded-sm text-sm text-white/60 bg-white/5">+56 9</span>
+        <input id="cita-telefono" type="tel" inputmode="numeric" maxlength="8" placeholder="1234 5678" required
+          oninput="this.value = this.value.replace(/\D/g, '').slice(0, 8)"
+          class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2 text-sm focus:outline-none focus:border-gold">
+      </div>
 
       <label class="block text-xs text-white/60 mb-1">Notas (opcional)</label>
       <textarea id="cita-notas" maxlength="300" rows="2" class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2 text-sm mb-3 focus:outline-none focus:border-gold"></textarea>
@@ -746,11 +751,12 @@
         errorEl.classList.remove('hidden');
         return;
       }
-      if (!/^[+0-9 ()-]{8,15}$/.test(telefono)) {
-        errorEl.textContent = 'Revisa el formato del teléfono.';
+      if (!/^\d{8}$/.test(telefono)) {
+        errorEl.textContent = 'Ingresa un número válido (8 dígitos).';
         errorEl.classList.remove('hidden');
         return;
       }
+      const telefonoCompleto = `+56 9 ${telefono.slice(0, 4)} ${telefono.slice(4)}`;
 
       const startTime = hora + ':00';
       const endTime = minutesToTime(timeToMinutes(hora) + duration) + ':00';
@@ -760,7 +766,7 @@
         barber_id: barberId,
         service_id: serviceId,
         customer_name: nombre,
-        customer_phone: telefono,
+        customer_phone: telefonoCompleto,
         booking_date: fecha,
         start_time: startTime,
         end_time: endTime,

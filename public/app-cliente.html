@@ -188,7 +188,12 @@
                 <p class="font-mono text-[11px] tracking-widest uppercase text-gold mb-3">Tus datos</p>
                 <div class="space-y-2">
                   <input id="input-nombre" type="text" maxlength="80" placeholder="Nombre" class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2.5 text-sm placeholder-white/40 focus:outline-none focus:border-gold">
-                  <input id="input-telefono" type="tel" maxlength="15" placeholder="Teléfono (ej: +56 9 1234 5678)" class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2.5 text-sm placeholder-white/40 focus:outline-none focus:border-gold">
+                  <div class="flex gap-2">
+                    <span class="shrink-0 flex items-center px-3 border border-white/15 rounded-sm text-sm text-white/60 bg-white/5">+56 9</span>
+                    <input id="input-telefono" type="tel" inputmode="numeric" maxlength="8" placeholder="1234 5678"
+                      oninput="this.value = this.value.replace(/\D/g, '').slice(0, 8)"
+                      class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2.5 text-sm placeholder-white/40 focus:outline-none focus:border-gold">
+                  </div>
                   <input id="input-email" type="email" maxlength="120" placeholder="Correo (opcional)" class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2.5 text-sm placeholder-white/40 focus:outline-none focus:border-gold">
                   <input id="input-honeypot" type="text" name="website" tabindex="-1" autocomplete="off" class="hidden">
                 </div>
@@ -532,6 +537,12 @@
         errorEl.classList.remove('hidden');
         return;
       }
+      if (!/^\d{8}$/.test(telefono)) {
+        errorEl.textContent = 'Ingresa un número válido (8 dígitos).';
+        errorEl.classList.remove('hidden');
+        return;
+      }
+      const telefonoCompleto = `+56 9 ${telefono.slice(0, 4)} ${telefono.slice(4)}`;
 
       const btn = document.getElementById('btn-confirmar');
       btn.disabled = true;
@@ -553,7 +564,7 @@
           barber_id: barberId,
           service_id: svc.id,
           customer_name: nombre,
-          customer_phone: telefono,
+          customer_phone: telefonoCompleto,
           customer_email: email || null,
           booking_date: state.selectedDate,
           start_time: state.selectedSlot,
