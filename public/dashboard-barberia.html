@@ -68,6 +68,9 @@
         <button onclick="showView('barberos', this)" class="nav-item text-white/60 flex-1 flex flex-col items-center justify-center gap-0.5 text-[10px] md:flex-none md:flex-row md:items-center md:justify-start md:gap-3 md:px-3 md:py-2.5 md:text-sm rounded-sm font-medium transition md:w-full md:text-left">
           <span>👤</span> Barberos
         </button>
+        <button onclick="showView('info', this)" class="nav-item text-white/60 flex-1 flex flex-col items-center justify-center gap-0.5 text-[10px] md:flex-none md:flex-row md:items-center md:justify-start md:gap-3 md:px-3 md:py-2.5 md:text-sm rounded-sm font-medium transition md:w-full md:text-left">
+          <span>ℹ️</span> Info
+        </button>
       </nav>
       <div class="hidden md:block p-3 border-t border-white/10">
         <div class="flex items-center gap-2 px-3 py-2 text-sm text-white/60">
@@ -161,6 +164,26 @@
           </div>
         </section>
 
+        <!-- INFO -->
+        <section id="view-info" class="view">
+          <h1 class="font-display text-2xl mb-6">Nuestra información</h1>
+
+          <div class="border border-white/10 rounded-sm p-4 mb-8 max-w-md">
+            <p class="font-mono text-[11px] tracking-widest uppercase text-white/40 mb-3">Datos de contacto</p>
+            <label class="block text-xs text-white/60 mb-1">Dirección</label>
+            <input id="info-direccion" type="text" maxlength="200" class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2 text-sm mb-3 focus:outline-none focus:border-gold">
+            <label class="block text-xs text-white/60 mb-1">Teléfono</label>
+            <input id="info-telefono" type="tel" maxlength="20" class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2 text-sm mb-3 focus:outline-none focus:border-gold">
+            <p id="info-datos-status" class="hidden text-xs mb-2"></p>
+            <button onclick="guardarDatosContacto()" class="text-xs border border-gold text-gold rounded-sm px-3 py-1.5 hover:bg-gold/10 transition">Guardar</button>
+          </div>
+
+          <p class="font-mono text-[11px] tracking-widest uppercase text-white/40 mb-3">Horarios por barbero</p>
+          <div id="info-horarios" class="space-y-4 max-w-md">
+            <p class="text-white/40 text-sm text-center py-6">Cargando…</p>
+          </div>
+        </section>
+
       </div>
     </main>
   </div>
@@ -223,6 +246,121 @@
     function timeToMinutes(t) { const [h, m] = t.split(':').map(Number); return h * 60 + m; }
     function minutesToTime(mins) { return String(Math.floor(mins / 60)).padStart(2, '0') + ':' + String(mins % 60).padStart(2, '0'); }
     function diffMinutes(t1, t2) { return timeToMinutes(t2) - timeToMinutes(t1); }
+
+    // ---------- Info: datos de contacto y horarios ----------
+    const DIAS = [
+      { weekday: 1, label: 'Lunes' },
+      { weekday: 2, label: 'Martes' },
+      { weekday: 3, label: 'Miércoles' },
+      { weekday: 4, label: 'Jueves' },
+      { weekday: 5, label: 'Viernes' },
+      { weekday: 6, label: 'Sábado' },
+      { weekday: 0, label: 'Domingo' },
+    ];
+
+    async function loadInfo() {
+      document.getElementById('info-direccion').value = state.barbershopAddress || '';
+      document.getElementById('info-telefono').value = state.barbershopPhone || '';
+
+      const contenedor = document.getElementById('info-horarios');
+      const { data: barbers } = await supabaseClient.from('barbers').select('id,name').eq('barbershop_id', state.barbershopId).eq('active', true).order('name');
+      if (!barbers || !barbers.length) {
+        contenedor.innerHTML = '<p class="text-white/40 text-sm text-center py-6">Agrega barberos para configurar horarios.</p>';
+        return;
+      }
+      const barberIds = barbers.map(b => b.id);
+      const { data: horarios } = await supabaseClient.from('barber_working_hours').select('barber_id,weekday,start_time,end_time').in('barber_id', barberIds);
+
+      contenedor.innerHTML = barbers.map(b => renderTarjetaHorario(b, (horarios || []).filter(h => h.barber_id === b.id))).join('');
+    }
+
+    function renderTarjetaHorario(barber, horarios) {
+      const filas = DIAS.map(({ weekday, label }) => {
+        const h = horarios.find(x => x.weekday === weekday);
+        const activo = !!h;
+        const desde = (h?.start_time || '10:00').slice(0, 5);
+        const hasta = (h?.end_time || '20:00').slice(0, 5);
+        return `
+          <div class="flex items-center gap-3 text-xs">
+            <label class="flex items-center gap-1.5 w-20 shrink-0 cursor-pointer">
+              <input type="checkbox" class="dia-activo" data-weekday="${weekday}" ${activo ? 'checked' : ''} onchange="toggleDiaHorario(this)">
+              ${label}
+            </label>
+            <input type="time" class="dia-desde border border-white/15 bg-transparent rounded-sm px-2 py-1 text-xs [color-scheme:dark]" data-weekday="${weekday}" value="${desde}" ${!activo ? 'disabled' : ''}>
+            <span class="text-white/40">a</span>
+            <input type="time" class="dia-hasta border border-white/15 bg-transparent rounded-sm px-2 py-1 text-xs [color-scheme:dark]" data-weekday="${weekday}" value="${hasta}" ${!activo ? 'disabled' : ''}>
+          </div>
+        `;
+      }).join('');
+
+      return `
+        <div class="border border-white/10 rounded-sm p-4" data-barber-id="${barber.id}">
+          <p class="text-sm font-medium mb-3">${escapeHtml(barber.name)}</p>
+          <div class="space-y-2">${filas}</div>
+          <p class="horario-status hidden text-xs mt-2"></p>
+          <button onclick="guardarHorarioBarbero('${barber.id}')" class="mt-3 text-xs border border-gold text-gold rounded-sm px-3 py-1.5 hover:bg-gold/10 transition">Guardar horario</button>
+        </div>
+      `;
+    }
+
+    function toggleDiaHorario(checkbox) {
+      const fila = checkbox.closest('.flex');
+      fila.querySelectorAll('.dia-desde, .dia-hasta').forEach(input => input.disabled = !checkbox.checked);
+    }
+
+    async function guardarHorarioBarbero(barberId) {
+      const tarjeta = document.querySelector(`[data-barber-id="${barberId}"]`);
+      const statusEl = tarjeta.querySelector('.horario-status');
+      statusEl.className = 'horario-status text-xs mt-2';
+      statusEl.textContent = 'Guardando…';
+
+      const activos = [];
+      const inactivos = [];
+      tarjeta.querySelectorAll('.dia-activo').forEach(chk => {
+        const weekday = parseInt(chk.dataset.weekday, 10);
+        if (chk.checked) {
+          const desde = tarjeta.querySelector(`.dia-desde[data-weekday="${weekday}"]`).value;
+          const hasta = tarjeta.querySelector(`.dia-hasta[data-weekday="${weekday}"]`).value;
+          if (desde && hasta && desde < hasta) activos.push({ barber_id: barberId, weekday, start_time: desde, end_time: hasta });
+        } else {
+          inactivos.push(weekday);
+        }
+      });
+
+      if (inactivos.length) await supabaseClient.from('barber_working_hours').delete().eq('barber_id', barberId).in('weekday', inactivos);
+      if (activos.length) {
+        const { error } = await supabaseClient.from('barber_working_hours').upsert(activos, { onConflict: 'barber_id,weekday' });
+        if (error) {
+          statusEl.textContent = 'Error al guardar: ' + error.message;
+          statusEl.classList.add('text-red-400');
+          return;
+        }
+      }
+      statusEl.textContent = '✓ Horario guardado';
+      statusEl.classList.add('text-green-400');
+      setTimeout(() => statusEl.classList.add('hidden'), 2000);
+    }
+
+    async function guardarDatosContacto() {
+      const direccion = document.getElementById('info-direccion').value.trim();
+      const telefono = document.getElementById('info-telefono').value.trim();
+      const statusEl = document.getElementById('info-datos-status');
+      statusEl.className = 'text-xs mb-2';
+      statusEl.textContent = 'Guardando…';
+      statusEl.classList.remove('hidden');
+
+      const { error } = await supabaseClient.from('barbershops').update({ address: direccion || null, phone: telefono || null }).eq('id', state.barbershopId);
+      if (error) {
+        statusEl.textContent = 'Error: ' + error.message;
+        statusEl.classList.add('text-red-400');
+        return;
+      }
+      state.barbershopAddress = direccion;
+      state.barbershopPhone = telefono;
+      statusEl.textContent = '✓ Guardado';
+      statusEl.classList.add('text-green-400');
+      setTimeout(() => statusEl.classList.add('hidden'), 2000);
+    }
 
     // ---------- compartir link de agendamiento ----------
     async function compartirAgenda() {
@@ -314,6 +452,8 @@
       state.barbershopName = shop.name;
       state.barbershopSlug = shop.slug;
       state.barbershopImageUrl = shop.image_url || null;
+      state.barbershopAddress = shop.address || '';
+      state.barbershopPhone = shop.phone || '';
       document.getElementById('sidebar-nombre').textContent = shop.name;
       updateSidebarLogo();
       document.getElementById('header-fecha').textContent =
@@ -347,7 +487,7 @@
       btn.classList.add('active');
       btn.classList.remove('text-white/60');
 
-      const loaders = { resumen: loadResumen, calendario: loadCalendario, servicios: loadServicios, barberos: loadBarberos };
+      const loaders = { resumen: loadResumen, calendario: loadCalendario, servicios: loadServicios, barberos: loadBarberos, info: loadInfo };
       loaders[name]?.();
     }
 
