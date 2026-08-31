@@ -35,17 +35,14 @@
 
   <div class="max-w-6xl mx-auto px-5 py-8">
     <a href="index.html" class="font-mono text-xs text-white/40 hover:text-gold transition">← CorteYa</a>
-    <h1 class="font-display text-2xl mt-3 mb-1">Sketch — App cliente</h1>
-    <p class="text-white/50 text-sm mb-10">Flujo: buscar → ver barbería → agendar → pagar. Navega haciendo click dentro de la pantalla.</p>
 
-    <div class="flex justify-center">
+    <div class="flex justify-center mt-6">
       <!-- PHONE FRAME -->
       <div class="relative w-[375px] h-[780px] rounded-[2.25rem] bg-ink overflow-hidden shadow-2xl">
 
         <!-- status bar estilo iPhone (compartido por las 4 pantallas) -->
         <div class="relative h-11 flex items-center justify-between px-6 z-30 shrink-0">
           <span class="font-semibold text-[13px] tracking-tight">9:41</span>
-          <div class="absolute left-1/2 -translate-x-1/2 top-2 w-[92px] h-[26px] bg-black rounded-full"></div>
           <div class="flex items-center gap-1.5">
             <svg class="w-[15px] h-3" viewBox="0 0 18 12" fill="currentColor">
               <rect x="0" y="7" width="3" height="5" rx="0.5"/>
@@ -127,7 +124,7 @@
           <div class="h-full flex flex-col">
             <div class="relative h-40 shrink-0">
               <img id="detalle-imagen" src="https://placehold.co/375x160/1D1D20/D9A441?text=..." class="w-full h-full object-cover">
-              <button onclick="showScreen('screen-buscar')" class="absolute top-3 left-3 w-8 h-8 rounded-full bg-ink/80 flex items-center justify-center text-sm">←</button>
+              <button id="detalle-back-btn" onclick="showScreen('screen-buscar')" class="absolute top-3 left-3 w-8 h-8 rounded-full bg-ink/80 flex items-center justify-center text-sm">←</button>
             </div>
             <div class="flex-1 overflow-y-auto px-5 pt-4 pb-4">
               <h2 id="detalle-nombre" class="font-display text-lg">Cargando…</h2>
@@ -230,6 +227,7 @@
   <script>
     const state = {
       allBarbershops: [],
+      viaSharedLink: false,
       barbershopId: null,
       barbershopName: '',
       barbershopAddress: '',
@@ -350,7 +348,10 @@
       const slugCompartido = new URLSearchParams(location.search).get('barberia');
       if (slugCompartido) {
         const shop = data.find(b => b.slug === slugCompartido);
-        if (shop) selectBarbershop(shop.id);
+        if (shop) {
+          state.viaSharedLink = true;
+          selectBarbershop(shop.id);
+        }
       }
     }
 
@@ -366,6 +367,7 @@
     }
 
     async function loadBarbershopDetail() {
+      document.getElementById('detalle-back-btn').classList.toggle('hidden', state.viaSharedLink);
       document.getElementById('detalle-nombre').textContent = state.barbershopName;
       document.getElementById('detalle-info').textContent = state.barbershopAddress || '';
       document.getElementById('detalle-imagen').src = state.barbershopImageUrl
@@ -607,7 +609,12 @@
       state.selectedDate = null;
       state.selectedSlot = null;
       state.candidateBarberIds = [];
-      showScreen('screen-buscar');
+      if (state.viaSharedLink) {
+        showScreen('screen-detalle');
+        loadBarbershopDetail();
+      } else {
+        showScreen('screen-buscar');
+      }
     }
 
     loadBarbershops();
