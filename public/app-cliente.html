@@ -221,7 +221,6 @@
       selectedSlot: null,
       slotsMap: {},
       candidateBarberIds: [],
-      icsUrl: null,
     };
 
     // ---------- navegación ----------
@@ -558,12 +557,15 @@
         'SUMMARY:' + icsEscape(title),
         'DESCRIPTION:' + icsEscape(details),
         'LOCATION:' + icsEscape(location),
+        'BEGIN:VALARM',
+        'ACTION:DISPLAY',
+        'DESCRIPTION:Reminder',
+        'TRIGGER:-PT30M',
+        'END:VALARM',
         'END:VEVENT',
         'END:VCALENDAR',
       ].join('\r\n');
-      if (state.icsUrl) URL.revokeObjectURL(state.icsUrl);
-      state.icsUrl = URL.createObjectURL(new Blob([ics], { type: 'text/calendar;charset=utf-8' }));
-      document.getElementById('btn-cal-ics').href = state.icsUrl;
+      document.getElementById('btn-cal-ics').href = '/.netlify/functions/ics?content=' + encodeURIComponent(ics);
     }
 
     async function submitBooking() {
@@ -640,7 +642,6 @@
     }
 
     function resetAndGoHome() {
-      if (state.icsUrl) { URL.revokeObjectURL(state.icsUrl); state.icsUrl = null; }
       document.getElementById('pago-form').classList.remove('hidden');
       document.getElementById('pago-exito').classList.add('hidden');
       document.getElementById('btn-confirmar').disabled = false;
