@@ -190,7 +190,11 @@
               <circle cx="12" cy="12" r="9"/><path d="M8 12.3l2.6 2.6L16 9.5"/>
             </svg>
             <h2 class="font-display text-xl mb-2">Reserva confirmada</h2>
-            <p id="exito-detalle" class="text-white/60 text-sm mb-8"></p>
+            <p id="exito-detalle" class="text-white/60 text-sm mb-6"></p>
+            <div class="w-full flex gap-2 mb-6">
+              <a id="btn-cal-google" href="#" target="_blank" rel="noopener" class="flex-1 border border-white/15 hover:border-gold/50 rounded-sm py-2.5 text-xs font-medium text-center transition">Google Calendar</a>
+              <a id="btn-cal-ics" href="#" class="flex-1 border border-white/15 hover:border-gold/50 rounded-sm py-2.5 text-xs font-medium text-center transition">Apple Calendar</a>
+            </div>
             <button onclick="resetAndGoHome()" class="w-full bg-gold hover:bg-goldlight text-ink font-semibold py-3 rounded-sm transition">Volver al inicio</button>
           </div>
         </div>
@@ -217,6 +221,7 @@
       selectedSlot: null,
       slotsMap: {},
       candidateBarberIds: [],
+      icsUrl: null,
     };
 
     // ---------- navegación ----------
@@ -502,6 +507,65 @@
       `;
     }
 
+    // ---------- calendario (Google / Apple) ----------
+    // Chile no tiene un offset horario fijo garantizado en el tiempo (hubo idas y
+    // vueltas con el horario de verano), así que en vez de asumir UTC-4 a mano,
+    // usamos Intl para preguntarle al navegador qué offset rige en esa fecha puntual.
+    function santiagoToUTCDate(iso, timeStr) {
+      const [y, mo, d] = iso.split('-').map(Number);
+      const [h, mi] = timeStr.split(':').map(Number);
+      const guess = new Date(Date.UTC(y, mo - 1, d, h, mi));
+      const fmt = new Intl.DateTimeFormat('en-US', {
+        timeZone: 'America/Santiago', hourCycle: 'h23',
+        year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit',
+      });
+      const p = fmt.formatToParts(guess).reduce((acc, part) => (acc[part.type] = part.value, acc), {});
+      const asSantiago = Date.UTC(+p.year, +p.month - 1, +p.day, +p.hour, +p.minute);
+      return new Date(guess.getTime() + (guess.getTime() - asSantiago));
+    }
+
+    function icsStamp(date) {
+      return date.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+    }
+
+    function icsEscape(str) {
+      return String(str).replace(/([,;])/g, '\\$1');
+    }
+
+    function buildCalendarLinks(svc, endTime) {
+      const start = santiagoToUTCDate(state.selectedDate, state.selectedSlot.slice(0, 5));
+      const end = santiagoToUTCDate(state.selectedDate, endTime.slice(0, 5));
+      const title = `${svc.name} - ${state.barbershopName}`;
+      const details = `Reserva en ${state.barbershopName} vía CorteYa.`;
+      const location = state.barbershopAddress || '';
+
+      const gUrl = 'https://calendar.google.com/calendar/render?action=TEMPLATE'
+        + '&text=' + encodeURIComponent(title)
+        + '&dates=' + icsStamp(start) + '/' + icsStamp(end)
+        + '&details=' + encodeURIComponent(details)
+        + '&location=' + encodeURIComponent(location);
+      document.getElementById('btn-cal-google').href = gUrl;
+
+      const ics = [
+        'BEGIN:VCALENDAR',
+        'VERSION:2.0',
+        'PRODID:-//CorteYa//Reserva//ES',
+        'BEGIN:VEVENT',
+        'UID:' + (crypto.randomUUID ? crypto.randomUUID() : Date.now() + '@corteya.app'),
+        'DTSTAMP:' + icsStamp(new Date()),
+        'DTSTART:' + icsStamp(start),
+        'DTEND:' + icsStamp(end),
+        'SUMMARY:' + icsEscape(title),
+        'DESCRIPTION:' + icsEscape(details),
+        'LOCATION:' + icsEscape(location),
+        'END:VEVENT',
+        'END:VCALENDAR',
+      ].join('\r\n');
+      if (state.icsUrl) URL.revokeObjectURL(state.icsUrl);
+      state.icsUrl = URL.createObjectURL(new Blob([ics], { type: 'text/calendar;charset=utf-8' }));
+      document.getElementById('btn-cal-ics').href = state.icsUrl;
+    }
+
     async function submitBooking() {
       const errorEl = document.getElementById('pago-error');
       errorEl.classList.add('hidden');
@@ -554,6 +618,7 @@
           document.getElementById('pago-form').classList.add('hidden');
           document.getElementById('pago-exito').classList.remove('hidden');
           document.getElementById('exito-detalle').innerHTML = `${escapeHtml(state.barbershopName)} · ${formatFechaLabel(state.selectedDate)} ${state.selectedSlot.slice(0, 5)}<br>${escapeHtml(svc.name)} · ${clp(svc.price_clp)}`;
+          buildCalendarLinks(svc, endTime);
           return;
         }
         lastError = error;
@@ -575,6 +640,7 @@
     }
 
     function resetAndGoHome() {
+      if (state.icsUrl) { URL.revokeObjectURL(state.icsUrl); state.icsUrl = null; }
       document.getElementById('pago-form').classList.remove('hidden');
       document.getElementById('pago-exito').classList.add('hidden');
       document.getElementById('btn-confirmar').disabled = false;
