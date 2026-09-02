@@ -106,10 +106,17 @@
             </div>
             <div class="flex-1 overflow-y-auto px-5 pt-4 pb-4">
               <h2 id="detalle-nombre" class="font-display text-lg">Cargando…</h2>
+              <p id="detalle-rating" class="text-xs text-gold mt-0.5"></p>
               <p id="detalle-info" class="text-xs text-white/50 mt-1"></p>
 
               <p class="font-mono text-[11px] tracking-widest uppercase text-gold mt-6 mb-3">Servicios</p>
               <div id="detalle-servicios" class="space-y-2"></div>
+
+              <div class="flex items-center justify-between mt-6 mb-3">
+                <p class="font-mono text-[11px] tracking-widest uppercase text-gold">Reseñas</p>
+                <button onclick="abrirModalResena()" class="text-xs text-gold hover:text-goldlight transition">+ Dejar reseña</button>
+              </div>
+              <div id="detalle-resenas" class="space-y-2"></div>
             </div>
             <div class="p-4 border-t border-white/10 shrink-0">
               <button onclick="onReservarClick()" class="w-full bg-gold hover:bg-goldlight text-ink font-semibold py-3 rounded-sm transition">Reservar</button>
@@ -206,6 +213,29 @@
     </div>
   </div>
 
+  <div id="modal-resena" class="hidden fixed inset-0 z-30 bg-black/70 flex items-center justify-center px-4">
+    <form id="form-resena" class="w-full max-w-sm bg-panel border border-white/10 rounded-sm p-5 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="font-display text-lg">Dejar reseña</h2>
+        <button type="button" onclick="cerrarModalResena()" class="text-white/50 hover:text-white text-lg leading-none">✕</button>
+      </div>
+      <p class="text-white/50 text-xs mb-4">Cuéntanos cómo fue tu experiencia en esta barbería, hayas agendado por CorteYa o no.</p>
+
+      <label class="block text-xs text-white/60 mb-2">Calificación</label>
+      <div id="resena-estrellas" class="flex gap-1.5 mb-4 text-2xl leading-none"></div>
+
+      <label class="block text-xs text-white/60 mb-1">Tu nombre</label>
+      <input id="resena-nombre" type="text" maxlength="60" required class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2 text-sm mb-3 focus:outline-none focus:border-gold">
+
+      <label class="block text-xs text-white/60 mb-1">Comentario</label>
+      <textarea id="resena-comentario" maxlength="400" rows="3" required class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2 text-sm mb-3 focus:outline-none focus:border-gold"></textarea>
+      <input id="resena-honeypot" type="text" name="website" tabindex="-1" autocomplete="off" class="hidden">
+
+      <p id="resena-error" class="hidden text-sm text-red-400 mb-3"></p>
+      <button type="submit" class="w-full bg-gold hover:bg-goldlight text-ink font-semibold py-2.5 rounded-sm transition">Publicar reseña</button>
+    </form>
+  </div>
+
   <script>
     const state = {
       allBarbershops: [],
@@ -213,6 +243,7 @@
       barbershopId: null,
       barbershopName: '',
       barbershopAddress: '',
+      resenaRating: 0,
       services: [],
       barbers: [],
       selectedService: null,
@@ -289,7 +320,7 @@
       const listEl = document.getElementById('buscar-lista');
       const { data, error } = await supabaseClient
         .from('barbershops')
-        .select('id, name, address, rating, image_url, slug');
+        .select('id, name, address, rating, review_count, image_url, slug');
 
       if (error || !data || data.length === 0) {
         listEl.innerHTML = '<p class="text-white/40 text-sm text-center py-8">No hay barberías disponibles todavía.</p>';
@@ -327,30 +358,37 @@
         `;
       }).join('');
 
-      const slugCompartido = new URLSearchParams(location.search).get('barberia');
+      const params = new URLSearchParams(location.search);
+      const slugCompartido = params.get('barberia');
       if (slugCompartido) {
         const shop = data.find(b => b.slug === slugCompartido);
         if (shop) {
           state.viaSharedLink = true;
-          selectBarbershop(shop.id);
+          await selectBarbershop(shop.id);
+          if (params.get('resena') === '1') abrirModalResena();
         }
       }
     }
 
     // ---------- pantalla Detalle ----------
-    function selectBarbershop(id) {
+    async function selectBarbershop(id) {
       const shop = state.allBarbershops.find(b => b.id === id);
       state.barbershopId = id;
       state.barbershopName = shop.name;
       state.barbershopAddress = shop.address;
       state.barbershopImageUrl = shop.image_url || null;
+      state.barbershopRating = shop.rating || 0;
+      state.barbershopReviewCount = shop.review_count || 0;
       showScreen('screen-detalle');
-      loadBarbershopDetail();
+      await loadBarbershopDetail();
     }
 
     async function loadBarbershopDetail() {
       document.getElementById('detalle-back-btn').classList.toggle('hidden', state.viaSharedLink);
       document.getElementById('detalle-nombre').textContent = state.barbershopName;
+      document.getElementById('detalle-rating').textContent = state.barbershopReviewCount
+        ? `⭐ ${state.barbershopRating} (${state.barbershopReviewCount} reseña${state.barbershopReviewCount === 1 ? '' : 's'})`
+        : 'Sin reseñas todavía';
       document.getElementById('detalle-info').textContent = state.barbershopAddress || '';
       document.getElementById('detalle-imagen').src = state.barbershopImageUrl
         || 'https://placehold.co/375x160/1D1D20/D9A441?text=' + encodeURIComponent(state.barbershopName);
@@ -372,7 +410,109 @@
           <span class="font-mono text-sm text-gold">${clp(s.price_clp)}</span>
         </button>
       `).join('');
+
+      loadReviews();
     }
+
+    // ---------- reseñas ----------
+    async function loadReviews() {
+      const listEl = document.getElementById('detalle-resenas');
+      const { data, error } = await supabaseClient
+        .from('reviews')
+        .select('customer_name, rating, comment, created_at')
+        .eq('barbershop_id', state.barbershopId)
+        .order('created_at', { ascending: false })
+        .limit(20);
+
+      if (error || !data || data.length === 0) {
+        listEl.innerHTML = '<p class="text-white/40 text-xs">Todavía no hay reseñas. ¡Sé el primero!</p>';
+        return;
+      }
+
+      listEl.innerHTML = data.map(r => `
+        <div class="border border-white/10 rounded-sm p-3">
+          <div class="flex items-center justify-between">
+            <p class="text-sm font-medium">${escapeHtml(r.customer_name)}</p>
+            <span class="text-gold text-xs">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</span>
+          </div>
+          ${r.comment ? `<p class="text-xs text-white/60 mt-1.5">${escapeHtml(r.comment)}</p>` : ''}
+        </div>
+      `).join('');
+    }
+
+    function renderEstrellasSelector() {
+      const el = document.getElementById('resena-estrellas');
+      el.innerHTML = [1, 2, 3, 4, 5].map(n => `
+        <button type="button" onclick="seleccionarEstrella(${n})" data-star="${n}" class="estrella-btn text-white/20 hover:text-goldlight transition">★</button>
+      `).join('');
+      seleccionarEstrella(0);
+    }
+
+    function seleccionarEstrella(n) {
+      state.resenaRating = n;
+      document.querySelectorAll('.estrella-btn').forEach(btn => {
+        btn.classList.toggle('text-gold', +btn.dataset.star <= n);
+        btn.classList.toggle('text-white/20', +btn.dataset.star > n);
+      });
+    }
+
+    function abrirModalResena() {
+      document.getElementById('form-resena').reset();
+      document.getElementById('resena-error').classList.add('hidden');
+      renderEstrellasSelector();
+      document.getElementById('modal-resena').classList.remove('hidden');
+    }
+
+    function cerrarModalResena() {
+      document.getElementById('modal-resena').classList.add('hidden');
+    }
+
+    document.getElementById('form-resena').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const errorEl = document.getElementById('resena-error');
+      errorEl.classList.add('hidden');
+
+      if (document.getElementById('resena-honeypot').value) return;
+
+      const nombre = document.getElementById('resena-nombre').value.trim();
+      const comentario = document.getElementById('resena-comentario').value.trim();
+
+      if (!nombre || !state.resenaRating || !comentario) {
+        errorEl.textContent = 'Completa tu nombre, la calificación y un comentario.';
+        errorEl.classList.remove('hidden');
+        return;
+      }
+
+      const btn = e.target.querySelector('button[type="submit"]');
+      btn.disabled = true;
+      btn.textContent = 'Publicando…';
+
+      const { error } = await supabaseClient.from('reviews').insert({
+        barbershop_id: state.barbershopId,
+        customer_name: nombre,
+        rating: state.resenaRating,
+        comment: comentario,
+      });
+
+      btn.disabled = false;
+      btn.textContent = 'Publicar reseña';
+
+      if (error) {
+        console.error(error);
+        errorEl.textContent = 'Algo salió mal. Intenta de nuevo.';
+        errorEl.classList.remove('hidden');
+        return;
+      }
+
+      cerrarModalResena();
+      loadReviews();
+      const { data: shop } = await supabaseClient.from('barbershops').select('rating, review_count').eq('id', state.barbershopId).single();
+      if (shop) {
+        state.barbershopRating = shop.rating || 0;
+        state.barbershopReviewCount = shop.review_count || 0;
+        document.getElementById('detalle-rating').textContent = `⭐ ${state.barbershopRating} (${state.barbershopReviewCount} reseña${state.barbershopReviewCount === 1 ? '' : 's'})`;
+      }
+    });
 
     function selectService(id) {
       state.selectedService = state.services.find(s => s.id === id);

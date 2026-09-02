@@ -17,6 +17,7 @@ create table barbershops (
   lng          numeric,
   phone        text,
   rating       numeric default 0,
+  review_count int not null default 0,
   image_url    text,
   timezone     text not null default 'America/Santiago',
   created_at   timestamptz not null default now()
@@ -77,6 +78,16 @@ create table bookings (
   time_range tsrange generated always as (
     tsrange(booking_date + start_time, booking_date + end_time, '[)')
   ) stored
+);
+
+-- reseñas públicas de clientes, sin importar si agendaron por CorteYa o no
+create table reviews (
+  id             uuid primary key default gen_random_uuid(),
+  barbershop_id  uuid not null references barbershops(id) on delete cascade,
+  customer_name  text not null check (char_length(customer_name) between 1 and 60),
+  rating         smallint not null check (rating between 1 and 5),
+  comment        text not null check (char_length(comment) between 1 and 400),
+  created_at     timestamptz not null default now()
 );
 
 -- Anti-doble-reserva a nivel de base de datos: rechaza cualquier traslape
@@ -149,6 +160,25 @@ $$;
 revoke all on function get_available_slots from public;
 grant execute on function get_available_slots to anon;
 
+-- una reseña nueva/editada/borrada recalcula el promedio y conteo mostrados
+-- en barbershops.rating, así la app no necesita hacer un segundo query
+create or replace function update_barbershop_rating() returns trigger
+language plpgsql as $$
+declare
+  v_barbershop_id uuid := coalesce(new.barbershop_id, old.barbershop_id);
+begin
+  update barbershops
+  set rating = coalesce((select round(avg(rating)::numeric, 1) from reviews where barbershop_id = v_barbershop_id), 0),
+      review_count = (select count(*) from reviews where barbershop_id = v_barbershop_id)
+  where id = v_barbershop_id;
+  return null;
+end;
+$$;
+
+create trigger reviews_update_barbershop_rating
+after insert or update or delete on reviews
+for each row execute function update_barbershop_rating();
+
 -- ============ SEGURIDAD (RLS) ============
 
 alter table barbershops enable row level security;
@@ -157,6 +187,7 @@ alter table services enable row level security;
 alter table barber_working_hours enable row level security;
 alter table barber_time_off enable row level security;
 alter table bookings enable row level security;
+alter table reviews enable row level security;
 
 -- barbershops: lectura pública (para buscar/ver barberías), solo el dueño edita la suya
 create policy "public read barbershops" on barbershops
@@ -217,3 +248,12 @@ create policy "owner reads own bookings" on bookings
 create policy "owner updates own bookings" on bookings
   for update using (barbershop_id in (select id from barbershops where owner_id = auth.uid()))
   with check (barbershop_id in (select id from barbershops where owner_id = auth.uid()));
+
+-- reviews: lectura pública, cualquiera crea una como invitado, el dueño puede
+-- borrar las de su propia barbería (moderación básica)
+create policy "public read reviews" on reviews
+  for select using (true);
+create policy "guest can create a review" on reviews
+  for insert with check (true);
+create policy "owner deletes own reviews" on reviews
+  for delete using (barbershop_id in (select id from barbershops where owner_id = auth.uid()));

@@ -2,6 +2,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
 <script src="supabase-client.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -91,6 +92,7 @@
         <p id="header-fecha" class="font-mono text-xs text-white/40"></p>
         <div class="flex items-center gap-2">
           <button id="btn-compartir" onclick="compartirAgenda()" class="text-xs border border-gold text-gold rounded-sm px-3 py-1.5 hover:bg-gold/10 transition">🔗 Compartir agenda</button>
+          <button onclick="abrirModalQR()" class="text-xs border border-gold text-gold rounded-sm px-3 py-1.5 hover:bg-gold/10 transition">🔳 QR reseñas</button>
           <button onclick="handleLogout()" class="text-xs border border-white/15 rounded-sm px-3 py-1.5 text-white/60 hover:border-white/30 transition">Cerrar sesión</button>
         </div>
       </header>
@@ -232,6 +234,19 @@
       <p id="cita-error" class="hidden text-sm text-red-400 mb-3"></p>
       <button type="submit" class="w-full bg-gold hover:bg-goldlight text-ink font-semibold py-2.5 rounded-sm transition">Guardar cita</button>
     </form>
+  </div>
+
+  <div id="modal-qr" class="hidden fixed inset-0 z-30 bg-black/70 flex items-center justify-center px-4">
+    <div class="w-full max-w-sm bg-panel border border-white/10 rounded-sm p-5 text-center">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="font-display text-lg">QR de reseñas</h2>
+        <button type="button" onclick="cerrarModalQR()" class="text-white/50 hover:text-white text-lg leading-none">✕</button>
+      </div>
+      <p class="text-white/50 text-xs mb-4">Muéstralo al cliente apenas termina su corte, para que deje su reseña al toque.</p>
+      <div class="bg-white rounded-sm p-3 inline-block">
+        <canvas id="qr-canvas"></canvas>
+      </div>
+    </div>
   </div>
 
   <script>
@@ -388,6 +403,18 @@
         btn.textContent = link;
       }
       setTimeout(() => { btn.textContent = original; }, 2500);
+    }
+
+    // ---------- QR para pedir reseñas ----------
+    function abrirModalQR() {
+      const link = `https://corteya.app/app-cliente.html?barberia=${encodeURIComponent(state.barbershopSlug)}&resena=1`;
+      const canvas = document.getElementById('qr-canvas');
+      QRCode.toCanvas(canvas, link, { width: 240, margin: 1, color: { dark: '#0B0B0C', light: '#FFFFFF' } });
+      document.getElementById('modal-qr').classList.remove('hidden');
+    }
+
+    function cerrarModalQR() {
+      document.getElementById('modal-qr').classList.add('hidden');
     }
 
     // ---------- logo de la barbería ----------
