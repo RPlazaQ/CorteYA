@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /app-cliente.html
+Disallow: /dashboard-barberia.html
+
+Sitemap: https://corteya.app/sitemap.xml
