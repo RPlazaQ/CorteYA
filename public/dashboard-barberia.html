@@ -817,9 +817,21 @@
           <img src="${b.photo_url || 'https://placehold.co/48x48/1D1D20/D9A441?text=' + encodeURIComponent(b.name.charAt(0))}" class="w-12 h-12 rounded-sm mb-3">
           <p class="text-sm font-medium">${escapeHtml(b.name)}</p>
           <p class="text-xs text-white/50 mb-2">${escapeHtml(b.specialty)}</p>
-          <span class="text-xs ${b.active ? 'bg-green-500/15 text-green-400' : 'bg-white/10 text-white/40'} px-2 py-0.5 rounded-sm">${b.active ? 'Disponible' : 'Inactivo'}</span>
+          <div class="flex items-center justify-between gap-2">
+            <span class="text-xs ${b.active ? 'bg-green-500/15 text-green-400' : 'bg-white/10 text-white/40'} px-2 py-0.5 rounded-sm">${b.active ? 'Disponible' : 'Inactivo'}</span>
+            <button onclick="toggleBarberoActivo('${b.id}', ${b.active})" class="text-xs text-white/40 hover:${b.active ? 'text-red-400' : 'text-green-400'} transition">${b.active ? 'Eliminar' : 'Reactivar'}</button>
+          </div>
         </div>
       `).join('') : '<p class="col-span-2 md:col-span-3 text-white/40 text-sm text-center py-6">Sin barberos todavía.</p>';
+    }
+
+    async function toggleBarberoActivo(id, activoActual) {
+      const mensaje = activoActual
+        ? '¿Eliminar a este barbero? Ya no va a aparecer para agendar nuevas horas, pero sus reservas pasadas se mantienen.'
+        : '¿Reactivar a este barbero? Va a volver a aparecer disponible para agendar.';
+      if (!confirm(mensaje)) return;
+      await supabaseClient.from('barbers').update({ active: !activoActual }).eq('id', id);
+      loadBarberos();
     }
 
     async function addBarbero() {
