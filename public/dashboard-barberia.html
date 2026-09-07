@@ -103,6 +103,7 @@
         <div class="flex items-center gap-2">
           <button id="btn-compartir" onclick="compartirAgenda()" class="text-xs border border-gold text-gold rounded-sm px-3 py-1.5 hover:bg-gold/10 transition">🔗 Compartir agenda</button>
           <button onclick="abrirModalQR()" class="text-xs border border-gold text-gold rounded-sm px-3 py-1.5 hover:bg-gold/10 transition">🔳 QR reseñas</button>
+          <button onclick="abrirModalHistoria()" class="text-xs border border-gold text-gold rounded-sm px-3 py-1.5 hover:bg-gold/10 transition">📲 Plantilla historia</button>
           <button onclick="handleLogout()" class="text-xs border border-white/15 rounded-sm px-3 py-1.5 text-white/60 hover:border-white/30 transition">Cerrar sesión</button>
         </div>
       </header>
@@ -256,6 +257,18 @@
       <div class="bg-white rounded-sm p-3 inline-block">
         <canvas id="qr-canvas"></canvas>
       </div>
+    </div>
+  </div>
+
+  <div id="modal-historia" class="hidden fixed inset-0 z-30 bg-black/70 flex items-center justify-center px-4">
+    <div class="w-full max-w-sm bg-panel border border-white/10 rounded-sm p-5 text-center">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="font-display text-lg">Plantilla para historia</h2>
+        <button type="button" onclick="cerrarModalHistoria()" class="text-white/50 hover:text-white text-lg leading-none">✕</button>
+      </div>
+      <p class="text-white/50 text-xs mb-4">Descárgala y súbela como historia en Instagram o Facebook — ya trae tu QR de agenda listo, así tus seguidores agendan directo.</p>
+      <canvas id="historia-canvas" width="1080" height="1920" style="width:100%; max-width:260px; height:auto; border-radius:4px;" class="mx-auto mb-4"></canvas>
+      <button onclick="descargarHistoria()" class="w-full bg-gold hover:bg-goldlight text-ink font-semibold py-2.5 rounded-sm transition text-sm">Descargar imagen</button>
     </div>
   </div>
 
@@ -479,6 +492,95 @@
       const canvas = document.getElementById('qr-canvas');
       QRCode.toCanvas(canvas, link, { width: 240, margin: 1, color: { dark: '#0B0B0C', light: '#FFFFFF' } });
       document.getElementById('modal-qr').classList.remove('hidden');
+    }
+
+    // ---------- Plantilla de historia para que la barbería promocione su agenda ----------
+    async function abrirModalHistoria() {
+      await dibujarHistoria();
+      document.getElementById('modal-historia').classList.remove('hidden');
+    }
+
+    function cerrarModalHistoria() {
+      document.getElementById('modal-historia').classList.add('hidden');
+    }
+
+    async function dibujarHistoria() {
+      const canvas = document.getElementById('historia-canvas');
+      const ctx = canvas.getContext('2d');
+      const W = canvas.width, H = canvas.height;
+
+      ctx.fillStyle = '#0B0B0C';
+      ctx.fillRect(0, 0, W, H);
+
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(760, 0, W - 760, H);
+      ctx.clip();
+      ctx.strokeStyle = 'rgba(217,164,65,0.3)';
+      ctx.lineWidth = 3;
+      for (let x = 700; x < W + 500; x += 46) {
+        ctx.beginPath();
+        ctx.moveTo(x, -50);
+        ctx.lineTo(x - 500, H + 50);
+        ctx.stroke();
+      }
+      ctx.restore();
+
+      ctx.textAlign = 'left';
+      ctx.font = 'bold 56px Arial, sans-serif';
+      ctx.fillStyle = '#F5F3EF';
+      ctx.fillText('CORTE', 60, 120);
+      const wCorte = ctx.measureText('CORTE').width;
+      ctx.fillStyle = '#D9A441';
+      ctx.fillText('YA', 60 + wCorte, 120);
+
+      ctx.font = 'bold 28px Arial, sans-serif';
+      ctx.fillStyle = '#D9A441';
+      ctx.fillText('AGENDA ONLINE', 60, 230);
+
+      ctx.font = 'bold 82px Arial, sans-serif';
+      ctx.fillStyle = '#F5F3EF';
+      ctx.fillText('TU HORA,', 60, 340);
+      ctx.fillStyle = '#D9A441';
+      ctx.fillText('SIN LLAMAR.', 60, 440);
+
+      const boxX = 190, boxY = 620, boxSize = 700, radius = 24;
+      ctx.fillStyle = '#FFFFFF';
+      ctx.beginPath();
+      ctx.moveTo(boxX + radius, boxY);
+      ctx.arcTo(boxX + boxSize, boxY, boxX + boxSize, boxY + boxSize, radius);
+      ctx.arcTo(boxX + boxSize, boxY + boxSize, boxX, boxY + boxSize, radius);
+      ctx.arcTo(boxX, boxY + boxSize, boxX, boxY, radius);
+      ctx.arcTo(boxX, boxY, boxX + boxSize, boxY, radius);
+      ctx.closePath();
+      ctx.fill();
+
+      const link = `https://corteya.app/agenda/${encodeURIComponent(state.barbershopSlug)}`;
+      const qrCanvas = document.createElement('canvas');
+      await QRCode.toCanvas(qrCanvas, link, { width: 600, margin: 0, color: { dark: '#0B0B0C', light: '#FFFFFF' } });
+      ctx.drawImage(qrCanvas, boxX + 50, boxY + 50, 600, 600);
+
+      ctx.textAlign = 'center';
+      ctx.font = 'bold 44px Arial, sans-serif';
+      ctx.fillStyle = '#F5F3EF';
+      ctx.fillText(state.barbershopName || 'Tu barbería', W / 2, boxY + boxSize + 80);
+
+      ctx.font = '32px Arial, sans-serif';
+      ctx.fillStyle = '#D9A441';
+      ctx.fillText('Escanea y agenda tu hora', W / 2, boxY + boxSize + 130);
+
+      ctx.font = '28px Arial, sans-serif';
+      ctx.fillStyle = 'rgba(245,243,239,0.5)';
+      ctx.fillText('corteya.app', W / 2, H - 80);
+      ctx.textAlign = 'left';
+    }
+
+    function descargarHistoria() {
+      const canvas = document.getElementById('historia-canvas');
+      const a = document.createElement('a');
+      a.download = `corteya-historia-${state.barbershopSlug || 'barberia'}.png`;
+      a.href = canvas.toDataURL('image/png');
+      a.click();
     }
 
     function cerrarModalQR() {
