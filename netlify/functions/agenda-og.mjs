@@ -11,9 +11,15 @@ function escapeHtml(str) {
   return String(str ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
 
-exports.handler = async (event) => {
-  const pathSlug = decodeURIComponent((event.path || '').split('/').filter(Boolean).pop() || '');
-  const slug = pathSlug !== 'agenda-og' ? pathSlug : (event.queryStringParameters?.slug || '');
+export default async (request) => {
+  const url = new URL(request.url);
+  const pathSlug = decodeURIComponent(url.pathname.split('/').filter(Boolean).pop() || '');
+  const slug = pathSlug !== 'agenda-og' ? pathSlug : (url.searchParams.get('slug') || '');
+
+  if (!slug) {
+    return new Response('Not found', { status: 404 });
+  }
+
   let name = 'CorteYa';
   let imageUrl = DEFAULT_IMAGE;
 
@@ -50,9 +56,17 @@ exports.handler = async (event) => {
 <body>Redirigiendo…</body>
 </html>`;
 
-  return {
-    statusCode: 200,
+  return new Response(html, {
+    status: 200,
     headers: { 'Content-Type': 'text/html; charset=utf-8' },
-    body: html,
-  };
+  });
+};
+
+export const config = {
+  rateLimit: {
+    action: 'rate_limit',
+    aggregateBy: 'ip',
+    windowSize: 60,
+    windowLimit: 30,
+  },
 };

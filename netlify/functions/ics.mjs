@@ -3,16 +3,25 @@
 // el archivo llega por una URL de verdad con el Content-Type correcto; con un blob:
 // terminaba ofreciendo "Guardar en Archivos" en vez de abrir el Calendario.
 
-exports.handler = async (event) => {
-  const content = event.queryStringParameters?.content || '';
+export default async (request) => {
+  const url = new URL(request.url);
+  const content = url.searchParams.get('content') || '';
 
-  return {
-    statusCode: 200,
+  return new Response(content, {
+    status: 200,
     headers: {
       'Content-Type': 'text/calendar; charset=utf-8',
       'Content-Disposition': 'inline; filename="reserva-corteya.ics"',
       'Cache-Control': 'no-store',
     },
-    body: content,
-  };
+  });
+};
+
+export const config = {
+  rateLimit: {
+    action: 'rate_limit',
+    aggregateBy: 'ip',
+    windowSize: 60,
+    windowLimit: 20,
+  },
 };
