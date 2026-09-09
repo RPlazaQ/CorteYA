@@ -7,6 +7,11 @@ leads-barberias-providencia.csv
 leads-barberias-providencia.html
 gmaps-leads-espanol.md
 seguimiento-entrevistas-barberias.csv
+leads_rm_barberias.csv
+leads_rm_barberias.html
+leads_rm_barberias_summary.json
+instagram_rm_barberias.csv
+instagram_rm_barberias.html
 *.xls
 *.xlsx
 *.pdf

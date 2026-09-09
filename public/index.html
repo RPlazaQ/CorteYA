@@ -86,8 +86,8 @@
         <a href="#barberias" class="hover:text-white transition">Para barberías</a>
         <a href="#faq" class="hover:text-white transition">Preguntas</a>
       </nav>
-      <a href="#lista-espera" class="bg-gold hover:bg-goldlight text-ink text-sm font-semibold px-4 py-2 rounded-sm transition">
-        Únete a la lista
+      <a href="#cotiza-tu-plan" class="bg-gold hover:bg-goldlight text-ink text-sm font-semibold px-4 py-2 rounded-sm transition">
+        Cotiza tu plan
       </a>
     </div>
   </header>
@@ -211,11 +211,62 @@
             <span class="text-white/80">Te llega la reserva altiro a tu panel — no dependes de revisar WhatsApp.</span>
           </li>
         </ul>
-        <a href="#lista-espera" onclick="document.querySelector('#tipo-barberia').checked=true"
-           class="inline-block bg-gold hover:bg-goldlight text-ink font-semibold px-6 py-3 rounded-sm transition">
-          Quiero registrar mi barbería
-        </a>
+        <div class="flex flex-col sm:flex-row gap-4">
+          <a href="#cotiza-tu-plan"
+             class="inline-block bg-gold hover:bg-goldlight text-ink text-center font-semibold px-6 py-3 rounded-sm transition">
+            Cotiza tu plan
+          </a>
+          <a href="#lista-espera" onclick="document.querySelector('#tipo-barberia').checked=true"
+             class="inline-block border border-white/30 hover:border-white text-center font-semibold px-6 py-3 rounded-sm transition">
+            Solo quiero que me avisen
+          </a>
+        </div>
       </div>
+    </div>
+  </section>
+
+  <!-- COTIZA TU PLAN -->
+  <section id="cotiza-tu-plan" class="max-w-2xl mx-auto px-5 sm:px-8 py-20 md:py-24">
+    <h2 class="font-display text-2xl sm:text-3xl mb-3 text-center">Cotiza tu plan</h2>
+    <p class="text-white/60 mb-10 text-center">Cuéntanos de tu barbería y te contactamos con la cotización a la brevedad — sin esperar a que contestemos el teléfono.</p>
+
+    <form id="cotiza-form" action="https://formspree.io/f/xnpaegbe" method="POST" class="border border-white/15 rounded-sm p-6 sm:p-8">
+      <input type="hidden" name="formulario" value="cotiza-tu-plan">
+      <div class="grid sm:grid-cols-2 gap-4 mb-4">
+        <input type="text" name="nombre_barberia" placeholder="Nombre de tu barbería" required
+               class="border border-white/15 rounded-sm px-4 py-3 text-sm placeholder-white/40 focus:outline-none focus:border-gold bg-transparent">
+        <input type="text" name="comuna" placeholder="Comuna" required
+               class="border border-white/15 rounded-sm px-4 py-3 text-sm placeholder-white/40 focus:outline-none focus:border-gold bg-transparent">
+      </div>
+      <div class="grid sm:grid-cols-2 gap-4 mb-4">
+        <input type="tel" name="telefono" placeholder="Teléfono de contacto" required
+               class="border border-white/15 rounded-sm px-4 py-3 text-sm placeholder-white/40 focus:outline-none focus:border-gold bg-transparent">
+        <select name="plan_interes" required
+                class="border border-white/15 rounded-sm px-4 py-3 text-sm text-white/80 focus:outline-none focus:border-gold bg-transparent">
+          <option value="" disabled selected class="bg-ink">Plan de interés</option>
+          <option value="Barbero independiente" class="bg-ink">Barbero independiente (1 silla)</option>
+          <option value="Multisucursal" class="bg-ink">Multisucursal (cadena)</option>
+          <option value="Local independiente" class="bg-ink">Local independiente</option>
+          <option value="No estoy seguro" class="bg-ink">No estoy seguro, ayúdenme a elegir</option>
+        </select>
+      </div>
+      <input type="email" name="email" placeholder="Correo (opcional)"
+             class="w-full border border-white/15 rounded-sm px-4 py-3 text-sm placeholder-white/40 focus:outline-none focus:border-gold bg-transparent mb-4">
+      <textarea name="comentario" placeholder="Cuéntanos algo más: cuántas sillas o locales, o el horario en que prefieres que te llamemos" rows="3"
+                class="w-full border border-white/15 rounded-sm px-4 py-3 text-sm placeholder-white/40 focus:outline-none focus:border-gold bg-transparent mb-5"></textarea>
+      <button type="submit" class="w-full bg-gold hover:bg-goldlight text-ink font-semibold px-6 py-3.5 rounded-sm transition">
+        Solicitar cotización
+      </button>
+      <p id="cotiza-error" class="hidden text-sm text-red-400 mt-3">
+        Algo salió mal. Intenta de nuevo o escríbenos directo.
+      </p>
+    </form>
+    <div id="cotiza-success" class="hidden border border-gold/40 rounded-sm p-10 text-center">
+      <svg class="w-8 h-8 text-gold mx-auto mb-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <circle cx="12" cy="12" r="9"/><path d="M8 12.3l2.6 2.6L16 9.5"/>
+      </svg>
+      <h3 class="font-display text-xl mb-2">¡Listo, ya tenemos tus datos!</h3>
+      <p class="text-white/60 text-sm">Te contactamos a la brevedad para coordinar la cotización de tu plan.</p>
     </div>
   </section>
 
@@ -284,6 +335,30 @@
   </script>
 
   <script>
+    const cotizaForm = document.getElementById('cotiza-form');
+    cotizaForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const errorEl = document.getElementById('cotiza-error');
+      errorEl.classList.add('hidden');
+      try {
+        const response = await fetch(cotizaForm.action, {
+          method: 'POST',
+          body: new FormData(cotizaForm),
+          headers: { 'Accept': 'application/json' }
+        });
+        if (response.ok) {
+          cotizaForm.classList.add('hidden');
+          document.getElementById('cotiza-success').classList.remove('hidden');
+        } else {
+          errorEl.classList.remove('hidden');
+        }
+      } catch {
+        errorEl.classList.remove('hidden');
+      }
+    });
+  </script>
+
+  <script>
     document.querySelectorAll('.preview-carousel').forEach(carousel => {
       const slides = carousel.querySelectorAll('.preview-slide');
       if (slides.length < 2) return;
@@ -321,7 +396,7 @@
             Tengo una barbería, ¿qué costo tiene?
             <span class="text-gold group-open:rotate-45 transition shrink-0">+</span>
           </summary>
-          <p class="text-white/60 text-sm mt-3">Aún estamos definiendo el modelo con las primeras barberías interesadas. Regístrate y te contactamos antes del lanzamiento.</p>
+          <p class="text-white/60 text-sm mt-3">Tenemos planes desde $12.000 CLP/mes según el tamaño de tu barbería, con precio de lanzamiento para las primeras interesadas. <a href="#cotiza-tu-plan" class="text-gold hover:text-goldlight underline">Cotiza el tuyo aquí</a>.</p>
         </details>
       </div>
     </div>

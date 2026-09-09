@@ -11,7 +11,7 @@ google-api-python-client>=2.160.0
 gspread>=6.1.0
 
 # Extracción de leads y scraping
-apify-client>=1.8.0
+apify-client>=1.9.3
 httpx>=0.28.0
 requests>=2.32.0
 html2text>=2024.2.0
