@@ -77,12 +77,12 @@ foreign key.
 
 ## Hecho en la sesión de código del 2026-09-13
 
-- **Campo `plan` en `barbershops`**: agregado vía `add-barbershop-plan.sql`
-  (falta correrlo en el SQL Editor de Supabase — no tengo acceso admin para
-  hacerlo yo). Valores: `piloto` / `barbero_independiente` / `multisucursal`
-  / `local_independiente` / `inactivo`. Rodrigo lo cambia a mano por ahora;
-  no hay nada que gatear todavía porque WhatsApp y prepago no existen como
-  funciones reales en el producto.
+- **Campo `plan` en `barbershops`**: agregado vía `add-barbershop-plan.sql`,
+  corrido en Supabase (confirmado en producción). Valores: `piloto` /
+  `barbero_independiente` / `multisucursal` / `local_independiente` /
+  `inactivo`. Rodrigo lo cambia a mano por ahora; no hay nada que gatear
+  todavía porque WhatsApp y prepago no existen como funciones reales en el
+  producto.
 - **Botón "Cambiar contraseña"** en Info → Seguridad. Ya no depende de que
   Rodrigo lo haga manualmente en Supabase.
 - **Advertencia de cambios sin guardar en "Info"**: si hay horarios editados
