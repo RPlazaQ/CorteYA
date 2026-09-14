@@ -20,6 +20,8 @@ create table barbershops (
   review_count int not null default 0,
   image_url    text,
   timezone     text not null default 'America/Santiago',
+  plan         text not null default 'piloto'
+               check (plan in ('piloto', 'barbero_independiente', 'multisucursal', 'local_independiente', 'inactivo')),
   created_at   timestamptz not null default now()
 );
 

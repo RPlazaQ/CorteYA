@@ -77,6 +77,9 @@
         <button onclick="showView('info', this)" class="nav-item text-white/60 flex-1 flex flex-col items-center justify-center gap-0.5 text-[10px] md:flex-none md:flex-row md:items-center md:justify-start md:gap-3 md:px-3 md:py-2.5 md:text-sm rounded-sm font-medium transition md:w-full md:text-left">
           <span>ℹ️</span> Info
         </button>
+        <button onclick="showView('reportes', this)" class="nav-item text-white/60 flex-1 flex flex-col items-center justify-center gap-0.5 text-[10px] md:flex-none md:flex-row md:items-center md:justify-start md:gap-3 md:px-3 md:py-2.5 md:text-sm rounded-sm font-medium transition md:w-full md:text-left">
+          <span>📊</span> Reportes
+        </button>
       </nav>
       <div class="hidden md:block p-3 border-t border-white/10">
         <div class="flex items-center gap-2 px-3 py-2 text-sm text-white/60">
@@ -191,9 +194,56 @@
             <button onclick="guardarDatosContacto()" class="text-xs border border-gold text-gold rounded-sm px-3 py-1.5 hover:bg-gold/10 transition">Guardar</button>
           </div>
 
+          <div class="border border-white/10 rounded-sm p-4 mb-8 max-w-md">
+            <p class="font-mono text-[11px] tracking-widest uppercase text-white/40 mb-3">Seguridad</p>
+            <label class="block text-xs text-white/60 mb-1">Nueva contraseña</label>
+            <input id="info-password-nueva" type="password" minlength="6" autocomplete="new-password" class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2 text-sm mb-3 focus:outline-none focus:border-gold">
+            <label class="block text-xs text-white/60 mb-1">Repetir contraseña</label>
+            <input id="info-password-repetir" type="password" minlength="6" autocomplete="new-password" class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2 text-sm mb-3 focus:outline-none focus:border-gold">
+            <p id="info-password-status" class="hidden text-xs mb-2"></p>
+            <button onclick="cambiarPassword()" class="text-xs border border-gold text-gold rounded-sm px-3 py-1.5 hover:bg-gold/10 transition">Cambiar contraseña</button>
+          </div>
+
           <p class="font-mono text-[11px] tracking-widest uppercase text-white/40 mb-3">Horarios por barbero</p>
           <div id="info-horarios" class="space-y-4 max-w-md">
             <p class="text-white/40 text-sm text-center py-6">Cargando…</p>
+          </div>
+        </section>
+
+        <!-- REPORTES -->
+        <section id="view-reportes" class="view">
+          <h1 class="font-display text-2xl mb-6">Reportes</h1>
+
+          <div class="flex flex-wrap items-end gap-3 mb-8">
+            <div>
+              <label class="block text-xs text-white/60 mb-1">Desde</label>
+              <input id="reporte-desde" type="date" onchange="loadReportes()" class="bg-transparent border border-white/15 rounded-sm px-2 py-1.5 text-xs text-white/80 focus:outline-none focus:border-gold [color-scheme:dark]">
+            </div>
+            <div>
+              <label class="block text-xs text-white/60 mb-1">Hasta</label>
+              <input id="reporte-hasta" type="date" onchange="loadReportes()" class="bg-transparent border border-white/15 rounded-sm px-2 py-1.5 text-xs text-white/80 focus:outline-none focus:border-gold [color-scheme:dark]">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3 md:grid-cols-2 md:gap-4 mb-8 max-w-lg">
+            <div class="border border-white/10 rounded-sm p-4">
+              <p class="font-mono text-[11px] tracking-widest uppercase text-white/40 mb-2">Cortes realizados</p>
+              <p id="reporte-cortes" class="font-display text-2xl md:text-3xl text-gold">—</p>
+            </div>
+            <div class="border border-white/10 rounded-sm p-4">
+              <p class="font-mono text-[11px] tracking-widest uppercase text-white/40 mb-2">$ recibido</p>
+              <p id="reporte-ingresos" class="font-display text-2xl md:text-3xl text-gold">—</p>
+            </div>
+          </div>
+
+          <p class="font-mono text-[11px] tracking-widest uppercase text-white/40 mb-3">Reagendadas en el período</p>
+          <div id="reporte-reagendadas" class="border border-white/10 rounded-sm divide-y divide-white/10 mb-8">
+            <p class="px-4 py-6 text-sm text-white/40 text-center">Cargando…</p>
+          </div>
+
+          <p class="font-mono text-[11px] tracking-widest uppercase text-white/40 mb-3">No asistió en el período</p>
+          <div id="reporte-no-show" class="border border-white/10 rounded-sm divide-y divide-white/10">
+            <p class="px-4 py-6 text-sm text-white/40 text-center">Cargando…</p>
           </div>
         </section>
 
@@ -260,7 +310,7 @@
   </div>
 
   <script>
-    const state = { barbershopId: null, barbershopName: '', calendarioOffset: 0, calendarioBarberosVisibles: null, vistaActual: 'resumen', ultimoCheckCitas: null };
+    const state = { barbershopId: null, barbershopName: '', calendarioOffset: 0, calendarioBarberosVisibles: null, vistaActual: 'resumen', ultimoCheckCitas: null, horariosSinGuardar: new Set() };
 
     // ---------- utilidades ----------
     function santiagoDateParts(offsetDays) {
@@ -305,6 +355,7 @@
         supabaseClient.from('barber_time_off').select('id,barber_id,start_date,end_date').in('barber_id', barberIds).order('start_date'),
       ]);
 
+      state.horariosSinGuardar.clear();
       contenedor.innerHTML = barbers.map(b => renderTarjetaHorario(
         b,
         (horarios || []).filter(h => h.barber_id === b.id),
@@ -326,12 +377,12 @@
         return `
           <div class="flex items-center gap-3 text-xs">
             <label class="flex items-center gap-1.5 w-20 shrink-0 cursor-pointer">
-              <input type="checkbox" class="dia-activo" data-weekday="${weekday}" ${activo ? 'checked' : ''} onchange="toggleDiaHorario(this)">
+              <input type="checkbox" class="dia-activo" data-weekday="${weekday}" ${activo ? 'checked' : ''} onchange="toggleDiaHorario(this); marcarHorarioSucio('${barber.id}')">
               ${label}
             </label>
-            <input type="time" class="dia-desde border border-white/15 bg-transparent rounded-sm px-2 py-1 text-xs [color-scheme:dark]" data-weekday="${weekday}" value="${desde}" ${!activo ? 'disabled' : ''}>
+            <input type="time" class="dia-desde border border-white/15 bg-transparent rounded-sm px-2 py-1 text-xs [color-scheme:dark]" data-weekday="${weekday}" value="${desde}" ${!activo ? 'disabled' : ''} oninput="marcarHorarioSucio('${barber.id}')">
             <span class="text-white/40">a</span>
-            <input type="time" class="dia-hasta border border-white/15 bg-transparent rounded-sm px-2 py-1 text-xs [color-scheme:dark]" data-weekday="${weekday}" value="${hasta}" ${!activo ? 'disabled' : ''}>
+            <input type="time" class="dia-hasta border border-white/15 bg-transparent rounded-sm px-2 py-1 text-xs [color-scheme:dark]" data-weekday="${weekday}" value="${hasta}" ${!activo ? 'disabled' : ''} oninput="marcarHorarioSucio('${barber.id}')">
           </div>
         `;
       }).join('');
@@ -397,6 +448,10 @@
       fila.querySelectorAll('.dia-desde, .dia-hasta').forEach(input => input.disabled = !checkbox.checked);
     }
 
+    function marcarHorarioSucio(barberId) {
+      state.horariosSinGuardar.add(barberId);
+    }
+
     async function guardarHorarioBarbero(barberId) {
       const tarjeta = document.querySelector(`[data-barber-id="${barberId}"]`);
       const statusEl = tarjeta.querySelector('.horario-status');
@@ -425,6 +480,7 @@
           return;
         }
       }
+      state.horariosSinGuardar.delete(barberId);
       statusEl.textContent = '✓ Horario guardado';
       statusEl.classList.add('text-green-400');
       setTimeout(() => statusEl.classList.add('hidden'), 2000);
@@ -449,6 +505,102 @@
       statusEl.textContent = '✓ Guardado';
       statusEl.classList.add('text-green-400');
       setTimeout(() => statusEl.classList.add('hidden'), 2000);
+    }
+
+    async function cambiarPassword() {
+      const nueva = document.getElementById('info-password-nueva').value;
+      const repetir = document.getElementById('info-password-repetir').value;
+      const statusEl = document.getElementById('info-password-status');
+      statusEl.className = 'text-xs mb-2';
+      statusEl.classList.remove('hidden');
+
+      if (nueva.length < 6) {
+        statusEl.textContent = 'La contraseña debe tener al menos 6 caracteres.';
+        statusEl.classList.add('text-red-400');
+        return;
+      }
+      if (nueva !== repetir) {
+        statusEl.textContent = 'Las contraseñas no coinciden.';
+        statusEl.classList.add('text-red-400');
+        return;
+      }
+
+      statusEl.textContent = 'Guardando…';
+      const { error } = await supabaseClient.auth.updateUser({ password: nueva });
+      if (error) {
+        statusEl.textContent = 'Error: ' + error.message;
+        statusEl.classList.add('text-red-400');
+        return;
+      }
+      document.getElementById('info-password-nueva').value = '';
+      document.getElementById('info-password-repetir').value = '';
+      statusEl.textContent = '✓ Contraseña actualizada';
+      statusEl.classList.add('text-green-400');
+      setTimeout(() => statusEl.classList.add('hidden'), 2000);
+    }
+
+    // ---------- reportes ----------
+    async function loadReportes() {
+      const desdeInput = document.getElementById('reporte-desde');
+      const hastaInput = document.getElementById('reporte-hasta');
+      if (!desdeInput.value || !hastaInput.value) {
+        const hoy = santiagoDateParts(0).iso;
+        desdeInput.value = desdeInput.value || (hoy.slice(0, 8) + '01');
+        hastaInput.value = hastaInput.value || hoy;
+      }
+      const desde = desdeInput.value;
+      const hasta = hastaInput.value;
+
+      const { data: barbers } = await supabaseClient.from('barbers').select('id').eq('barbershop_id', state.barbershopId);
+      const barberIds = (barbers || []).map(b => b.id);
+
+      const vacioLista = (contenedor, texto) => { document.getElementById(contenedor).innerHTML = `<p class="px-4 py-6 text-sm text-white/40 text-center">${texto}</p>`; };
+
+      if (!barberIds.length) {
+        document.getElementById('reporte-cortes').textContent = '0';
+        document.getElementById('reporte-ingresos').textContent = clp(0);
+        vacioLista('reporte-reagendadas', 'Agrega barberos para ver reportes.');
+        vacioLista('reporte-no-show', 'Agrega barberos para ver reportes.');
+        return;
+      }
+
+      const { data: bookings, error } = await supabaseClient
+        .from('bookings')
+        .select('customer_name,customer_phone,booking_date,start_time,status,services(price_clp)')
+        .in('barber_id', barberIds)
+        .gte('booking_date', desde)
+        .lte('booking_date', hasta)
+        .order('booking_date');
+
+      if (error) {
+        console.error(error);
+        vacioLista('reporte-reagendadas', 'Error al cargar el reporte.');
+        vacioLista('reporte-no-show', 'Error al cargar el reporte.');
+        return;
+      }
+
+      const pagadas = (bookings || []).filter(b => ['paid_cash', 'paid_transfer', 'paid_card'].includes(b.status));
+      const reagendadas = (bookings || []).filter(b => b.status === 'rescheduled');
+      const noShow = (bookings || []).filter(b => b.status === 'no_show');
+
+      document.getElementById('reporte-cortes').textContent = pagadas.length;
+      document.getElementById('reporte-ingresos').textContent = clp(pagadas.reduce((sum, b) => sum + (b.services?.price_clp || 0), 0));
+
+      const renderLista = (lista) => lista.map(b => `
+        <div class="px-4 py-3 flex items-center justify-between text-sm">
+          <div>
+            <p class="font-medium">${escapeHtml(b.customer_name)}</p>
+            <p class="text-xs text-white/40">${escapeHtml(b.customer_phone)}</p>
+          </div>
+          <span class="text-xs text-white/60 shrink-0 ml-3">${formatFechaCorta(b.booking_date)} · ${b.start_time.slice(0, 5)}</span>
+        </div>
+      `).join('');
+
+      if (reagendadas.length) document.getElementById('reporte-reagendadas').innerHTML = renderLista(reagendadas);
+      else vacioLista('reporte-reagendadas', 'Sin reagendamientos en el período.');
+
+      if (noShow.length) document.getElementById('reporte-no-show').innerHTML = renderLista(noShow);
+      else vacioLista('reporte-no-show', 'Sin inasistencias en el período.');
     }
 
     // ---------- compartir link de agendamiento ----------
@@ -585,6 +737,10 @@
 
     // ---------- navegación ----------
     function showView(name, btn) {
+      if (state.vistaActual === 'info' && name !== 'info' && state.horariosSinGuardar.size > 0) {
+        if (!confirm('Tienes cambios de horario sin guardar. ¿Salir igual? Se van a perder.')) return;
+        state.horariosSinGuardar.clear();
+      }
       document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
       document.getElementById('view-' + name).classList.add('active');
       document.querySelectorAll('.nav-item').forEach(n => {
@@ -595,7 +751,7 @@
       btn.classList.remove('text-white/60');
 
       state.vistaActual = name;
-      const loaders = { resumen: loadResumen, calendario: loadCalendario, servicios: loadServicios, barberos: loadBarberos, info: loadInfo };
+      const loaders = { resumen: loadResumen, calendario: loadCalendario, servicios: loadServicios, barberos: loadBarberos, info: loadInfo, reportes: loadReportes };
       loaders[name]?.();
     }
 
@@ -992,6 +1148,13 @@
       cerrarModalCita();
       if (document.getElementById('view-calendario').classList.contains('active')) loadCalendario();
       if (fecha === santiagoDateParts(0).iso) loadResumen();
+    });
+
+    window.addEventListener('beforeunload', (e) => {
+      if (state.horariosSinGuardar.size > 0) {
+        e.preventDefault();
+        e.returnValue = '';
+      }
     });
   </script>
 
