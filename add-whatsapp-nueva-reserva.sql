@@ -13,13 +13,24 @@
 -- función de Netlify no lee la base de datos, solo reenvía el payload ya
 -- armado a la API de WhatsApp.
 --
--- IMPORTANTE — antes de correr este archivo, corre por separado (fuera
+-- IMPORTANTE — después de correr este archivo, corre por separado (fuera
 -- de git, te lo paso por chat) este comando con el secreto real:
---   alter database postgres set app.settings.whatsapp_webhook_secret = '<secreto>';
+--   insert into app_secrets (key, value) values ('whatsapp_webhook_secret', '<secreto>')
+--   on conflict (key) do update set value = excluded.value;
 -- Ese secreto tiene que ser EXACTAMENTE el mismo valor que la variable de
 -- entorno WHATSAPP_WEBHOOK_SECRET en Netlify.
+--
+-- (Nota: originalmente esto se guardaba con `alter database postgres set
+-- app.settings...`, pero Supabase no da permiso para eso en el plan
+-- hosteado — de ahí la tabla en vez del parámetro de sesión.)
 
 create extension if not exists pg_net with schema extensions;
+
+create table if not exists app_secrets (
+  key text primary key,
+  value text not null
+);
+revoke all on app_secrets from anon, authenticated;
 
 alter table bookings add column if not exists owner_notified_at timestamptz;
 
@@ -29,6 +40,7 @@ declare
   v_barbershop_phone text;
   v_barber_name text;
   v_service_name text;
+  v_secret text;
 begin
   if new.status <> 'confirmed' then
     return new;
@@ -43,11 +55,13 @@ begin
     return new;
   end if;
 
+  select value into v_secret from app_secrets where key = 'whatsapp_webhook_secret';
+
   perform net.http_post(
     url := 'https://corteya.app/.netlify/functions/whatsapp-nueva-reserva',
     headers := jsonb_build_object(
       'Content-Type', 'application/json',
-      'X-CorteYa-Secret', current_setting('app.settings.whatsapp_webhook_secret', true)
+      'X-CorteYa-Secret', v_secret
     ),
     body := jsonb_build_object(
       'booking_id', new.id,
