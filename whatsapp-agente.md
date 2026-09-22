@@ -75,20 +75,29 @@ intente dejarlos en Netlify por API, o los agregas tú mismo: *Site settings
   escribe acá porque este archivo va a un repo público. Tiene que ser
   igual al que va en Supabase, paso 4)
 
-Nota sobre el token: el que te da la pantalla de configuración dura 24h.
-Para uno que no expire, **App → Configuración básica** te deja generar un
-**token de sistema permanente** asociado a un "system user" — te guío en
-eso cuando lleguemos.
+Nota sobre el token (ya resuelto, 2026-09-22): el que te da la pantalla de
+configuración inicial dura apenas ~2h, no 24h como pensábamos. Ya se
+reemplazó por un **token de sistema permanente** (`corteya-bot`, creado en
+Meta Business Suite → Usuarios del sistema, con acceso total a la WABA de
+prueba y permisos `whatsapp_business_messaging` +
+`whatsapp_business_management`). `expires_at: 0` — no vence. Ese es el
+que va en `WHATSAPP_TOKEN` en Netlify de ahora en adelante.
 
 ### 4. Correr el SQL en Supabase
-1. Primero, en el SQL Editor, corre **solo esta línea**, reemplazando
-   `<secreto>` por el mismo valor que pusiste en `WHATSAPP_WEBHOOK_SECRET`
-   en Netlify (no se escribe el valor real acá porque este archivo va a un
-   repo público):
+1. Primero, en el SQL Editor, corre esto, reemplazando `<secreto>` por el
+   mismo valor que pusiste en `WHATSAPP_WEBHOOK_SECRET` en Netlify (no se
+   escribe el valor real acá porque este archivo va a un repo público):
    ```sql
-   alter database postgres set app.settings.whatsapp_webhook_secret = '<secreto>';
+   insert into app_secrets (key, value) values ('whatsapp_webhook_secret', '<secreto>')
+   on conflict (key) do update set value = excluded.value;
    ```
-2. Después corre completo `add-whatsapp-nueva-reserva.sql`.
+   (Nota: originalmente esto era `alter database postgres set
+   app.settings...`, pero Supabase no da permiso para eso en el plan
+   hosteado — de ahí la tabla `app_secrets` en vez del parámetro de sesión.
+   Ese `insert` requiere que `add-whatsapp-nueva-reserva.sql` ya se haya
+   corrido antes, porque es el que crea la tabla.)
+2. Corre completo `add-whatsapp-nueva-reserva.sql` (antes del insert de
+   arriba, no después).
 
 ### 5. Probar
 Agenda una hora de prueba en `app-cliente.html` para Tommy's Barber Shop —
@@ -100,7 +109,6 @@ por WhatsApp casi al toque.
   número real + verificación de negocio de Meta (ver duda de iniciación de
   actividades: hacerla como persona natural con giro cuando se decida ir
   en serio con esto).
-- Token de sistema permanente en vez del temporal de 24h.
 - Si algún día una barbería tiene más de un barbero y se quiere avisar al
   barbero específico (no solo al teléfono general de la barbería), hay que
   agregar un campo de teléfono a `barbers` — no existe hoy.
