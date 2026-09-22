@@ -207,6 +207,11 @@
               <a id="btn-cal-google" href="#" target="_blank" rel="noopener" class="flex-1 border border-white/15 hover:border-gold/50 rounded-sm py-2.5 text-xs font-medium text-center transition">Google Calendar</a>
               <a id="btn-cal-ics" href="#" class="flex-1 border border-white/15 hover:border-gold/50 rounded-sm py-2.5 text-xs font-medium text-center transition">Apple Calendar</a>
             </div>
+            <p id="aviso-navegador-app" class="hidden text-white/40 text-[11px] -mt-4 mb-6 leading-snug">
+              Si "Apple Calendar" no abrió nada: estás en el navegador de Instagram/Facebook,
+              que bloquea esa función. Toca los <strong>•••</strong> arriba y elige
+              <strong>"Abrir en Safari"</strong> para que funcione.
+            </p>
             <button onclick="resetAndGoHome()" class="w-full bg-gold hover:bg-goldlight text-ink font-semibold py-3 rounded-sm transition">Volver al inicio</button>
           </div>
         </div>
@@ -676,6 +681,11 @@
       return String(str).replace(/([,;])/g, '\\$1');
     }
 
+    function isInAppBrowser() {
+      const ua = navigator.userAgent || '';
+      return /Instagram|FBAN|FBAV|Line\/|MicroMessenger|TikTok|musical_ly/i.test(ua);
+    }
+
     function buildCalendarLinks(svc, endTime) {
       const start = santiagoToUTCDate(state.selectedDate, state.selectedSlot.slice(0, 5));
       const end = santiagoToUTCDate(state.selectedDate, endTime.slice(0, 5));
@@ -711,6 +721,8 @@
         'END:VCALENDAR',
       ].join('\r\n');
       document.getElementById('btn-cal-ics').href = '/.netlify/functions/ics?content=' + encodeURIComponent(ics);
+
+      document.getElementById('aviso-navegador-app').classList.toggle('hidden', !isInAppBrowser());
     }
 
     async function submitBooking() {
