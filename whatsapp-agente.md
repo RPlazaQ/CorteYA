@@ -46,17 +46,23 @@ Archivos: `add-whatsapp-nueva-reserva.sql` (migración), `netlify/functions/_wha
    **token de acceso temporal** (dura 24h; más abajo cómo sacar uno que no
    expire).
 
-### 2. Enviar la plantilla a aprobación
-En **WhatsApp → Administrador de plantillas de mensajes → Crear plantilla**,
-categoría **Utilidad**, idioma **Español**, crea esta (el orden de las
-variables {{1}}..{{6}} tiene que respetarse tal cual, el código ya las manda
-en ese orden):
+### 2. Enviar la plantilla a aprobación (ya hecho, 2026-09-22)
+Creada por API, categoría **Utilidad**, idioma **es**, queda en estado
+**PENDING** hasta que Meta la revise (normalmente minutos a algunas horas).
+El primer texto que intentamos (muy corto, puro variables) lo rechazó por
+"proporción entre parámetros y palabras" y por tener una variable pegada
+al final — el texto final que sí pasó a revisión, con más palabras de
+relleno alrededor de cada variable:
 
 **`nueva_reserva_barbero`**
-> Nueva reserva: {{1}} el {{2}} a las {{3}} con {{4}}. Cliente: {{5}}, tel {{6}}.
+> Hola, tienes una nueva reserva en tu agenda de CorteYa. Servicio
+> agendado: {{1}}. Fecha de la cita: {{2}}, a las {{3}} horas. Barbero
+> asignado para atender: {{4}}. Datos del cliente que reservo: {{5}}, con
+> telefono de contacto {{6}}. Puedes revisar el detalle completo en tu
+> panel de CorteYa.
 
-La aprobación normalmente demora minutos a algunas horas — mándala a
-revisión ni bien tengas la app creada, no esperes a tener todo lo demás listo.
+El orden de las variables {{1}}..{{6}} coincide con lo que ya manda el
+código (`whatsapp-nueva-reserva.mjs`), no hay que tocar nada ahí.
 
 ### 3. Pasarme las credenciales (o agregarlas tú mismo)
 Una vez tengas **Phone number ID** y **token**, pásamelos por chat para que
