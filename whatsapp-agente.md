@@ -64,8 +64,10 @@ intente dejarlos en Netlify por API, o los agregas tú mismo: *Site settings
 → Environment variables → Add a variable* (scope "Functions"):
 - `WHATSAPP_TOKEN`
 - `WHATSAPP_PHONE_NUMBER_ID`
-- `WHATSAPP_WEBHOOK_SECRET` = `736503a901225649d1be6bf1adefc66d2791ae5a3206b316`
-  (ya generado, no lo cambies — tiene que ser igual al que va en Supabase, paso 4)
+- `WHATSAPP_WEBHOOK_SECRET`
+  (valor generado aparte, revisa Netlify → Environment variables — no se
+  escribe acá porque este archivo va a un repo público. Tiene que ser
+  igual al que va en Supabase, paso 4)
 
 Nota sobre el token: el que te da la pantalla de configuración dura 24h.
 Para uno que no expire, **App → Configuración básica** te deja generar un
@@ -73,10 +75,12 @@ Para uno que no expire, **App → Configuración básica** te deja generar un
 eso cuando lleguemos.
 
 ### 4. Correr el SQL en Supabase
-1. Primero, en el SQL Editor, corre **solo esta línea** (con el secreto
-   real, no la subo a git):
+1. Primero, en el SQL Editor, corre **solo esta línea**, reemplazando
+   `<secreto>` por el mismo valor que pusiste en `WHATSAPP_WEBHOOK_SECRET`
+   en Netlify (no se escribe el valor real acá porque este archivo va a un
+   repo público):
    ```sql
-   alter database postgres set app.settings.whatsapp_webhook_secret = '736503a901225649d1be6bf1adefc66d2791ae5a3206b316';
+   alter database postgres set app.settings.whatsapp_webhook_secret = '<secreto>';
    ```
 2. Después corre completo `add-whatsapp-nueva-reserva.sql`.
 
