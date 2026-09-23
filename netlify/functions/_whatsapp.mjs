@@ -19,8 +19,12 @@ export function formatHora(timeStr) {
 }
 
 export async function sendWhatsAppTemplate({ to, templateName, languageCode = 'es', params }) {
-  const phoneNumberId = process.env.WHATSAPP_PHONE_NUMBER_ID;
-  const token = process.env.WHATSAPP_TOKEN;
+  // .trim() por si quedó un espacio/salto de línea pegado al copiar el valor
+  // en Netlify — con eso el ID "se ve" igual pero la URL apunta a un objeto
+  // que Meta no reconoce, y el error que devuelve es indistinguible de un
+  // ID realmente incorrecto.
+  const phoneNumberId = (process.env.WHATSAPP_PHONE_NUMBER_ID || '').trim();
+  const token = (process.env.WHATSAPP_TOKEN || '').trim();
   if (!phoneNumberId || !token) {
     throw new Error('Faltan WHATSAPP_PHONE_NUMBER_ID o WHATSAPP_TOKEN en las variables de entorno');
   }
