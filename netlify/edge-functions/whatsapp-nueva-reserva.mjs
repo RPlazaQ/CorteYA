@@ -37,7 +37,10 @@ export default async (request) => {
     return new Response('ok', { status: 200 });
   } catch (e) {
     console.error('whatsapp-nueva-reserva error', e);
-    return new Response('error', { status: 500 });
+    // TEMPORAL (2026-09-23): devolver el mensaje real para poder verlo en
+    // net._http_response.content sin depender del visor de logs de
+    // Netlify -- revertir a solo 'error' una vez confirmado el envio.
+    return new Response(String(e && e.message ? e.message : e), { status: 500 });
   }
 };
 
