@@ -2,6 +2,11 @@
 // después de crear una reserva. Avisa al BARBERO, no al cliente — ver
 // add-whatsapp-nueva-reserva.sql para el porqué. No lee Supabase: todo el
 // payload viene ya armado desde el trigger.
+//
+// Edge Function (no Netlify Function normal) -- ver _whatsapp.mjs para el
+// porqué del cambio. El `path` de abajo mantiene la misma URL de siempre
+// (/.netlify/functions/whatsapp-nueva-reserva) para no tener que tocar el
+// trigger de Postgres.
 
 import { checkSecret, sendWhatsAppTemplate, formatFecha, formatHora } from './_whatsapp.mjs';
 
@@ -35,3 +40,5 @@ export default async (request) => {
     return new Response('error', { status: 500 });
   }
 };
+
+export const config = { path: '/.netlify/functions/whatsapp-nueva-reserva' };
