@@ -8,7 +8,7 @@
 // (/.netlify/functions/whatsapp-nueva-reserva) para no tener que tocar el
 // trigger de Postgres.
 
-import { checkSecret, sendWhatsAppTemplate, formatFecha, formatHora } from './_whatsapp.mjs';
+import { checkSecret, sendWhatsAppTemplate, formatFecha, formatHora } from './lib/_whatsapp.mjs';
 
 export default async (request) => {
   if (!checkSecret(request)) {
