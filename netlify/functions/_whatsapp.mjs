@@ -1,7 +1,7 @@
 // Helper compartido: manda un mensaje de plantilla ya aprobada por Meta.
 // No lee la base de datos — recibe los datos ya armados desde quien lo llama.
 
-const GRAPH_VERSION = 'v21.0';
+const GRAPH_VERSION = 'v26.0';
 
 export function checkSecret(request) {
   const expected = process.env.WHATSAPP_WEBHOOK_SECRET;
