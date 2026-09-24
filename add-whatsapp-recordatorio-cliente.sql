@@ -15,7 +15,7 @@
 --   1. Extensión pg_cron habilitada — Supabase: Database -> Extensions
 --      -> busca "pg_cron" -> Enable (pg_net ya debería estar habilitada,
 --      la usa el trigger del aviso al barbero).
---   2. La plantilla 'recordatorio_cita_cliente' debe existir y estar
+--   2. La plantilla 'recordatorio_cita_cliente_v2' debe existir y estar
 --      APPROVED en Meta para que el envío real funcione — este cron se
 --      puede crear igual desde ya, simplemente no entregará mensajes
 --      hasta que la plantilla esté aprobada (el intento queda registrado
@@ -70,7 +70,7 @@ begin
         'to', v_to_digits,
         'type', 'template',
         'template', jsonb_build_object(
-          'name', 'recordatorio_cita_cliente',
+          'name', 'recordatorio_cita_cliente_v2',
           'language', jsonb_build_object('code', 'es'),
           'components', jsonb_build_array(
             jsonb_build_object(
