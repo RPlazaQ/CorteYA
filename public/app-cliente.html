@@ -325,9 +325,12 @@
       return String(str ?? '').trim().replace(/(^|\s)(\S)/g, (m, sep, ch) => sep + ch.toUpperCase());
     }
     function autoCapitalizeInput(e) {
+      // Ojo: sin trim() acá — a diferencia de capitalizeWords(), esto corre en
+      // cada tecleo, y trim() se comería el espacio recién escrito antes de
+      // que el usuario alcance a escribir la siguiente palabra.
       const el = e.target;
       const pos = el.selectionStart;
-      const nuevo = capitalizeWords(el.value);
+      const nuevo = el.value.replace(/(^|\s)(\S)/g, (m, sep, ch) => sep + ch.toUpperCase());
       if (nuevo !== el.value) {
         el.value = nuevo;
         el.setSelectionRange(pos, pos);
