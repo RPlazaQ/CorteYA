@@ -174,7 +174,7 @@
               <div>
                 <p class="font-mono text-[11px] tracking-widest uppercase text-gold mb-3">Tus datos</p>
                 <div class="space-y-2">
-                  <input id="input-nombre" type="text" maxlength="80" placeholder="Nombre" class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2.5 text-sm placeholder-white/40 focus:outline-none focus:border-gold">
+                  <input id="input-nombre" type="text" maxlength="80" placeholder="Nombre" oninput="autoCapitalizeInput(event)" class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2.5 text-sm placeholder-white/40 focus:outline-none focus:border-gold">
                   <div class="flex gap-2">
                     <span class="shrink-0 flex items-center px-3 border border-white/15 rounded-sm text-sm text-white/60 bg-white/5">+56 9</span>
                     <input id="input-telefono" type="tel" inputmode="numeric" maxlength="8" placeholder="1234 5678"
@@ -235,7 +235,7 @@
       <div id="resena-estrellas" class="flex gap-1.5 mb-4 text-2xl leading-none"></div>
 
       <label class="block text-xs text-white/60 mb-1">Tu nombre</label>
-      <input id="resena-nombre" type="text" maxlength="60" required class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2 text-sm mb-3 focus:outline-none focus:border-gold">
+      <input id="resena-nombre" type="text" maxlength="60" required oninput="autoCapitalizeInput(event)" class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2 text-sm mb-3 focus:outline-none focus:border-gold">
 
       <label class="block text-xs text-white/60 mb-1">Comentario</label>
       <textarea id="resena-comentario" maxlength="400" rows="3" required class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2 text-sm mb-3 focus:outline-none focus:border-gold"></textarea>
@@ -317,6 +317,21 @@
 
     function escapeHtml(str) {
       return String(str ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    }
+
+    // Pone en mayúscula la primera letra de cada palabra (después de cada espacio),
+    // sin tocar el resto — así "tommys barber" queda "Tommys Barber".
+    function capitalizeWords(str) {
+      return String(str ?? '').trim().replace(/(^|\s)(\S)/g, (m, sep, ch) => sep + ch.toUpperCase());
+    }
+    function autoCapitalizeInput(e) {
+      const el = e.target;
+      const pos = el.selectionStart;
+      const nuevo = capitalizeWords(el.value);
+      if (nuevo !== el.value) {
+        el.value = nuevo;
+        el.setSelectionRange(pos, pos);
+      }
     }
 
     // ---------- pantalla Buscar ----------
