@@ -184,6 +184,19 @@
         <section id="view-info" class="view">
           <h1 class="font-display text-2xl mb-6">Nuestra información</h1>
 
+          <div class="border border-white/10 rounded-sm p-4 mb-8 max-w-md flex items-center gap-4">
+            <label for="logo-upload-info" class="relative shrink-0 cursor-pointer group" title="Cambiar logo">
+              <img id="info-logo" src="https://placehold.co/56x56/1D1D20/D9A441?text=..." class="w-14 h-14 rounded-sm object-cover">
+              <span class="absolute inset-0 rounded-sm bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center text-[10px] transition">✎ Cambiar</span>
+            </label>
+            <input id="logo-upload-info" type="file" accept="image/png,image/jpeg,image/webp" class="hidden">
+            <div>
+              <p class="font-mono text-[11px] tracking-widest uppercase text-white/40 mb-1">Logo</p>
+              <p class="text-xs text-white/40">Toca la imagen para subir tu logo (PNG/JPG/WEBP, menos de 2MB)</p>
+              <p id="logo-status-info" class="hidden text-xs text-white/50 mt-1"></p>
+            </div>
+          </div>
+
           <div class="border border-white/10 rounded-sm p-4 mb-8 max-w-md">
             <p class="font-mono text-[11px] tracking-widest uppercase text-white/40 mb-3">Datos de contacto</p>
             <label class="block text-xs text-white/60 mb-1">Dirección</label>
@@ -661,11 +674,14 @@
     function updateSidebarLogo() {
       document.getElementById('sidebar-logo').src = state.barbershopImageUrl
         || 'https://placehold.co/28x28/1D1D20/D9A441?text=' + encodeURIComponent(initials(state.barbershopName));
+      const infoLogo = document.getElementById('info-logo');
+      if (infoLogo) {
+        infoLogo.src = state.barbershopImageUrl
+          || 'https://placehold.co/56x56/1D1D20/D9A441?text=' + encodeURIComponent(initials(state.barbershopName));
+      }
     }
-    document.getElementById('logo-upload').addEventListener('change', async (e) => {
-      const file = e.target.files[0];
+    async function subirLogo(file, statusEl) {
       if (!file) return;
-      const statusEl = document.getElementById('logo-status');
       statusEl.textContent = 'Subiendo…';
       statusEl.classList.remove('hidden');
 
@@ -690,6 +706,13 @@
       state.barbershopImageUrl = pub.publicUrl + '?t=' + Date.now();
       updateSidebarLogo();
       statusEl.classList.add('hidden');
+    }
+    document.getElementById('logo-upload').addEventListener('change', async (e) => {
+      await subirLogo(e.target.files[0], document.getElementById('logo-status'));
+      e.target.value = '';
+    });
+    document.getElementById('logo-upload-info').addEventListener('change', async (e) => {
+      await subirLogo(e.target.files[0], document.getElementById('logo-status-info'));
       e.target.value = '';
     });
 
