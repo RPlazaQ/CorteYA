@@ -234,6 +234,11 @@
       <label class="block text-xs text-white/60 mb-2">Calificación</label>
       <div id="resena-estrellas" class="flex gap-1.5 mb-4 text-2xl leading-none"></div>
 
+      <label class="block text-xs text-white/60 mb-1">¿Quién te atendió? (opcional)</label>
+      <select id="resena-barbero" class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2 text-sm mb-3 focus:outline-none focus:border-gold [color-scheme:dark]">
+        <option value="">No recuerdo / prefiero no decir</option>
+      </select>
+
       <label class="block text-xs text-white/60 mb-1">Tu nombre</label>
       <input id="resena-nombre" type="text" maxlength="60" required oninput="autoCapitalizeInput(event)" class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2 text-sm mb-3 focus:outline-none focus:border-gold">
 
@@ -488,6 +493,9 @@
       document.getElementById('form-resena').reset();
       document.getElementById('resena-error').classList.add('hidden');
       renderEstrellasSelector();
+      const selectBarbero = document.getElementById('resena-barbero');
+      selectBarbero.innerHTML = '<option value="">No recuerdo / prefiero no decir</option>'
+        + state.barbers.map(b => `<option value="${b.id}">${escapeHtml(b.name)}</option>`).join('');
       document.getElementById('modal-resena').classList.remove('hidden');
     }
 
@@ -515,8 +523,11 @@
       btn.disabled = true;
       btn.textContent = 'Publicando…';
 
+      const barberoId = document.getElementById('resena-barbero').value || null;
+
       const { error } = await supabaseClient.from('reviews').insert({
         barbershop_id: state.barbershopId,
+        barber_id: barberoId,
         customer_name: nombre,
         rating: state.resenaRating,
         comment: comentario,
@@ -567,7 +578,7 @@
     // ---------- pantalla Agendar ----------
     function loadAgendarScreen() {
       const barberChips = ['<button data-barber-id="any" onclick="selectBarber(\'any\')" class="chip-barbero text-xs border px-3 py-2 rounded-sm border-gold bg-gold/10 text-gold">Cualquiera</button>']
-        .concat(state.barbers.map(b => `<button data-barber-id="${b.id}" onclick="selectBarber('${b.id}')" class="chip-barbero text-xs border px-3 py-2 rounded-sm border-white/15 text-white/70">${escapeHtml(b.name)}</button>`));
+        .concat(state.barbers.map(b => `<button data-barber-id="${b.id}" onclick="selectBarber('${b.id}')" class="chip-barbero text-xs border px-3 py-2 rounded-sm border-white/15 text-white/70">${escapeHtml(b.name)}${b.review_count ? ` · ⭐${b.rating}` : ''}</button>`));
       document.getElementById('agendar-barberos').innerHTML = barberChips.join('');
 
       const hoy = santiagoDateParts(0);
