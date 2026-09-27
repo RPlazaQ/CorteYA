@@ -34,8 +34,14 @@ create table barbers (
   active         boolean not null default true,
   rating         numeric(2,1) not null default 0,
   review_count   int not null default 0,
+  -- login individual opcional del barbero (ver add-barber-logins.sql); nulo
+  -- mientras el dueño no le cree un acceso, y el barbero sigue funcionando
+  -- igual que hoy (administrado 100% por el dueño)
+  user_id        uuid references auth.users(id) on delete set null,
   created_at     timestamptz not null default now()
 );
+
+create unique index if not exists barbers_user_id_key on barbers(user_id) where user_id is not null;
 
 create table services (
   id               uuid primary key default gen_random_uuid(),
@@ -249,6 +255,11 @@ create policy "owner manages own working hours" on barber_working_hours
     where s.owner_id = auth.uid()
   ));
 
+-- el barbero necesita leer su propio horario para que el Calendario le
+-- arme la grilla del día
+create policy "barbero reads own working hours" on barber_working_hours
+  for select using (barber_id in (select id from barbers where user_id = auth.uid()));
+
 create policy "owner manages own time off" on barber_time_off
   for all using (barber_id in (
     select b.id from barbers b join barbershops s on s.id = b.barbershop_id
@@ -277,6 +288,14 @@ create policy "owner reads own bookings" on bookings
 create policy "owner updates own bookings" on bookings
   for update using (barbershop_id in (select id from barbershops where owner_id = auth.uid()))
   with check (barbershop_id in (select id from barbershops where owner_id = auth.uid()));
+
+-- el barbero ve y actualiza (estado de la cita) solo las suyas — se suma a
+-- las políticas del dueño de arriba, no las reemplaza
+create policy "barbero reads own bookings" on bookings
+  for select using (barber_id in (select id from barbers where user_id = auth.uid()));
+create policy "barbero updates own bookings" on bookings
+  for update using (barber_id in (select id from barbers where user_id = auth.uid()))
+  with check (barber_id in (select id from barbers where user_id = auth.uid()));
 
 -- reviews: lectura pública, cualquiera crea una como invitado, el dueño puede
 -- borrar las de su propia barbería (moderación básica)

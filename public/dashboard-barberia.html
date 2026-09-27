@@ -68,16 +68,16 @@
         <button onclick="showView('calendario', this)" class="nav-item text-white/60 flex-1 flex flex-col items-center justify-center gap-0.5 text-[10px] md:flex-none md:flex-row md:items-center md:justify-start md:gap-3 md:px-3 md:py-2.5 md:text-sm rounded-sm font-medium transition md:w-full md:text-left">
           <span>📅</span> Calendario
         </button>
-        <button onclick="showView('servicios', this)" class="nav-item text-white/60 flex-1 flex flex-col items-center justify-center gap-0.5 text-[10px] md:flex-none md:flex-row md:items-center md:justify-start md:gap-3 md:px-3 md:py-2.5 md:text-sm rounded-sm font-medium transition md:w-full md:text-left">
+        <button data-owner-only onclick="showView('servicios', this)" class="nav-item text-white/60 flex-1 flex flex-col items-center justify-center gap-0.5 text-[10px] md:flex-none md:flex-row md:items-center md:justify-start md:gap-3 md:px-3 md:py-2.5 md:text-sm rounded-sm font-medium transition md:w-full md:text-left">
           <span>✂️</span> Servicios
         </button>
-        <button onclick="showView('barberos', this)" class="nav-item text-white/60 flex-1 flex flex-col items-center justify-center gap-0.5 text-[10px] md:flex-none md:flex-row md:items-center md:justify-start md:gap-3 md:px-3 md:py-2.5 md:text-sm rounded-sm font-medium transition md:w-full md:text-left">
+        <button data-owner-only onclick="showView('barberos', this)" class="nav-item text-white/60 flex-1 flex flex-col items-center justify-center gap-0.5 text-[10px] md:flex-none md:flex-row md:items-center md:justify-start md:gap-3 md:px-3 md:py-2.5 md:text-sm rounded-sm font-medium transition md:w-full md:text-left">
           <span>👤</span> Barberos
         </button>
         <button onclick="showView('info', this)" class="nav-item text-white/60 flex-1 flex flex-col items-center justify-center gap-0.5 text-[10px] md:flex-none md:flex-row md:items-center md:justify-start md:gap-3 md:px-3 md:py-2.5 md:text-sm rounded-sm font-medium transition md:w-full md:text-left">
           <span>ℹ️</span> Info
         </button>
-        <button onclick="showView('reportes', this)" class="nav-item text-white/60 flex-1 flex flex-col items-center justify-center gap-0.5 text-[10px] md:flex-none md:flex-row md:items-center md:justify-start md:gap-3 md:px-3 md:py-2.5 md:text-sm rounded-sm font-medium transition md:w-full md:text-left">
+        <button data-owner-only onclick="showView('reportes', this)" class="nav-item text-white/60 flex-1 flex flex-col items-center justify-center gap-0.5 text-[10px] md:flex-none md:flex-row md:items-center md:justify-start md:gap-3 md:px-3 md:py-2.5 md:text-sm rounded-sm font-medium transition md:w-full md:text-left">
           <span>📊</span> Reportes
         </button>
       </nav>
@@ -149,7 +149,7 @@
               <input id="calendario-fecha-input" type="date" onchange="seleccionarFechaCalendario(this.value)"
                 class="bg-transparent border border-white/15 rounded-sm px-2 py-1.5 text-xs text-white/80 text-center focus:outline-none focus:border-gold [color-scheme:dark] w-36">
               <button onclick="cambiarDiaCalendario(1)" class="border border-white/15 rounded-sm w-8 h-8 flex items-center justify-center text-white/60 hover:border-white/30 transition">›</button>
-              <button onclick="abrirModalCita()" class="text-xs border border-gold text-gold rounded-sm px-3 py-1.5 hover:bg-gold/10 transition">+ Agregar cita</button>
+              <button data-owner-only onclick="abrirModalCita()" class="text-xs border border-gold text-gold rounded-sm px-3 py-1.5 hover:bg-gold/10 transition">+ Agregar cita</button>
             </div>
           </div>
           <div id="calendario-filtro-barberos" class="flex flex-wrap gap-2 mb-4"></div>
@@ -184,7 +184,7 @@
         <section id="view-info" class="view">
           <h1 class="font-display text-2xl mb-6">Nuestra información</h1>
 
-          <div class="border border-white/10 rounded-sm p-4 mb-8 max-w-md flex items-center gap-4">
+          <div data-owner-only class="border border-white/10 rounded-sm p-4 mb-8 max-w-md flex items-center gap-4">
             <label for="logo-upload-info" class="relative shrink-0 cursor-pointer group" title="Cambiar logo">
               <img id="info-logo" src="https://placehold.co/56x56/1D1D20/D9A441?text=..." class="w-14 h-14 rounded-sm object-cover">
               <span class="absolute inset-0 rounded-sm bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center text-[10px] transition">✎ Cambiar</span>
@@ -197,7 +197,7 @@
             </div>
           </div>
 
-          <div class="border border-white/10 rounded-sm p-4 mb-8 max-w-md">
+          <div data-owner-only class="border border-white/10 rounded-sm p-4 mb-8 max-w-md">
             <p class="font-mono text-[11px] tracking-widest uppercase text-white/40 mb-3">Datos de contacto</p>
             <label class="block text-xs text-white/60 mb-1">Dirección</label>
             <input id="info-direccion" type="text" maxlength="200" class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2 text-sm mb-3 focus:outline-none focus:border-gold">
@@ -217,9 +217,11 @@
             <button onclick="cambiarPassword()" class="text-xs border border-gold text-gold rounded-sm px-3 py-1.5 hover:bg-gold/10 transition">Cambiar contraseña</button>
           </div>
 
-          <p class="font-mono text-[11px] tracking-widest uppercase text-white/40 mb-3">Horarios por barbero</p>
-          <div id="info-horarios" class="space-y-4 max-w-md">
-            <p class="text-white/40 text-sm text-center py-6">Cargando…</p>
+          <div data-owner-only>
+            <p class="font-mono text-[11px] tracking-widest uppercase text-white/40 mb-3">Horarios por barbero</p>
+            <div id="info-horarios" class="space-y-4 max-w-md">
+              <p class="text-white/40 text-sm text-center py-6">Cargando…</p>
+            </div>
           </div>
         </section>
 
@@ -323,7 +325,7 @@
   </div>
 
   <script>
-    const state = { barbershopId: null, barbershopName: '', calendarioOffset: 0, calendarioBarberosVisibles: null, vistaActual: 'resumen', ultimoCheckCitas: null, horariosSinGuardar: new Set() };
+    const state = { barbershopId: null, barbershopName: '', calendarioOffset: 0, calendarioBarberosVisibles: null, vistaActual: 'resumen', ultimoCheckCitas: null, horariosSinGuardar: new Set(), role: null, barberId: null, barberName: '' };
 
     // ---------- utilidades ----------
     function santiagoDateParts(offsetDays) {
@@ -370,6 +372,7 @@
     ];
 
     async function loadInfo() {
+      if (state.role === 'barbero') return; // solo ve "Seguridad" (cambiar contraseña), el resto está oculto
       document.getElementById('info-direccion').value = state.barbershopAddress || '';
       document.getElementById('info-telefono').value = state.barbershopPhone || '';
 
@@ -730,17 +733,26 @@
         errorEl.classList.remove('hidden');
         return;
       }
-      await loadOwnerBarbershop(data.user.id);
+      await routeAfterLogin(data.user.id);
     });
 
-    async function loadOwnerBarbershop(userId) {
-      const { data: shop, error } = await supabaseClient.from('barbershops').select('*').eq('owner_id', userId).single();
-      if (error || !shop) {
-        document.getElementById('login-error').textContent = 'Esta cuenta no tiene una barbería asociada.';
-        document.getElementById('login-error').classList.remove('hidden');
-        await supabaseClient.auth.signOut();
-        return;
+    // ---------- ruteo por rol: dueño (barbershops.owner_id) o barbero (barbers.user_id) ----------
+    async function routeAfterLogin(userId) {
+      const { data: shop } = await supabaseClient.from('barbershops').select('*').eq('owner_id', userId).maybeSingle();
+      if (shop) { await loadOwnerBarbershop(shop); return; }
+
+      const { data: barber } = await supabaseClient.from('barbers').select('*').eq('user_id', userId).eq('active', true).maybeSingle();
+      if (barber) {
+        const { data: barberShop } = await supabaseClient.from('barbershops').select('*').eq('id', barber.barbershop_id).maybeSingle();
+        if (barberShop) { await loadBarberoBarbershop(barber, barberShop); return; }
       }
+
+      document.getElementById('login-error').textContent = 'Esta cuenta no tiene acceso a ninguna barbería.';
+      document.getElementById('login-error').classList.remove('hidden');
+      await supabaseClient.auth.signOut();
+    }
+
+    function applyCommonShopState(shop) {
       state.barbershopId = shop.id;
       state.barbershopName = shop.name;
       state.barbershopSlug = shop.slug;
@@ -753,11 +765,38 @@
         new Intl.DateTimeFormat('es-CL', { timeZone: 'America/Santiago', weekday: 'long', day: 'numeric', month: 'long' }).format(new Date());
       document.getElementById('login-screen').classList.add('hidden');
       document.getElementById('dashboard-app').classList.remove('hidden');
-      loadResumen();
+    }
 
+    // solo esconde/muestra elementos marcados con data-owner-only — la
+    // seguridad real la da RLS (barbero solo ve/edita sus propias citas
+    // aunque abra estas vistas igual desde la consola)
+    function applyRoleVisibility() {
+      document.querySelectorAll('[data-owner-only]').forEach(el => el.classList.toggle('hidden', state.role !== 'owner'));
+    }
+
+    function startPolling() {
       state.ultimoCheckCitas = new Date().toISOString();
       clearInterval(state.pollCitasInterval);
       state.pollCitasInterval = setInterval(revisarCitasNuevas, 30000);
+    }
+
+    async function loadOwnerBarbershop(shop) {
+      state.role = 'owner';
+      state.barberId = null;
+      applyCommonShopState(shop);
+      applyRoleVisibility();
+      loadResumen();
+      startPolling();
+    }
+
+    async function loadBarberoBarbershop(barber, shop) {
+      state.role = 'barbero';
+      state.barberId = barber.id;
+      state.barberName = barber.name;
+      applyCommonShopState(shop);
+      applyRoleVisibility();
+      loadResumen();
+      startPolling();
     }
 
     async function handleLogout() {
@@ -768,11 +807,13 @@
       document.getElementById('login-email').value = '';
       document.getElementById('login-password').value = '';
       state.calendarioBarberosVisibles = null;
+      state.role = null;
+      state.barberId = null;
     }
 
     (async function checkExistingSession() {
       const { data: { session } } = await supabaseClient.auth.getSession();
-      if (session?.user) await loadOwnerBarbershop(session.user.id);
+      if (session?.user) await routeAfterLogin(session.user.id);
     })();
 
     // ---------- navegación ----------
@@ -865,21 +906,27 @@
 
     async function loadResumen() {
       const todayIso = santiagoDateParts(0).iso;
-      const { data: bookings } = await supabaseClient
+      let query = supabaseClient
         .from('bookings')
         .select('*, services(name, price_clp, duration_minutes), barbers(name)')
         .eq('barbershop_id', state.barbershopId)
         .eq('booking_date', todayIso)
-        .not('status', 'in', '(cancelled,no_show)')
-        .order('start_time');
+        .not('status', 'in', '(cancelled,no_show)');
+      if (state.role === 'barbero') query = query.eq('barber_id', state.barberId);
+      const { data: bookings } = await query.order('start_time');
       const rows = bookings || [];
 
       document.getElementById('stat-citas').textContent = rows.length;
       document.getElementById('stat-ingresos').textContent = clp(rows.reduce((sum, b) => sum + (b.services?.price_clp || 0), 0));
 
-      const { data: barbers } = await supabaseClient.from('barbers').select('id').eq('barbershop_id', state.barbershopId).eq('active', true);
       const weekday = santiagoDateParts(0).dateObj.getUTCDay();
-      const barberIds = (barbers || []).map(b => b.id);
+      let barberIds;
+      if (state.role === 'barbero') {
+        barberIds = [state.barberId];
+      } else {
+        const { data: barbers } = await supabaseClient.from('barbers').select('id').eq('barbershop_id', state.barbershopId).eq('active', true);
+        barberIds = (barbers || []).map(b => b.id);
+      }
       const { data: horas } = barberIds.length
         ? await supabaseClient.from('barber_working_hours').select('start_time,end_time').eq('weekday', weekday).in('barber_id', barberIds)
         : { data: [] };
@@ -971,7 +1018,9 @@
       fechaInput.max = santiagoDateParts(29).iso;
       fechaInput.value = todayIso;
 
-      const { data: todosBarberos } = await supabaseClient.from('barbers').select('id,name').eq('barbershop_id', state.barbershopId).eq('active', true).order('name');
+      const todosBarberos = state.role === 'barbero'
+        ? [{ id: state.barberId, name: state.barberName }]
+        : (await supabaseClient.from('barbers').select('id,name').eq('barbershop_id', state.barbershopId).eq('active', true).order('name')).data;
       if (!todosBarberos || !todosBarberos.length) {
         document.getElementById('calendario-filtro-barberos').innerHTML = '';
         container.innerHTML = '<p class="text-white/40 text-sm text-center py-8">Agrega barberos para ver el calendario.</p>';
@@ -979,13 +1028,16 @@
       }
 
       const idsDisponibles = todosBarberos.map(b => b.id);
-      if (!state.calendarioBarberosVisibles) {
+      if (state.role === 'barbero') {
+        document.getElementById('calendario-filtro-barberos').innerHTML = '';
+        state.calendarioBarberosVisibles = idsDisponibles;
+      } else if (!state.calendarioBarberosVisibles) {
         state.calendarioBarberosVisibles = cargarFiltroBarberosGuardado(idsDisponibles);
       } else {
         state.calendarioBarberosVisibles = state.calendarioBarberosVisibles.filter(id => idsDisponibles.includes(id));
         if (!state.calendarioBarberosVisibles.length) state.calendarioBarberosVisibles = idsDisponibles.slice();
       }
-      renderFiltroBarberos(todosBarberos, idsDisponibles);
+      if (state.role !== 'barbero') renderFiltroBarberos(todosBarberos, idsDisponibles);
 
       const barbers = todosBarberos.filter(b => state.calendarioBarberosVisibles.includes(b.id));
       const barberIds = barbers.map(b => b.id);
@@ -1077,12 +1129,50 @@
           <img src="${b.photo_url || 'https://placehold.co/48x48/1D1D20/D9A441?text=' + encodeURIComponent(b.name.charAt(0))}" class="w-12 h-12 rounded-sm mb-3">
           <p class="text-sm font-medium">${escapeHtml(b.name)}</p>
           <p class="text-xs text-white/50 mb-2">${escapeHtml(b.specialty)}</p>
-          <div class="flex items-center justify-between gap-2">
+          <div class="flex items-center justify-between gap-2 mb-2">
             <span class="text-xs ${b.active ? 'bg-green-500/15 text-green-400' : 'bg-white/10 text-white/40'} px-2 py-0.5 rounded-sm">${b.active ? 'Disponible' : 'Inactivo'}</span>
             <button onclick="toggleBarberoActivo('${b.id}', ${b.active})" class="text-xs text-white/40 hover:${b.active ? 'text-red-400' : 'text-green-400'} transition">${b.active ? 'Eliminar' : 'Reactivar'}</button>
           </div>
+          ${b.user_id
+            ? `<div class="flex items-center justify-between gap-2">
+                <span class="text-xs bg-gold/10 text-gold px-2 py-0.5 rounded-sm">🔑 Acceso activo</span>
+                <button onclick="quitarAccesoBarbero('${b.id}', '${escapeHtml(b.name)}')" class="text-xs text-white/40 hover:text-red-400 transition">Quitar acceso</button>
+              </div>`
+            : `<button onclick="crearAccesoBarbero('${b.id}', '${escapeHtml(b.name)}')" class="w-full text-xs border border-white/15 rounded-sm px-2 py-1.5 text-white/60 hover:border-gold hover:text-gold transition">+ Crear acceso</button>`
+          }
         </div>
       `).join('') : '<p class="col-span-2 md:col-span-3 text-white/40 text-sm text-center py-6">Sin barberos todavía.</p>';
+    }
+
+    // Crea una cuenta de login para que el barbero entre a su propio panel
+    // restringido. Usa un cliente de Supabase aparte (persistSession:false)
+    // para que el auth.signUp() del barbero no reemplace la sesión del
+    // dueño que está logueado ahora mismo.
+    async function crearAccesoBarbero(barberId, barberName) {
+      const email = prompt(`Correo del barbero (${barberName}) para su acceso:`);
+      if (!email) return;
+      const correo = email.trim().toLowerCase();
+      if (!/^\S+@\S+\.\S+$/.test(correo)) { alert('Correo inválido.'); return; }
+
+      const password = Math.random().toString(36).slice(-4) + Math.random().toString(36).slice(-4).toUpperCase();
+
+      const clienteTemporal = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { auth: { persistSession: false, autoRefreshToken: false } });
+      const { data, error } = await clienteTemporal.auth.signUp({ email: correo, password });
+      if (error) { alert('No se pudo crear el acceso: ' + error.message); return; }
+      if (!data.user) { alert('No se pudo crear el acceso (respuesta inesperada).'); return; }
+
+      const { error: linkError } = await supabaseClient.from('barbers').update({ user_id: data.user.id }).eq('id', barberId);
+      if (linkError) { alert('El usuario se creó pero no se pudo vincular al barbero: ' + linkError.message); return; }
+
+      alert(`Acceso creado para ${barberName}.\n\nCorreo: ${correo}\nContraseña temporal: ${password}\n\nCompártesela por WhatsApp — puede cambiarla después en Info → Seguridad.\n\nEntra en el mismo link: ${location.origin}${location.pathname}`);
+      loadBarberos();
+    }
+
+    async function quitarAccesoBarbero(barberId, barberName) {
+      if (!confirm(`¿Quitarle el acceso a ${barberName}? Ya no va a poder entrar a su panel (el dueño sigue administrando todo por él).`)) return;
+      const { error } = await supabaseClient.from('barbers').update({ user_id: null }).eq('id', barberId);
+      if (error) { alert('Error: ' + error.message); return; }
+      loadBarberos();
     }
 
     async function toggleBarberoActivo(id, activoActual) {
