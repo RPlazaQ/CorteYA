@@ -325,7 +325,11 @@
   </div>
 
   <script>
-    const state = { barbershopId: null, barbershopName: '', calendarioOffset: 0, calendarioBarberosVisibles: null, vistaActual: 'resumen', ultimoCheckCitas: null, horariosSinGuardar: new Set(), role: null, barberId: null, barberName: '' };
+    const state = { barbershopId: null, barbershopName: '', calendarioOffset: 0, calendarioBarberosVisibles: null, vistaActual: 'resumen', ultimoCheckCitas: null, horariosSinGuardar: new Set(), role: null, barberId: null, barberName: '', barbershopPlan: null };
+
+    // planes que incluyen la función de logins de barbero — 'piloto' entra
+    // completo mientras se valida la función, antes de fijar el pricing final
+    const PLANES_CON_LOGIN_BARBERO = ['multisucursal', 'local_independiente', 'piloto'];
 
     // ---------- utilidades ----------
     function santiagoDateParts(offsetDays) {
@@ -744,6 +748,12 @@
       const { data: barber } = await supabaseClient.from('barbers').select('*').eq('user_id', userId).eq('active', true).maybeSingle();
       if (barber) {
         const { data: barberShop } = await supabaseClient.from('barbershops').select('*').eq('id', barber.barbershop_id).maybeSingle();
+        if (barberShop && !PLANES_CON_LOGIN_BARBERO.includes(barberShop.plan)) {
+          document.getElementById('login-error').textContent = 'El plan actual de esta barbería no incluye accesos individuales para barberos. Habla con el dueño.';
+          document.getElementById('login-error').classList.remove('hidden');
+          await supabaseClient.auth.signOut();
+          return;
+        }
         if (barberShop) { await loadBarberoBarbershop(barber, barberShop); return; }
       }
 
@@ -759,6 +769,7 @@
       state.barbershopImageUrl = shop.image_url || null;
       state.barbershopAddress = shop.address || '';
       state.barbershopPhone = shop.phone || '';
+      state.barbershopPlan = shop.plan;
       document.getElementById('sidebar-nombre').textContent = shop.name;
       updateSidebarLogo();
       document.getElementById('header-fecha').textContent =
@@ -1138,7 +1149,9 @@
                 <span class="text-xs bg-gold/10 text-gold px-2 py-0.5 rounded-sm">🔑 Acceso activo</span>
                 <button onclick="quitarAccesoBarbero('${b.id}', '${escapeHtml(b.name)}')" class="text-xs text-white/40 hover:text-red-400 transition">Quitar acceso</button>
               </div>`
-            : `<button onclick="crearAccesoBarbero('${b.id}', '${escapeHtml(b.name)}')" class="w-full text-xs border border-white/15 rounded-sm px-2 py-1.5 text-white/60 hover:border-gold hover:text-gold transition">+ Crear acceso</button>`
+            : PLANES_CON_LOGIN_BARBERO.includes(state.barbershopPlan)
+              ? `<button onclick="crearAccesoBarbero('${b.id}', '${escapeHtml(b.name)}')" class="w-full text-xs border border-white/15 rounded-sm px-2 py-1.5 text-white/60 hover:border-gold hover:text-gold transition">+ Crear acceso</button>`
+              : `<p class="text-[11px] text-white/30 text-center">Los accesos de barbero no están incluidos en tu plan actual.</p>`
           }
         </div>
       `).join('') : '<p class="col-span-2 md:col-span-3 text-white/40 text-sm text-center py-6">Sin barberos todavía.</p>';
@@ -1149,6 +1162,10 @@
     // para que el auth.signUp() del barbero no reemplace la sesión del
     // dueño que está logueado ahora mismo.
     async function crearAccesoBarbero(barberId, barberName) {
+      if (!PLANES_CON_LOGIN_BARBERO.includes(state.barbershopPlan)) {
+        alert('Los accesos de barbero no están incluidos en tu plan actual.');
+        return;
+      }
       const email = prompt(`Correo del barbero (${barberName}) para su acceso:`);
       if (!email) return;
       const correo = email.trim().toLowerCase();
