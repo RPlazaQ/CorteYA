@@ -327,9 +327,11 @@
   <script>
     const state = { barbershopId: null, barbershopName: '', calendarioOffset: 0, calendarioBarberosVisibles: null, vistaActual: 'resumen', ultimoCheckCitas: null, horariosSinGuardar: new Set(), role: null, barberId: null, barberName: '', barbershopPlan: null };
 
-    // planes que incluyen la función de logins de barbero — 'piloto' entra
-    // completo mientras se valida la función, antes de fijar el pricing final
-    const PLANES_CON_LOGIN_BARBERO = ['multisucursal', 'local_independiente', 'piloto'];
+    // planes que incluyen la función de logins de barbero. 'piloto' queda
+    // afuera a propósito: sin el plan pagado de Supabase, "Confirm email"
+    // no se puede automatizar, y un correo sin confirmar a mano por cada
+    // barbero no escala mientras se sumen más barberías al piloto.
+    const PLANES_CON_LOGIN_BARBERO = ['multisucursal', 'local_independiente'];
 
     // ---------- utilidades ----------
     function santiagoDateParts(offsetDays) {
