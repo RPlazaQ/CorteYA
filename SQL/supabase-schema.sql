@@ -111,6 +111,47 @@ alter table bookings
     time_range with &&
   ) where (status not in ('cancelled','no_show'));
 
+-- Consistencia de reservas: barbero y servicio deben pertenecer a la
+-- barbería indicada, y la duración debe calzar con la del servicio (sin
+-- esto, cualquiera con la key pública podía insertar una end_time inventada
+-- y bloquear la agenda de un barbero, o plantar la reserva bajo el
+-- barbershop_id de otra barbería distinta a la del barbero/servicio real).
+create or replace function validate_booking_consistency()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  svc_duration int;
+begin
+  select duration_minutes into svc_duration
+  from services
+  where id = new.service_id and barbershop_id = new.barbershop_id;
+
+  if svc_duration is null then
+    raise exception 'El servicio no pertenece a esta barbería';
+  end if;
+
+  if not exists (
+    select 1 from barbers
+    where id = new.barber_id and barbershop_id = new.barbershop_id
+  ) then
+    raise exception 'El barbero no pertenece a esta barbería';
+  end if;
+
+  if new.end_time <> new.start_time + (svc_duration || ' minutes')::interval then
+    raise exception 'La duración de la reserva no coincide con el servicio';
+  end if;
+
+  return new;
+end;
+$$;
+
+create trigger trg_validate_booking_consistency
+  before insert on bookings
+  for each row execute function validate_booking_consistency();
+
 -- ============ DISPONIBILIDAD (función) ============
 
 create or replace function get_available_slots(
@@ -230,6 +271,26 @@ create policy "public read barbershops" on barbershops
 create policy "owner updates own barbershop" on barbershops
   for update using (auth.uid() = owner_id) with check (auth.uid() = owner_id);
 
+-- el dueño puede editar su barbería, pero no auto-subirse el plan: eso
+-- solo lo cambia el service_role (tú, desde el panel de Supabase).
+create or replace function prevent_plan_self_change()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  if new.plan is distinct from old.plan and auth.role() <> 'service_role' then
+    raise exception 'El plan de la barbería no se puede cambiar desde aquí';
+  end if;
+  return new;
+end;
+$$;
+
+create trigger trg_prevent_plan_self_change
+  before update on barbershops
+  for each row execute function prevent_plan_self_change();
+
 -- barbers: lectura pública de los activos, dueño administra los suyos
 create policy "public read active barbers" on barbers
   for select using (active = true);
@@ -305,3 +366,32 @@ create policy "guest can create a review" on reviews
   for insert with check (true);
 create policy "owner deletes own reviews" on reviews
   for delete using (barbershop_id in (select id from barbershops where owner_id = auth.uid()));
+
+-- límite de reseñas por barbería: máximo 5 cada 10 minutos. No requiere
+-- login (las reseñas de invitado sin reserva previa son intencionales),
+-- pero corta un bombardeo automatizado de rating negativo.
+create or replace function limit_review_rate()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  recent_count int;
+begin
+  select count(*) into recent_count
+  from reviews
+  where barbershop_id = new.barbershop_id
+    and created_at > now() - interval '10 minutes';
+
+  if recent_count >= 5 then
+    raise exception 'Se alcanzó el límite de reseñas por el momento, intenta en unos minutos';
+  end if;
+
+  return new;
+end;
+$$;
+
+create trigger trg_limit_review_rate
+  before insert on reviews
+  for each row execute function limit_review_rate();
