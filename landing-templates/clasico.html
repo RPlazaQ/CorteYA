@@ -1,0 +1,533 @@
+<title>Barbería La Navaja</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,900&family=Work+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ground:#13201A;
+    --ground-rgb:19,32,26;
+    --surface:#1C2B22;
+    --surface-2:#223325;
+    --ink:#F2ECDD;
+    --ink-dim:#C9C2AE;
+    --brass:#C9A24B;
+    --brass-bright:#E3C06E;
+    --brass-dim:#7C6633;
+    --pole-red:#9C3B2E;
+    --line:#33452F;
+    color-scheme: dark;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--ground);
+    color:var(--ink);
+    font-family:'Work Sans', ui-sans-serif, system-ui, sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .display{
+    font-family:'Fraunces', ui-serif, Georgia, serif;
+    font-optical-sizing:auto;
+    text-wrap:balance;
+    letter-spacing:-0.01em;
+  }
+  .mono{ font-family:'Space Mono', ui-monospace, monospace; font-variant-numeric:tabular-nums; }
+
+  .wrap{ max-width:880px; margin:0 auto; padding-inline:20px; }
+
+  /* barber-pole divider: a thin rotating diagonal stripe, the one recurring motif of the page */
+  .pole{
+    height:10px;
+    background:repeating-linear-gradient(
+      45deg,
+      var(--pole-red) 0 14px,
+      var(--ink) 14px 28px,
+      var(--brass) 28px 42px
+    );
+    background-size:120px 100%;
+    animation:slide 6s linear infinite;
+    opacity:0.9;
+  }
+  @media (prefers-reduced-motion: reduce){ .pole{ animation:none; } }
+  @keyframes slide{ from{ background-position:0 0; } to{ background-position:120px 0; } }
+
+  header.top{
+    position:sticky; top:env(safe-area-inset-top,0px);
+    z-index:20;
+    background:rgba(var(--ground-rgb),0.92);
+    backdrop-filter:blur(6px);
+    border-bottom:1px solid var(--line);
+  }
+  header.top .bar{
+    display:flex; align-items:center; justify-content:space-between;
+    padding-block:14px;
+    gap:12px;
+  }
+  .wordmark{ display:flex; align-items:center; gap:11px; }
+  .logo-badge{
+    width:34px; height:34px; flex:none; border-radius:6px;
+    border:1px solid var(--brass-dim);
+    background:var(--surface);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Fraunces',serif; font-weight:700; font-size:0.95rem; color:var(--brass-bright);
+  }
+  .wordmark span{ font-family:'Fraunces',serif; font-weight:600; font-size:1.05rem; letter-spacing:0.01em; }
+
+  .btn-cta{
+    display:inline-flex; align-items:center; gap:8px;
+    background:var(--brass); color:#1A1308;
+    font-weight:700; font-size:0.92rem;
+    padding:10px 18px; border-radius:3px;
+    border:1px solid var(--brass-bright);
+    text-decoration:none;
+    white-space:nowrap;
+    transition:transform .15s ease, background .15s ease;
+  }
+  .btn-cta:hover{ background:var(--brass-bright); transform:translateY(-1px); }
+  .btn-cta:focus-visible{ outline:2px solid var(--ink); outline-offset:2px; }
+
+  section{ padding-block:56px; }
+  .eyebrow{
+    text-transform:uppercase; letter-spacing:0.14em; font-size:0.72rem;
+    color:var(--brass); font-weight:600; margin:0 0 10px;
+  }
+
+  /* hero */
+  .hero{ padding-top:48px; }
+  .hero h1{ font-size:clamp(2.3rem, 6vw, 3.6rem); margin:0 0 16px; line-height:1.04; font-weight:600; }
+  .hero p.lead{ color:var(--ink-dim); font-size:1.08rem; max-width:46ch; margin:0 0 26px; }
+  .hero-meta{ display:flex; flex-wrap:wrap; gap:18px 28px; margin-bottom:30px; }
+  .hero-meta .item{ display:flex; align-items:center; gap:8px; font-size:0.92rem; color:var(--ink-dim); }
+  .hero-meta svg{ width:17px; height:17px; flex:none; color:var(--brass); }
+  .stars{ color:var(--brass-bright); letter-spacing:0.05em; }
+
+  .razor-mark{ position:absolute; right:20px; top:70px; width:150px; height:150px; opacity:0.16; pointer-events:none; }
+  .logo-hero{
+    width:68px; height:68px; border-radius:10px;
+    border:1px solid var(--brass-dim); background:var(--surface);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Fraunces',serif; font-weight:700; font-size:1.8rem; color:var(--brass-bright);
+    margin-bottom:18px;
+  }
+
+  /* selector de color de marca — solo para esta demo, no va en el sitio real */
+  .brand-picker{
+    position:sticky; top:calc(61px + env(safe-area-inset-top,0px)); z-index:19;
+    background:var(--surface-2); border-bottom:1px solid var(--line);
+    font-size:0.78rem;
+  }
+  .brand-picker .wrap{ display:flex; align-items:center; gap:12px; padding-block:9px; flex-wrap:wrap; }
+  .brand-picker .label{ color:var(--ink-dim); }
+  .brand-picker button{
+    display:inline-flex; align-items:center; gap:6px;
+    background:none; border:1px solid var(--line); color:var(--ink-dim);
+    font-size:0.78rem; padding:5px 10px; border-radius:20px; cursor:pointer;
+    font-family:inherit;
+  }
+  .brand-picker button .dot{ width:10px; height:10px; border-radius:50%; flex:none; border:1px solid rgba(255,255,255,0.18); }
+  .brand-picker button.active{ border-color:var(--brass); color:var(--ink); }
+
+  /* servicios: menu-board style with dotted leaders */
+  .menu-item{
+    display:flex; align-items:baseline; gap:10px;
+    padding-block:14px;
+    border-bottom:1px dashed var(--line);
+  }
+  .menu-item:last-child{ border-bottom:none; }
+  .menu-item .name{ font-weight:600; font-size:1.02rem; }
+  .menu-item .dur{ color:var(--ink-dim); font-size:0.82rem; }
+  .menu-item .fill{ flex:1; border-bottom:1px dotted var(--brass-dim); transform:translateY(-4px); min-width:12px; }
+  .menu-item .price{ font-family:'Space Mono',monospace; color:var(--brass-bright); font-weight:700; font-size:1.02rem; white-space:nowrap; }
+
+  /* barberos: perfil completo, alternando lados */
+  .barber-feature{
+    display:grid; grid-template-columns:200px 1fr; gap:28px; align-items:center;
+    padding-block:30px; border-bottom:1px solid var(--line);
+  }
+  .barber-feature:last-child{ border-bottom:none; }
+  .barber-feature.flip{ grid-template-columns:1fr 200px; }
+  .barber-feature.flip .portrait{ order:2; }
+  .portrait{
+    aspect-ratio:3/4; border-radius:6px;
+    background:linear-gradient(165deg,var(--brass) 0%,var(--brass-dim) 55%,var(--surface-2) 100%);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Fraunces',serif; font-weight:700; font-size:3rem; color:#1A1308;
+    border:1px solid var(--brass-dim);
+  }
+  .barber-feature h3{ margin:0 0 4px; font-size:1.5rem; font-weight:600; }
+  .barber-feature .role{ color:var(--brass-bright); font-size:0.92rem; margin:0 0 10px; }
+  .barber-feature .bio{ color:var(--ink-dim); font-size:0.95rem; max-width:40ch; margin:0 0 14px; }
+  .barber-feature .stats{ display:flex; gap:18px; margin-bottom:16px; font-size:0.85rem; color:var(--ink-dim); flex-wrap:wrap; }
+  .barber-feature .stats b{ color:var(--ink); }
+  @media (max-width:560px){
+    .barber-feature, .barber-feature.flip{ grid-template-columns:120px 1fr; }
+    .barber-feature.flip .portrait{ order:0; }
+  }
+
+  /* galería "el club por dentro" */
+  .gallery-grid{
+    display:grid; grid-template-columns:repeat(3,1fr); grid-auto-rows:110px; gap:10px;
+  }
+  .gallery-tile{
+    position:relative; border-radius:4px; overflow:hidden;
+    border:1px solid var(--line);
+    display:flex; align-items:flex-end;
+  }
+  .gallery-tile.tall{ grid-row:span 2; }
+  .gallery-tile .tex{
+    position:absolute; inset:0;
+    background:
+      repeating-linear-gradient(115deg, rgba(0,0,0,0.12) 0 2px, transparent 2px 7px),
+      linear-gradient(165deg, var(--surface-2), var(--surface));
+  }
+  .gallery-tile svg{ position:absolute; top:10px; right:10px; width:16px; height:16px; color:var(--brass-dim); opacity:.8; }
+  .gallery-tile span{
+    position:relative; font-size:0.72rem; color:var(--ink-dim);
+    padding:7px 9px; background:rgba(var(--ground-rgb),.6); width:100%;
+  }
+  @media (max-width:560px){ .gallery-grid{ grid-template-columns:repeat(2,1fr); } }
+
+  /* manifiesto */
+  .manifesto{ text-align:center; padding-block:70px; }
+  .manifesto .mark{ width:60px; height:2px; background:var(--brass-dim); margin:0 auto 26px; }
+  .manifesto q{ display:block; font-family:'Fraunces',serif; font-style:italic; font-weight:500;
+    font-size:clamp(1.3rem,3.6vw,1.9rem); line-height:1.3; max-width:30ch; margin:0 auto 16px;
+    quotes:none; }
+  .manifesto p.sub{ color:var(--ink-dim); font-size:0.92rem; max-width:40ch; margin:0 auto; }
+
+  /* instagram banner */
+  .ig-banner{
+    display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;
+    background:var(--surface-2); border:1px solid var(--line); border-radius:4px;
+    padding:20px 24px;
+  }
+  .ig-banner .who{ display:flex; align-items:center; gap:12px; }
+  .ig-banner .who svg{ width:26px; height:26px; color:var(--brass); flex:none; }
+  .ig-banner .handle{ font-weight:600; }
+  .ig-banner .followers{ color:var(--ink-dim); font-size:0.85rem; }
+
+  /* contacto */
+  .contact-row{ display:flex; gap:14px; flex-wrap:wrap; }
+  .btn-wsp{
+    display:inline-flex; align-items:center; gap:8px;
+    background:#1E3A2E; border:1px solid #2E5A44; color:var(--ink);
+    font-weight:600; font-size:0.92rem; padding:12px 20px; border-radius:3px; text-decoration:none;
+  }
+  .btn-wsp svg{ width:17px; height:17px; color:#6FCF97; }
+  .contact-info{ color:var(--ink-dim); font-size:0.92rem; display:flex; align-items:center; gap:8px; }
+
+  /* reseñas */
+  .review-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:16px; }
+  .review{ background:var(--surface); border-left:3px solid var(--brass); padding:18px 20px; border-radius:2px; }
+  .review p{ margin:0 0 10px; font-size:0.96rem; color:var(--ink); }
+  .review .who{ font-size:0.82rem; color:var(--ink-dim); }
+
+  /* horario */
+  table.hours{ width:100%; border-collapse:collapse; font-size:0.95rem; }
+  table.hours td{ padding:10px 4px; border-bottom:1px solid var(--line); }
+  table.hours td:last-child{ text-align:right; font-family:'Space Mono',monospace; color:var(--ink-dim); }
+  table.hours tr.today td{ color:var(--brass-bright); font-weight:600; }
+
+  /* ubicación */
+  .loc-card{
+    background:var(--surface); border:1px solid var(--line); border-radius:4px;
+    overflow:hidden;
+  }
+  .map-mock{
+    position:relative; height:190px;
+    background:
+      linear-gradient(var(--surface-2) 1px, transparent 1px) 0 0/34px 34px,
+      linear-gradient(90deg, var(--surface-2) 1px, transparent 1px) 0 0/34px 34px,
+      var(--surface);
+  }
+  .map-mock .road{
+    position:absolute; background:var(--line);
+  }
+  .map-mock .road.h{ left:0; right:0; top:62%; height:10px; }
+  .map-mock .road.v{ top:0; bottom:0; left:38%; width:10px; }
+  .map-mock .pin{
+    position:absolute; left:38%; top:62%; transform:translate(-50%,-92%);
+    width:34px; height:34px; color:var(--pole-red);
+    filter:drop-shadow(0 3px 4px rgba(0,0,0,.35));
+  }
+  .map-mock .note{
+    position:absolute; left:14px; bottom:12px; font-size:0.72rem; color:var(--ink-dim);
+    background:rgba(var(--ground-rgb),.75); padding:4px 8px; border-radius:3px;
+  }
+  .loc-body{ display:flex; justify-content:space-between; align-items:center; gap:14px; flex-wrap:wrap; padding:18px 22px; }
+  .loc-body .addr{ font-size:1rem; }
+  .loc-body .addr .com{ color:var(--ink-dim); font-size:0.88rem; }
+  .btn-ghost{
+    display:inline-flex; align-items:center; gap:7px;
+    border:1px solid var(--brass-dim); color:var(--brass-bright);
+    font-size:0.88rem; font-weight:600; padding:9px 16px; border-radius:3px;
+    text-decoration:none; white-space:nowrap;
+  }
+  .btn-ghost:hover{ border-color:var(--brass); }
+  .btn-ghost svg{ width:15px; height:15px; }
+
+  footer{ padding-block:40px; border-top:1px solid var(--line); }
+  footer .foot-row{ display:flex; flex-wrap:wrap; justify-content:space-between; gap:20px; align-items:center; }
+  footer .badge{ font-size:0.8rem; color:var(--ink-dim); }
+  footer .badge a{ color:var(--brass); text-decoration:none; }
+  footer .badge a:hover{ text-decoration:underline; }
+  .social{ display:flex; gap:12px; }
+  .social a{ color:var(--ink-dim); }
+  .social svg{ width:19px; height:19px; }
+
+  .sticky-cta{
+    position:fixed; left:0; right:0; bottom:0;
+    padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px));
+    background:linear-gradient(180deg, rgba(var(--ground-rgb),0), var(--ground) 40%);
+    display:none;
+    z-index:30;
+  }
+  .sticky-cta .btn-cta{ width:100%; justify-content:center; padding-block:13px; }
+  @media (max-width:640px){
+    .sticky-cta{ display:block; }
+    section{ padding-block:44px; }
+  }
+</style>
+
+<header class="top">
+  <div class="wrap bar">
+    <div class="wordmark">
+      <div class="logo-badge" title="Aquí va el logo que suba la barbería">LN</div>
+      <span>La Navaja</span>
+    </div>
+    <a class="btn-cta" href="#agendar">Agendar hora</a>
+  </div>
+</header>
+
+<div class="brand-picker">
+  <div class="wrap">
+    <span class="label">Color de marca de la barbería (demo):</span>
+    <button type="button" class="active" data-accent="gold"><span class="dot" style="background:#C9A24B"></span>Dorado clásico</button>
+    <button type="button" data-accent="red"><span class="dot" style="background:#C1512F"></span>Rojo navaja</button>
+    <button type="button" data-accent="blue"><span class="dot" style="background:#4C8FA6"></span>Azul acero</button>
+    <button type="button" data-accent="mono"><span class="dot" style="background:#E7E3D6"></span>Blanco y negro</button>
+  </div>
+</div>
+
+<div class="pole" role="presentation"></div>
+
+<main class="wrap">
+  <section class="hero" style="position:relative;">
+    <svg class="razor-mark" viewBox="0 0 100 100" fill="none" stroke="var(--brass)" stroke-width="1.4">
+      <path d="M20 70 L70 20 L78 28 L28 78 Z" />
+      <path d="M70 20 L82 20 L82 32" />
+    </svg>
+    <div class="logo-hero">LN</div>
+    <p class="eyebrow">Barbería · Las Condes, Santiago</p>
+    <h1 class="display">Un buen corte<br>no se improvisa.</h1>
+    <p class="lead">Fade, clásico o afeitado a la antigua con navaja — hecho por manos que llevan el oficio hace años. Agenda tu turno en menos de un minuto, sin llamadas.</p>
+    <div class="hero-meta">
+      <div class="item"><span class="stars">★★★★★</span>&nbsp;4.8 (89 reseñas)</div>
+      <div class="item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 21s7-7.1 7-12a7 7 0 10-14 0c0 4.9 7 12 7 12z"/><circle cx="12" cy="9" r="2.4"/></svg>
+        Av. Las Condes 1234, Local 3
+      </div>
+      <div class="item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 7v5l3 3"/><circle cx="12" cy="12" r="9"/></svg>
+        Hoy hasta las 20:00
+      </div>
+    </div>
+    <a class="btn-cta" href="#agendar" style="font-size:1rem; padding:13px 24px;">Ver horas disponibles →</a>
+  </section>
+
+  <section id="servicios">
+    <p class="eyebrow">Carta de servicios</p>
+    <h2 class="display" style="font-size:1.7rem; margin:0 0 22px; font-weight:600;">Qué te puedes hacer</h2>
+    <div>
+      <div class="menu-item"><span class="name">Corte clásico</span><span class="dur">· 30 min</span><span class="fill"></span><span class="price">$9.000</span></div>
+      <div class="menu-item"><span class="name">Fade + diseño</span><span class="dur">· 45 min</span><span class="fill"></span><span class="price">$12.000</span></div>
+      <div class="menu-item"><span class="name">Afeitado a la antigua (navaja)</span><span class="dur">· 30 min</span><span class="fill"></span><span class="price">$10.000</span></div>
+      <div class="menu-item"><span class="name">Barba + perfilado</span><span class="dur">· 20 min</span><span class="fill"></span><span class="price">$7.000</span></div>
+      <div class="menu-item"><span class="name">Combo corte + barba</span><span class="dur">· 60 min</span><span class="fill"></span><span class="price">$16.000</span></div>
+    </div>
+  </section>
+
+  <section id="equipo">
+    <p class="eyebrow">El equipo</p>
+    <h2 class="display" style="font-size:1.7rem; margin:0 0 6px; font-weight:600;">Quién te atiende</h2>
+
+    <div class="barber-feature">
+      <div class="portrait">MS</div>
+      <div>
+        <h3 class="display">Manuel Soto</h3>
+        <p class="role">Especialista en fade</p>
+        <p class="bio">15 años de oficio. El que más agenda tiene los viernes — reserva con anticipación.</p>
+        <div class="stats"><span><b>4.9</b> ★ · 52 reseñas</span><span><b>15</b> años</span></div>
+        <a class="btn-ghost" href="#agendar">Agenda con Manuel →</a>
+      </div>
+    </div>
+
+    <div class="barber-feature flip">
+      <div class="portrait">CR</div>
+      <div>
+        <h3 class="display">Camila Reyes</h3>
+        <p class="role">Clásico y afeitado a navaja</p>
+        <p class="bio">Formada en barbería tradicional — la navaja es su sello, sin apuro y bien hecho.</p>
+        <div class="stats"><span><b>4.8</b> ★ · 31 reseñas</span><span><b>8</b> años</span></div>
+        <a class="btn-ghost" href="#agendar">Agenda con Camila →</a>
+      </div>
+    </div>
+
+    <div class="barber-feature">
+      <div class="portrait">JI</div>
+      <div>
+        <h3 class="display">Jorge Ibáñez</h3>
+        <p class="role">Diseño y color</p>
+        <p class="bio">El de los cortes más atrevidos — diseños, líneas y color para los que quieren destacar.</p>
+        <div class="stats"><span><b>4.7</b> ★ · 20 reseñas</span><span><b>5</b> años</span></div>
+        <a class="btn-ghost" href="#agendar">Agenda con Jorge →</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="galeria">
+    <p class="eyebrow">El local</p>
+    <h2 class="display" style="font-size:1.7rem; margin:0 0 22px; font-weight:600;">La Navaja por dentro</h2>
+    <div class="gallery-grid">
+      <div class="gallery-tile tall"><div class="tex"></div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 4l16 16M10 14l-6 6M14 10l6-6"/><circle cx="7" cy="7" r="2.3"/><circle cx="7" cy="17" r="2.3"/></svg><span>Fade en proceso</span></div>
+      <div class="gallery-tile"><div class="tex"></div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 19V5a2 2 0 012-2h5l9 9-9 9H6a2 2 0 01-2-2z"/></svg><span>Sillón vintage</span></div>
+      <div class="gallery-tile"><div class="tex"></div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg><span>Interior</span></div>
+      <div class="gallery-tile"><div class="tex"></div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3c-4 4-7 7.2-7 10.5a7 7 0 0014 0C19 10.2 16 7 12 3z"/></svg><span>Afeitado a navaja</span></div>
+      <div class="gallery-tile tall"><div class="tex"></div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 21s7-7.1 7-12a7 7 0 10-14 0c0 4.9 7 12 7 12z"/><circle cx="12" cy="9" r="2.4"/></svg><span>Resultado final</span></div>
+    </div>
+  </section>
+
+  <section class="manifesto">
+    <div class="mark"></div>
+    <q class="display">No cortamos el pelo.<br>Afilamos el oficio.</q>
+    <p class="sub">Treinta minutos pensados por gente que lleva años haciendo esto bien.</p>
+  </section>
+
+  <section id="resenas">
+    <p class="eyebrow">Lo que dicen</p>
+    <h2 class="display" style="font-size:1.7rem; margin:0 0 22px; font-weight:600;">Reseñas recientes</h2>
+    <div class="review-grid">
+      <div class="review"><p>"Quedé mejor que en la peluquería de toda la vida. El fade quedó perfecto."</p><p class="who">— Diego R.</p></div>
+      <div class="review"><p>"La afeitada con navaja es otro nivel, muy recomendado."</p><p class="who">— Felipe M.</p></div>
+      <div class="review"><p>"Agendé en 30 segundos desde el celu, llegué y ya tenían todo listo."</p><p class="who">— Ignacio T.</p></div>
+    </div>
+  </section>
+
+  <section id="horario">
+    <p class="eyebrow">Atención</p>
+    <h2 class="display" style="font-size:1.7rem; margin:0 0 22px; font-weight:600;">Horario</h2>
+    <table class="hours">
+      <tr><td>Lunes</td><td>10:00 – 20:00</td></tr>
+      <tr><td>Martes</td><td>10:00 – 20:00</td></tr>
+      <tr><td>Miércoles</td><td>10:00 – 20:00</td></tr>
+      <tr><td>Jueves</td><td>10:00 – 20:00</td></tr>
+      <tr class="today"><td>Viernes</td><td>10:00 – 20:00</td></tr>
+      <tr><td>Sábado</td><td>10:00 – 18:00</td></tr>
+      <tr><td>Domingo</td><td>Cerrado</td></tr>
+    </table>
+  </section>
+
+  <section id="ubicacion">
+    <p class="eyebrow">Dónde estamos</p>
+    <h2 class="display" style="font-size:1.7rem; margin:0 0 22px; font-weight:600;">Ubicación</h2>
+    <div class="loc-card">
+      <div class="map-mock" aria-hidden="true">
+        <div class="road h"></div>
+        <div class="road v"></div>
+        <svg class="pin" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a7 7 0 00-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 00-7-7zm0 9.5A2.5 2.5 0 1112 6.5a2.5 2.5 0 010 5z"/></svg>
+        <span class="note">Vista de referencia — en el sitio real va el mapa interactivo de Google</span>
+      </div>
+      <div class="loc-body">
+        <div class="addr">
+          Av. Las Condes 1234, Local 3<br>
+          <span class="com">Las Condes, Región Metropolitana</span>
+        </div>
+        <a class="btn-ghost" href="https://www.google.com/maps/dir/?api=1&destination=Av.+Las+Condes+1234,+Las+Condes,+Chile" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 11l18-8-8 18-2-8-8-2z"/></svg>
+          Cómo llegar
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section id="instagram">
+    <div class="ig-banner">
+      <div class="who">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg>
+        <div>
+          <div class="handle">@barbería.lanavaja</div>
+          <div class="followers">Antes/después de cada corte, todas las semanas</div>
+        </div>
+      </div>
+      <a class="btn-ghost" href="#" target="_blank" rel="noopener">Seguir en Instagram</a>
+    </div>
+  </section>
+
+  <section id="contacto">
+    <p class="eyebrow">Escríbenos</p>
+    <h2 class="display" style="font-size:1.7rem; margin:0 0 22px; font-weight:600;">¿Alguna duda antes de reservar?</h2>
+    <div class="contact-row">
+      <a class="btn-wsp" href="https://wa.me/56912345678" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 20l1.4-4.1A8 8 0 1112 20a8 8 0 01-4-1.1z"/></svg>
+        Escríbenos por WhatsApp
+      </a>
+      <span class="contact-info">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>
+        hola@lanavaja.cl
+      </span>
+    </div>
+  </section>
+
+  <section id="agendar" style="text-align:center; padding-block:60px;">
+    <h2 class="display" style="font-size:2rem; margin:0 0 14px; font-weight:600;">¿Listo para tu turno?</h2>
+    <p style="color:var(--ink-dim); margin:0 0 26px;">Elige el servicio, el barbero y la hora que más te acomode.</p>
+    <a class="btn-cta" href="#" style="font-size:1.05rem; padding:15px 30px;">Agendar en CorteYa →</a>
+  </section>
+</main>
+
+<div class="pole" role="presentation"></div>
+
+<footer class="wrap">
+  <div class="foot-row">
+    <div class="badge">Av. Las Condes 1234, Local 3 · +56 9 1234 5678<br>Página creada con <a href="#">CorteYa</a></div>
+    <div class="social">
+      <a href="#" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg></a>
+      <a href="#" aria-label="WhatsApp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 20l1.4-4.1A8 8 0 1112 20a8 8 0 01-4-1.1z"/></svg></a>
+    </div>
+  </div>
+</footer>
+
+<div class="sticky-cta"><a class="btn-cta" href="#agendar">Agendar hora</a></div>
+
+<script>
+  // Demo únicamente: simula que cada barbería define su propio color de marca
+  // (en el sitio real esto vendría de un campo en Supabase, no de botones).
+  // base verde original, para poder volver a ella al salir de "mono"
+  const GREEN_BASE = { ground:'#13201A', groundRgb:'19,32,26', surface:'#1C2B22', surface2:'#223325', ink:'#F2ECDD', inkDim:'#C9C2AE', line:'#33452F' };
+  const MONO_BASE  = { ground:'#0A0A0A', groundRgb:'10,10,10', surface:'#161616', surface2:'#1F1F1F', ink:'#FFFFFF', inkDim:'#A8A8A8', line:'#2E2E2E' };
+
+  const ACCENTS = {
+    gold: { brass:'#C9A24B', bright:'#E3C06E', dim:'#7C6633', base:GREEN_BASE },
+    red:  { brass:'#C1512F', bright:'#DE7B55', dim:'#7A3019', base:GREEN_BASE },
+    blue: { brass:'#4C8FA6', bright:'#72B6CC', dim:'#2C5560', base:GREEN_BASE },
+    mono: { brass:'#FFFFFF', bright:'#FFFFFF', dim:'#8F8C84',  base:MONO_BASE },
+  };
+  document.querySelectorAll('.brand-picker button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const a = ACCENTS[btn.dataset.accent];
+      const root = document.documentElement.style;
+      root.setProperty('--brass', a.brass);
+      root.setProperty('--brass-bright', a.bright);
+      root.setProperty('--brass-dim', a.dim);
+      root.setProperty('--ground', a.base.ground);
+      root.setProperty('--ground-rgb', a.base.groundRgb);
+      root.setProperty('--surface', a.base.surface);
+      root.setProperty('--surface-2', a.base.surface2);
+      root.setProperty('--ink', a.base.ink);
+      root.setProperty('--ink-dim', a.base.inkDim);
+      root.setProperty('--line', a.base.line);
+      document.querySelectorAll('.brand-picker button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+  });
+</script>

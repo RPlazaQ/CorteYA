@@ -1,0 +1,369 @@
+<title>La Navaja — Estilo Urbano</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;900&family=Work+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ground:#0A0A0A;
+    --surface:#161614;
+    --surface-2:#1F1F1C;
+    --ink:#F2F0EB;
+    --ink-dim:#8F8C84;
+    --accent:#F2B705;
+    --accent-dim:#8C6A08;
+    --line:#2C2C28;
+    color-scheme: dark;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:var(--ground); color:var(--ink);
+    font-family:'Work Sans', ui-sans-serif, system-ui, sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .display{ font-family:'Big Shoulders Display', sans-serif; font-weight:900; text-transform:uppercase; letter-spacing:0.01em; text-wrap:balance; }
+  .mono{ font-family:'Space Mono', ui-monospace, monospace; font-variant-numeric:tabular-nums; }
+  .wrap{ max-width:900px; margin:0 auto; padding-inline:20px; }
+
+  /* texto fantasma / outline — el recurso tipográfico que pidió el usuario */
+  .ghost{
+    -webkit-text-stroke:1.5px var(--ink);
+    color:transparent;
+    line-height:0.86;
+  }
+  .ghost.accent-stroke{ -webkit-text-stroke-color:var(--accent); }
+
+  .grain{
+    background-image:repeating-linear-gradient(100deg, rgba(255,255,255,.025) 0 1px, transparent 1px 3px);
+  }
+
+  header.top{
+    position:sticky; top:env(safe-area-inset-top,0px); z-index:20;
+    background:rgba(10,10,10,0.9); border-bottom:1px solid var(--line);
+  }
+  header.top .bar{ display:flex; align-items:center; justify-content:space-between; padding-block:14px; gap:12px; }
+  .wordmark{ display:flex; align-items:center; gap:11px; }
+  .logo-badge{
+    width:32px; height:32px; flex:none; border-radius:3px; border:1px solid var(--accent-dim);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Big Shoulders Display',sans-serif; font-weight:900; font-size:1rem; color:var(--accent);
+  }
+  .wordmark span{ font-family:'Big Shoulders Display',sans-serif; font-weight:900; font-size:1.15rem; letter-spacing:0.04em; }
+
+  .btn-cta{
+    display:inline-flex; align-items:center; gap:8px;
+    background:var(--accent); color:#161100;
+    font-weight:700; font-size:0.85rem; text-transform:uppercase; letter-spacing:0.04em;
+    padding:11px 20px; border-radius:2px; border:none; text-decoration:none; white-space:nowrap;
+  }
+  .btn-cta:hover{ filter:brightness(1.1); }
+  .btn-ghost{
+    display:inline-flex; align-items:center; gap:7px;
+    border:1px solid var(--line); color:var(--ink);
+    font-size:0.8rem; text-transform:uppercase; letter-spacing:0.04em; font-weight:600;
+    padding:10px 16px; border-radius:2px; text-decoration:none; white-space:nowrap;
+  }
+  .btn-ghost:hover{ border-color:var(--accent); color:var(--accent); }
+
+  section{ padding-block:60px; }
+  .eyebrow{ text-transform:uppercase; letter-spacing:0.18em; font-size:0.72rem; color:var(--accent); font-weight:700; margin:0 0 10px; font-family:'Space Mono',monospace; }
+
+  /* brand picker (demo only) */
+  .brand-picker{ position:sticky; top:calc(61px + env(safe-area-inset-top,0px)); z-index:19; background:var(--surface-2); border-bottom:1px solid var(--line); font-size:0.78rem; }
+  .brand-picker .wrap{ display:flex; align-items:center; gap:12px; padding-block:9px; flex-wrap:wrap; }
+  .brand-picker .label{ color:var(--ink-dim); font-family:'Space Mono',monospace; }
+  .brand-picker button{ display:inline-flex; align-items:center; gap:6px; background:none; border:1px solid var(--line); color:var(--ink-dim); font-size:0.78rem; padding:5px 10px; border-radius:20px; cursor:pointer; font-family:inherit; }
+  .brand-picker button .dot{ width:10px; height:10px; border-radius:50%; flex:none; border:1px solid rgba(255,255,255,0.18); }
+  .brand-picker button.active{ border-color:var(--accent); color:var(--ink); }
+
+  /* hero */
+  .hero{
+    position:relative; padding-block:70px 50px; overflow:hidden;
+    background:
+      radial-gradient(ellipse at 70% 20%, rgba(242,183,5,0.08), transparent 55%),
+      var(--ground);
+  }
+  .hero .tag{ font-family:'Space Mono',monospace; font-size:0.78rem; color:var(--ink-dim); letter-spacing:0.08em; margin-bottom:22px; }
+  .hero h1{ font-size:clamp(3.4rem,13vw,6rem); margin:0; line-height:0.86; }
+  .hero h1 .solid{ display:block; color:var(--ink); -webkit-text-stroke:0; }
+  .hero h1 .outline{ display:block; font-size:clamp(2.6rem,10vw,4.6rem); }
+  .hero .row{ display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:20px; margin-top:34px; }
+  .hero .meta{ font-size:0.88rem; color:var(--ink-dim); max-width:38ch; }
+  .hero .meta b{ color:var(--accent); }
+
+  /* nosotros */
+  .about-wrap{ position:relative; }
+  .about-ghost{ font-size:clamp(3.5rem,14vw,7rem); position:absolute; top:-30px; left:-4px; z-index:0; opacity:0.5; user-select:none; }
+  .about-body{ position:relative; z-index:1; padding-top:90px; max-width:54ch; }
+  .about-body p{ color:var(--ink-dim); line-height:1.6; }
+  .about-body b{ color:var(--accent); }
+  .about-body a{ color:var(--ink); font-family:'Space Mono',monospace; font-size:0.82rem; text-decoration:underline; text-underline-offset:3px; }
+
+  /* equipo — nombres como elemento gráfico */
+  .team-panel{
+    background:var(--surface); border:1px solid var(--line); border-radius:4px; padding:34px 28px;
+    position:relative; overflow:hidden;
+  }
+  .team-stack .row{
+    display:flex; align-items:baseline; justify-content:space-between; gap:16px; flex-wrap:wrap;
+    padding-block:14px; border-bottom:1px solid var(--line);
+  }
+  .team-stack .row:last-child{ border-bottom:none; }
+  .team-stack .name{ font-size:clamp(2rem,6vw,3.1rem); line-height:0.9; }
+  .team-stack .row.highlight .name{ color:var(--accent); }
+  .team-stack .row:not(.highlight) .name{ -webkit-text-stroke:1.3px var(--ink); color:transparent; }
+  .team-stack .side{ display:flex; align-items:center; gap:16px; flex-wrap:wrap; }
+  .team-stack .role{ font-family:'Space Mono',monospace; font-size:0.74rem; color:var(--ink-dim); text-transform:uppercase; letter-spacing:0.05em; }
+  .team-stack .perfil{ font-family:'Space Mono',monospace; font-size:0.74rem; color:var(--ink); text-decoration:none; border-bottom:1px solid var(--accent); padding-bottom:2px; }
+  .team-foot{ display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap; margin-top:26px; }
+  .team-foot .join{ font-size:0.84rem; color:var(--ink-dim); }
+  .team-foot .join a{ color:var(--accent); text-decoration:none; }
+
+  /* servicios: categorías grandes + lista completa */
+  .cat-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:40px; }
+  .cat{ text-align:left; }
+  .cat .en{ font-size:clamp(1.6rem,5vw,2.3rem); line-height:0.85; margin-bottom:2px; }
+  .cat .es{ font-family:'Space Mono',monospace; font-weight:700; font-size:0.95rem; color:var(--accent); margin-bottom:8px; }
+  .cat p{ font-size:0.82rem; color:var(--ink-dim); margin:0; line-height:1.4; }
+  @media (max-width:640px){ .cat-grid{ grid-template-columns:1fr; } }
+
+  .menu-item{ display:flex; align-items:baseline; gap:10px; padding-block:13px; border-bottom:1px solid var(--line); }
+  .menu-item:last-child{ border-bottom:none; }
+  .menu-item .name{ font-weight:600; font-size:0.96rem; }
+  .menu-item .dur{ color:var(--ink-dim); font-size:0.78rem; font-family:'Space Mono',monospace; }
+  .menu-item .fill{ flex:1; border-bottom:1px dotted var(--line); transform:translateY(-4px); min-width:12px; }
+  .menu-item .price{ font-family:'Space Mono',monospace; color:var(--accent); font-weight:700; font-size:0.96rem; white-space:nowrap; }
+
+  /* reseñas */
+  .review-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:1px; background:var(--line); border:1px solid var(--line); }
+  .review{ background:var(--ground); padding:20px 22px; }
+  .review p{ margin:0 0 12px; font-size:0.92rem; color:var(--ink); }
+  .review .who{ font-size:0.76rem; color:var(--ink-dim); font-family:'Space Mono',monospace; text-transform:uppercase; }
+
+  /* horario */
+  table.hours{ width:100%; border-collapse:collapse; font-size:0.92rem; font-family:'Space Mono',monospace; }
+  table.hours td{ padding:11px 4px; border-bottom:1px solid var(--line); text-transform:uppercase; font-size:0.82rem; letter-spacing:0.03em; }
+  table.hours td:last-child{ text-align:right; color:var(--ink-dim); }
+  table.hours tr.today td{ color:var(--accent); }
+
+  /* ubicación */
+  .loc-ghost{ font-size:clamp(2.6rem,11vw,5.2rem); line-height:0.84; margin-bottom:26px; }
+  .loc-row{ display:flex; justify-content:space-between; align-items:center; gap:20px; flex-wrap:wrap; background:var(--surface); border:1px solid var(--line); border-radius:4px; padding:22px 26px; position:relative; }
+  .loc-row .addr{ font-size:0.95rem; }
+  .loc-row .addr .com{ color:var(--ink-dim); font-size:0.84rem; }
+  .fab{
+    width:52px; height:52px; border-radius:50%; background:var(--accent); color:#161100;
+    display:flex; align-items:center; justify-content:center; text-decoration:none; flex:none;
+  }
+  .fab svg{ width:20px; height:20px; }
+
+  /* footer */
+  footer{ border-top:1px solid var(--line); padding-block:46px; }
+  .foot-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:28px; margin-bottom:36px; }
+  .foot-grid h4{ font-family:'Space Mono',monospace; text-transform:uppercase; font-size:0.74rem; letter-spacing:0.08em; color:var(--ink-dim); margin:0 0 12px; }
+  .foot-grid div > div, .foot-grid div > a{ display:block; font-size:0.88rem; margin-bottom:6px; color:var(--ink); text-decoration:none; }
+  .foot-grid a:hover{ color:var(--accent); }
+  @media (max-width:640px){ .foot-grid{ grid-template-columns:1fr; gap:22px; } }
+  .foot-credit{ display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; font-size:0.74rem; color:var(--ink-dim); font-family:'Space Mono',monospace; padding-top:22px; border-top:1px solid var(--line); }
+  .foot-credit a{ color:var(--accent); text-decoration:none; }
+
+  .sticky-cta{
+    position:fixed; left:0; right:0; bottom:0;
+    padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px));
+    background:linear-gradient(180deg, rgba(10,10,10,0), var(--ground) 40%);
+    display:none; z-index:30;
+  }
+  .sticky-cta .btn-cta{ width:100%; justify-content:center; padding-block:13px; }
+  @media (max-width:640px){ .sticky-cta{ display:block; } section{ padding-block:46px; } }
+</style>
+
+<header class="top">
+  <div class="wrap bar">
+    <div class="wordmark">
+      <div class="logo-badge">LN</div>
+      <span>La Navaja</span>
+    </div>
+    <a class="btn-cta" href="#agendar">Agendar →</a>
+  </div>
+</header>
+
+<div class="brand-picker">
+  <div class="wrap">
+    <span class="label">// color de marca (demo):</span>
+    <button type="button" class="active" data-accent="amber"><span class="dot" style="background:#F2B705"></span>Ámbar</button>
+    <button type="button" data-accent="cyan"><span class="dot" style="background:#2FB6C7"></span>Cian</button>
+    <button type="button" data-accent="red"><span class="dot" style="background:#D6452B"></span>Rojo</button>
+    <button type="button" data-accent="mono"><span class="dot" style="background:#F2F0EB"></span>Blanco y negro</button>
+  </div>
+</div>
+
+<section class="hero grain">
+  <div class="wrap">
+    <p class="tag">BARBERÍA · LAS CONDES, SANTIAGO · EST. 2019</p>
+    <h1 class="display">
+      <span class="solid">La Navaja</span>
+      <span class="outline ghost">Barbería</span>
+    </h1>
+    <div class="row">
+      <p class="meta">Fade, clásico o afeitado a la antigua con navaja. <b>Sin llamadas, sin esperar respuesta</b> — agenda tu turno desde el celular.</p>
+      <a class="btn-ghost" href="#agendar">Ver horas disponibles →</a>
+    </div>
+  </div>
+</section>
+
+<main class="wrap">
+  <section id="nosotros" class="about-wrap">
+    <div class="about-ghost display ghost">LA NAVAJA</div>
+    <div class="about-body">
+      <p class="eyebrow">Nosotros</p>
+      <p>Bienvenido a <b>LA NAVAJA</b>, donde el oficio no pasa de moda. Somos pioneros del fade en la comuna, y no es casualidad: nos enorgullece tener al equipo más talentoso, apasionado por el detalle y experto en sacar lo mejor de ti.</p>
+      <a href="#equipo">CONOCE AL EQUIPO →</a>
+    </div>
+  </section>
+
+  <section id="equipo">
+    <p class="eyebrow">Nuestro equipo</p>
+    <div class="team-panel">
+      <div class="team-stack">
+        <div class="row highlight">
+          <span class="name display">Manuel</span>
+          <div class="side">
+            <span class="role">Especialista en fade · 15 años</span>
+            <a class="perfil" href="#agendar">PERFIL →</a>
+          </div>
+        </div>
+        <div class="row">
+          <span class="name display">Camila</span>
+          <div class="side">
+            <span class="role">Clásico y navaja · 8 años</span>
+            <a class="perfil" href="#agendar">PERFIL →</a>
+          </div>
+        </div>
+        <div class="row">
+          <span class="name display">Jorge</span>
+          <div class="side">
+            <span class="role">Diseño y color · 5 años</span>
+            <a class="perfil" href="#agendar">PERFIL →</a>
+          </div>
+        </div>
+      </div>
+      <div class="team-foot">
+        <span class="join">¿Quieres ser parte del equipo? <a href="#contacto">Escríbenos →</a></span>
+        <a class="btn-ghost" href="#" target="_blank" rel="noopener">Ver Instagram →</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="servicios">
+    <p class="eyebrow">Servicios</p>
+    <div class="cat-grid">
+      <div class="cat">
+        <p class="en display ghost">FADE</p>
+        <p class="es">MODERNO</p>
+        <p>Texturas vivas, líneas nítidas y actitud.</p>
+      </div>
+      <div class="cat">
+        <p class="en display ghost accent-stroke">CLASSIC</p>
+        <p class="es">CLÁSICO</p>
+        <p>Elegancia sin esfuerzo. Estructura y carácter.</p>
+      </div>
+      <div class="cat">
+        <p class="en display ghost">SHAVE</p>
+        <p class="es">A NAVAJA</p>
+        <p>Afeitado a la antigua, con calma y precisión.</p>
+      </div>
+    </div>
+    <div>
+      <div class="menu-item"><span class="name">Corte clásico</span><span class="dur">30 MIN</span><span class="fill"></span><span class="price">$9.000</span></div>
+      <div class="menu-item"><span class="name">Fade + diseño</span><span class="dur">45 MIN</span><span class="fill"></span><span class="price">$12.000</span></div>
+      <div class="menu-item"><span class="name">Afeitado a la antigua (navaja)</span><span class="dur">30 MIN</span><span class="fill"></span><span class="price">$10.000</span></div>
+      <div class="menu-item"><span class="name">Barba + perfilado</span><span class="dur">20 MIN</span><span class="fill"></span><span class="price">$7.000</span></div>
+      <div class="menu-item"><span class="name">Combo corte + barba</span><span class="dur">60 MIN</span><span class="fill"></span><span class="price">$16.000</span></div>
+    </div>
+  </section>
+
+  <section id="resenas">
+    <p class="eyebrow">Lo que dicen</p>
+    <div class="review-grid">
+      <div class="review"><p>"Quedé mejor que en la peluquería de toda la vida. El fade quedó perfecto."</p><p class="who">Diego R.</p></div>
+      <div class="review"><p>"La afeitada con navaja es otro nivel, muy recomendado."</p><p class="who">Felipe M.</p></div>
+      <div class="review"><p>"Agendé en 30 segundos desde el celu, llegué y ya tenían todo listo."</p><p class="who">Ignacio T.</p></div>
+    </div>
+  </section>
+
+  <section id="horario">
+    <p class="eyebrow">Atención</p>
+    <table class="hours">
+      <tr><td>Lunes</td><td>10:00 – 20:00</td></tr>
+      <tr><td>Martes</td><td>10:00 – 20:00</td></tr>
+      <tr><td>Miércoles</td><td>10:00 – 20:00</td></tr>
+      <tr><td>Jueves</td><td>10:00 – 20:00</td></tr>
+      <tr class="today"><td>Viernes</td><td>10:00 – 20:00</td></tr>
+      <tr><td>Sábado</td><td>10:00 – 18:00</td></tr>
+      <tr><td>Domingo</td><td>Cerrado</td></tr>
+    </table>
+  </section>
+
+  <section id="ubicacion">
+    <p class="loc-ghost display ghost">LAS CONDES,<br>SANTIAGO</p>
+    <div class="loc-row">
+      <div class="addr">
+        Av. Las Condes 1234, Local 3<br>
+        <span class="com">+56 9 1234 5678</span>
+      </div>
+      <a class="fab" href="https://www.google.com/maps/dir/?api=1&destination=Av.+Las+Condes+1234,+Las+Condes,+Chile" target="_blank" rel="noopener" aria-label="Cómo llegar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l18-8-8 18-2-8-8-2z"/></svg>
+      </a>
+    </div>
+  </section>
+
+  <section id="agendar" style="text-align:center;">
+    <h2 class="display" style="font-size:clamp(1.8rem,5vw,2.6rem); margin:0 0 14px;">¿Listo para tu turno?</h2>
+    <p style="color:var(--ink-dim); margin:0 0 26px; font-size:0.95rem;">Elige el servicio, el barbero y la hora que más te acomode.</p>
+    <a class="btn-cta" href="#" style="font-size:0.95rem; padding:16px 32px;">Agendar en CorteYa →</a>
+  </section>
+</main>
+
+<footer class="wrap">
+  <div class="foot-grid">
+    <div>
+      <h4>Ubicación</h4>
+      <div>Av. Las Condes 1234<br>Las Condes, Santiago</div>
+      <a href="#" target="_blank" rel="noopener">Ir a Google Maps</a>
+    </div>
+    <div>
+      <h4>Redes</h4>
+      <a href="#" target="_blank" rel="noopener">Instagram</a>
+      <a href="#" target="_blank" rel="noopener">WhatsApp</a>
+    </div>
+    <div>
+      <h4>Info</h4>
+      <div>Lun–Sáb 10:00–20:00</div>
+      <a href="#contacto">Únete al equipo</a>
+    </div>
+  </div>
+  <div class="foot-credit">
+    <span>© La Navaja</span>
+    <span>Hecho con <a href="#">CorteYa</a></span>
+  </div>
+</footer>
+
+<div class="sticky-cta"><a class="btn-cta" href="#agendar">Agendar hora</a></div>
+
+<script>
+  const ACCENTS = {
+    amber: { accent:'#F2B705', dim:'#8C6A08' },
+    cyan:  { accent:'#2FB6C7', dim:'#1A6A73' },
+    red:   { accent:'#D6452B', dim:'#7A271A' },
+    mono:  { accent:'#F2F0EB', dim:'#8F8C84' },
+  };
+  document.querySelectorAll('.brand-picker button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const a = ACCENTS[btn.dataset.accent];
+      const root = document.documentElement.style;
+      root.setProperty('--accent', a.accent);
+      root.setProperty('--accent-dim', a.dim);
+      document.querySelectorAll('.brand-picker button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+  });
+</script>
