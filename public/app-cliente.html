@@ -208,13 +208,16 @@
       </div>
 
       <div id="pago-loading" class="hidden flex-1 flex flex-col items-center justify-center px-8 text-center">
-        <div class="relative w-12 h-12 mb-6 text-gold">
-          <svg class="loading-icon li-tijera absolute inset-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4l16 16M10 14l-6 6M14 10l6-6"/><circle cx="7" cy="7" r="2.3"/><circle cx="7" cy="17" r="2.3"/></svg>
-          <svg class="loading-icon li-navaja hidden absolute inset-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 20.5l6-6"/><path d="M9.5 14.5L18 6c.8-.8 2-.8 2.8 0 .8.8.8 2 0 2.8L12 17.5"/><path d="M12 17.5l-2.5-3"/></svg>
-          <svg class="loading-icon li-cilindro hidden absolute inset-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="6" width="8" height="12" rx="2"/><rect x="9" y="3" width="6" height="2.2" rx="1"/><rect x="9" y="18.8" width="6" height="2.2" rx="1"/><path d="M8.5 7.5L15.5 16.5M9.8 7l5.7 8M11.1 7l5 7.3"/></svg>
-        </div>
-        <div class="w-full max-w-[200px] h-1.5 bg-white/10 rounded-full overflow-hidden mb-4">
-          <div class="loading-bar-fill h-full bg-gold rounded-full" style="width:0%"></div>
+        <div class="relative w-20 h-20 mb-5">
+          <svg class="w-20 h-20 -rotate-90" viewBox="0 0 80 80">
+            <circle cx="40" cy="40" r="35" fill="none" stroke="rgba(255,255,255,.1)" stroke-width="4"/>
+            <circle class="loading-ring" cx="40" cy="40" r="35" fill="none" stroke="#D9A441" stroke-width="4" stroke-linecap="round" stroke-dasharray="220" stroke-dashoffset="220"/>
+          </svg>
+          <div class="absolute inset-0 flex items-center justify-center text-gold">
+            <svg class="loading-icon li-tijera w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4l16 16M10 14l-6 6M14 10l6-6"/><circle cx="7" cy="7" r="2.3"/><circle cx="7" cy="17" r="2.3"/></svg>
+            <svg class="loading-icon li-navaja hidden w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 20.5l6-6"/><path d="M9.5 14.5L18 6c.8-.8 2-.8 2.8 0 .8.8.8 2 0 2.8L12 17.5"/><path d="M12 17.5l-2.5-3"/></svg>
+            <svg class="loading-icon li-cilindro hidden w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="6" width="8" height="12" rx="2"/><rect x="9" y="3" width="6" height="2.2" rx="1"/><rect x="9" y="18.8" width="6" height="2.2" rx="1"/><path d="M8.5 7.5L15.5 16.5M9.8 7l5.7 8M11.1 7l5 7.3"/></svg>
+          </div>
         </div>
         <p class="text-white/60 text-sm">Confirmando tu reserva…</p>
       </div>
@@ -347,13 +350,16 @@
     </div>
 
     <div id="d-loading" class="hidden py-20 flex flex-col items-center text-center">
-      <div class="relative w-12 h-12 mb-6 text-gold">
-        <svg class="loading-icon li-tijera absolute inset-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4l16 16M10 14l-6 6M14 10l6-6"/><circle cx="7" cy="7" r="2.3"/><circle cx="7" cy="17" r="2.3"/></svg>
-        <svg class="loading-icon li-navaja hidden absolute inset-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 20.5l6-6"/><path d="M9.5 14.5L18 6c.8-.8 2-.8 2.8 0 .8.8.8 2 0 2.8L12 17.5"/><path d="M12 17.5l-2.5-3"/></svg>
-        <svg class="loading-icon li-cilindro hidden absolute inset-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="6" width="8" height="12" rx="2"/><rect x="9" y="3" width="6" height="2.2" rx="1"/><rect x="9" y="18.8" width="6" height="2.2" rx="1"/><path d="M8.5 7.5L15.5 16.5M9.8 7l5.7 8M11.1 7l5 7.3"/></svg>
-      </div>
-      <div class="w-full max-w-[200px] h-1.5 bg-white/10 rounded-full overflow-hidden mb-4">
-        <div class="loading-bar-fill h-full bg-gold rounded-full" style="width:0%"></div>
+      <div class="relative w-20 h-20 mb-5">
+        <svg class="w-20 h-20 -rotate-90" viewBox="0 0 80 80">
+          <circle cx="40" cy="40" r="35" fill="none" stroke="rgba(255,255,255,.1)" stroke-width="4"/>
+          <circle class="loading-ring" cx="40" cy="40" r="35" fill="none" stroke="#D9A441" stroke-width="4" stroke-linecap="round" stroke-dasharray="220" stroke-dashoffset="220"/>
+        </svg>
+        <div class="absolute inset-0 flex items-center justify-center text-gold">
+          <svg class="loading-icon li-tijera w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4l16 16M10 14l-6 6M14 10l6-6"/><circle cx="7" cy="7" r="2.3"/><circle cx="7" cy="17" r="2.3"/></svg>
+          <svg class="loading-icon li-navaja hidden w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 20.5l6-6"/><path d="M9.5 14.5L18 6c.8-.8 2-.8 2.8 0 .8.8.8 2 0 2.8L12 17.5"/><path d="M12 17.5l-2.5-3"/></svg>
+          <svg class="loading-icon li-cilindro hidden w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="6" width="8" height="12" rx="2"/><rect x="9" y="3" width="6" height="2.2" rx="1"/><rect x="9" y="18.8" width="6" height="2.2" rx="1"/><path d="M8.5 7.5L15.5 16.5M9.8 7l5.7 8M11.1 7l5 7.3"/></svg>
+        </div>
       </div>
       <p class="text-white/60 text-sm">Confirmando tu reserva…</p>
     </div>
@@ -1129,16 +1135,18 @@
       });
     }
 
-    // Corre la barra de 0% a 100% a lo largo de totalMs (vía transition CSS,
-    // no a los tirones con setInterval) y va cambiando el ícono de arriba
-    // en 3 tercios iguales.
+    // Anima el anillo circular de 0 a 100% a lo largo de totalMs (vía
+    // transition CSS sobre stroke-dashoffset, no a los tirones con
+    // setInterval) y va cambiando el ícono del centro en 3 tercios iguales.
+    const LOADING_RING_CIRC = 220; // 2 * PI * r(35), redondeado
+
     async function runLoadingAnimation(root, totalMs) {
-      const bar = root.querySelector('.loading-bar-fill');
-      bar.style.transition = 'none';
-      bar.style.width = '0%';
-      void bar.offsetWidth; // fuerza reflow para que el transition de abajo sí anime desde 0%
-      bar.style.transition = `width ${totalMs}ms linear`;
-      requestAnimationFrame(() => { bar.style.width = '100%'; });
+      const ring = root.querySelector('.loading-ring');
+      ring.style.transition = 'none';
+      ring.style.strokeDashoffset = String(LOADING_RING_CIRC);
+      void ring.getBoundingClientRect(); // fuerza reflow para que el transition de abajo sí anime desde el inicio
+      ring.style.transition = `stroke-dashoffset ${totalMs}ms linear`;
+      requestAnimationFrame(() => { ring.style.strokeDashoffset = '0'; });
 
       const tercio = totalMs / 3;
       setLoadingIcon(root, 'tijera');
@@ -1155,7 +1163,7 @@
       document.getElementById('d-flow').classList.add('hidden');
       document.getElementById('d-loading').classList.remove('hidden');
 
-      const totalMs = 3800 + Math.random() * 800;
+      const totalMs = 4800 + Math.random() * 800;
       await Promise.all([
         runLoadingAnimation(document.getElementById('pago-loading'), totalMs),
         runLoadingAnimation(document.getElementById('d-loading'), totalMs),
