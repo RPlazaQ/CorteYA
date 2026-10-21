@@ -16,10 +16,10 @@ values (
   'America/Santiago'
 );
 
-insert into barbers (id, barbershop_id, name, specialty, active) values
-  ('22222222-2222-4222-8222-222222222221', '11111111-1111-4111-8111-111111111111', 'Tomás', 'Corte y barba', true),
-  ('22222222-2222-4222-8222-222222222222', '11111111-1111-4111-8111-111111111111', 'Nico',  'Especialista en fade', true),
-  ('22222222-2222-4222-8222-222222222223', '11111111-1111-4111-8111-111111111111', 'Caro',  'Corte clásico', true);
+insert into barbers (id, barbershop_id, name, active) values
+  ('22222222-2222-4222-8222-222222222221', '11111111-1111-4111-8111-111111111111', 'Tomás', true),
+  ('22222222-2222-4222-8222-222222222222', '11111111-1111-4111-8111-111111111111', 'Nico',  true),
+  ('22222222-2222-4222-8222-222222222223', '11111111-1111-4111-8111-111111111111', 'Caro',  true);
 
 insert into services (id, barbershop_id, name, duration_minutes, price_clp, active) values
   ('33333333-3333-4333-8333-333333333331', '11111111-1111-4111-8111-111111111111', 'Corte clásico',    30, 8000,  true),

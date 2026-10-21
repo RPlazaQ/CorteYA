@@ -29,7 +29,6 @@ create table barbers (
   id             uuid primary key default gen_random_uuid(),
   barbershop_id  uuid not null references barbershops(id) on delete cascade,
   name           text not null,
-  specialty      text,
   photo_url      text,
   active         boolean not null default true,
   rating         numeric(2,1) not null default 0,

@@ -14,8 +14,8 @@ values (
   'America/Santiago'
 );
 
-insert into barbers (id, barbershop_id, name, specialty, active) values
-  ('99999999-9999-4999-8999-999999999992', '99999999-9999-4999-8999-999999999991', 'Barbero Prueba', 'Corte y barba', true);
+insert into barbers (id, barbershop_id, name, active) values
+  ('99999999-9999-4999-8999-999999999992', '99999999-9999-4999-8999-999999999991', 'Barbero Prueba', true);
 
 insert into services (id, barbershop_id, name, duration_minutes, price_clp, active) values
   ('99999999-9999-4999-8999-999999999993', '99999999-9999-4999-8999-999999999991', 'Corte de prueba', 30, 5000, true);

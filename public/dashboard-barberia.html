@@ -1140,8 +1140,7 @@
       document.getElementById('barberos-lista').innerHTML = (data && data.length) ? data.map(b => `
         <div class="border border-white/10 rounded-sm p-4">
           <img src="${b.photo_url || 'https://placehold.co/48x48/1D1D20/D9A441?text=' + encodeURIComponent(b.name.charAt(0))}" class="w-12 h-12 rounded-sm mb-3">
-          <p class="text-sm font-medium">${escapeHtml(b.name)}</p>
-          <p class="text-xs text-white/50 mb-2">${escapeHtml(b.specialty)}</p>
+          <p class="text-sm font-medium mb-2">${escapeHtml(b.name)}</p>
           <div class="flex items-center justify-between gap-2 mb-2">
             <span class="text-xs ${b.active ? 'bg-green-500/15 text-green-400' : 'bg-white/10 text-white/40'} px-2 py-0.5 rounded-sm">${b.active ? 'Disponible' : 'Inactivo'}</span>
             <button onclick="toggleBarberoActivo('${b.id}', ${b.active})" class="text-xs text-white/40 hover:${b.active ? 'text-red-400' : 'text-green-400'} transition">${b.active ? 'Eliminar' : 'Reactivar'}</button>
@@ -1207,9 +1206,7 @@
       let name = prompt('Nombre del barbero:');
       if (!name) return;
       name = capitalizeWords(name).slice(0, 50);
-      let specialty = prompt('Especialidad (opcional):', '') || null;
-      if (specialty) specialty = capitalizeWords(specialty).slice(0, 60);
-      const { data, error } = await supabaseClient.from('barbers').insert({ barbershop_id: state.barbershopId, name, specialty }).select().single();
+      const { data, error } = await supabaseClient.from('barbers').insert({ barbershop_id: state.barbershopId, name }).select().single();
       if (error) { alert('Error: ' + error.message); return; }
       const horario = [1, 2, 3, 4, 5, 6].map(weekday => ({ barber_id: data.id, weekday, start_time: '10:00', end_time: '20:00' }));
       await supabaseClient.from('barber_working_hours').insert(horario);
