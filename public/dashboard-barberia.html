@@ -238,6 +238,34 @@
               <label class="block text-xs text-white/60 mb-1">Hasta</label>
               <input id="reporte-hasta" type="date" onchange="loadReportes()" class="bg-transparent border border-white/15 rounded-sm px-2 py-1.5 text-xs text-white/80 focus:outline-none focus:border-gold [color-scheme:dark]">
             </div>
+            <div>
+              <label class="block text-xs text-white/60 mb-1">Turno</label>
+              <select id="reporte-turno" onchange="loadReportes()" class="bg-transparent border border-white/15 rounded-sm px-2 py-1.5 text-xs text-white/80 focus:outline-none focus:border-gold [color-scheme:dark]">
+                <option value="">Todos</option>
+                <option value="manana">Mañana (antes de 14:00)</option>
+                <option value="tarde">Tarde (14:00 o después)</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs text-white/60 mb-1">Forma de pago</label>
+              <select id="reporte-pago" onchange="loadReportes()" class="bg-transparent border border-white/15 rounded-sm px-2 py-1.5 text-xs text-white/80 focus:outline-none focus:border-gold [color-scheme:dark]">
+                <option value="">Todas</option>
+                <option value="paid_cash">Efectivo</option>
+                <option value="paid_transfer">Transferencia</option>
+                <option value="paid_card">Tarjeta</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs text-white/60 mb-1">Estado</label>
+              <select id="reporte-estado" onchange="loadReportes()" class="bg-transparent border border-white/15 rounded-sm px-2 py-1.5 text-xs text-white/80 focus:outline-none focus:border-gold [color-scheme:dark]">
+                <option value="">Todos</option>
+                <option value="confirmed">Confirmada</option>
+                <option value="rescheduled">Reagendada</option>
+                <option value="asistio">Asistió (pagada)</option>
+                <option value="cancelled">Canceló</option>
+                <option value="no_show">No asistió</option>
+              </select>
+            </div>
           </div>
 
           <div class="grid grid-cols-2 gap-3 md:grid-cols-2 md:gap-4 mb-8 max-w-lg">
@@ -251,13 +279,8 @@
             </div>
           </div>
 
-          <p class="font-mono text-[11px] tracking-widest uppercase text-white/40 mb-3">Reagendadas en el período</p>
-          <div id="reporte-reagendadas" class="border border-white/10 rounded-sm divide-y divide-white/10 mb-8">
-            <p class="px-4 py-6 text-sm text-white/40 text-center">Cargando…</p>
-          </div>
-
-          <p class="font-mono text-[11px] tracking-widest uppercase text-white/40 mb-3">No asistió en el período</p>
-          <div id="reporte-no-show" class="border border-white/10 rounded-sm divide-y divide-white/10">
+          <p class="font-mono text-[11px] tracking-widest uppercase text-white/40 mb-3">Reservas en el período</p>
+          <div id="reporte-lista" class="border border-white/10 rounded-sm divide-y divide-white/10">
             <p class="px-4 py-6 text-sm text-white/40 text-center">Cargando…</p>
           </div>
         </section>
@@ -591,6 +614,8 @@
     }
 
     // ---------- reportes ----------
+    const PAGOS_RESERVA = ['paid_cash', 'paid_transfer', 'paid_card'];
+
     async function loadReportes() {
       const desdeInput = document.getElementById('reporte-desde');
       const hastaInput = document.getElementById('reporte-hasta');
@@ -601,6 +626,9 @@
       }
       const desde = desdeInput.value;
       const hasta = hastaInput.value;
+      const turno = document.getElementById('reporte-turno').value;
+      const pago = document.getElementById('reporte-pago').value;
+      const estado = document.getElementById('reporte-estado').value;
 
       const { data: barbers } = await supabaseClient.from('barbers').select('id').eq('barbershop_id', state.barbershopId);
       const barberIds = (barbers || []).map(b => b.id);
@@ -610,48 +638,55 @@
       if (!barberIds.length) {
         document.getElementById('reporte-cortes').textContent = '0';
         document.getElementById('reporte-ingresos').textContent = clp(0);
-        vacioLista('reporte-reagendadas', 'Agrega barberos para ver reportes.');
-        vacioLista('reporte-no-show', 'Agrega barberos para ver reportes.');
+        vacioLista('reporte-lista', 'Agrega barberos para ver reportes.');
         return;
       }
 
       const { data: bookings, error } = await supabaseClient
         .from('bookings')
-        .select('customer_name,customer_phone,booking_date,start_time,status,services(price_clp)')
+        .select('customer_name,customer_phone,booking_date,start_time,status,barbers(name),services(name,price_clp)')
         .in('barber_id', barberIds)
         .gte('booking_date', desde)
         .lte('booking_date', hasta)
-        .order('booking_date');
+        .order('booking_date')
+        .order('start_time');
 
       if (error) {
         console.error(error);
-        vacioLista('reporte-reagendadas', 'Error al cargar el reporte.');
-        vacioLista('reporte-no-show', 'Error al cargar el reporte.');
+        vacioLista('reporte-lista', 'Error al cargar el reporte.');
         return;
       }
 
-      const pagadas = (bookings || []).filter(b => ['paid_cash', 'paid_transfer', 'paid_card'].includes(b.status));
-      const reagendadas = (bookings || []).filter(b => b.status === 'rescheduled');
-      const noShow = (bookings || []).filter(b => b.status === 'no_show');
+      const filtradas = (bookings || []).filter(b => {
+        if (turno === 'manana' && b.start_time >= '14:00:00') return false;
+        if (turno === 'tarde' && b.start_time < '14:00:00') return false;
+        if (pago && b.status !== pago) return false;
+        if (estado === 'asistio' && !PAGOS_RESERVA.includes(b.status)) return false;
+        if (estado && estado !== 'asistio' && b.status !== estado) return false;
+        return true;
+      });
 
+      const pagadas = filtradas.filter(b => PAGOS_RESERVA.includes(b.status));
       document.getElementById('reporte-cortes').textContent = pagadas.length;
       document.getElementById('reporte-ingresos').textContent = clp(pagadas.reduce((sum, b) => sum + (b.services?.price_clp || 0), 0));
 
-      const renderLista = (lista) => lista.map(b => `
-        <div class="px-4 py-3 flex items-center justify-between text-sm">
-          <div>
-            <p class="font-medium">${escapeHtml(b.customer_name)}</p>
-            <p class="text-xs text-white/40">${escapeHtml(b.customer_phone)}</p>
+      if (!filtradas.length) {
+        vacioLista('reporte-lista', 'Sin reservas para estos filtros.');
+        return;
+      }
+
+      document.getElementById('reporte-lista').innerHTML = filtradas.map(b => `
+        <div class="px-4 py-3 flex items-center justify-between gap-3 text-sm">
+          <div class="min-w-0">
+            <p class="font-medium truncate">${escapeHtml(b.customer_name)}</p>
+            <p class="text-xs text-white/40 truncate">${escapeHtml(b.customer_phone)} · ${escapeHtml(b.barbers?.name || '')} · ${escapeHtml(b.services?.name || '')}</p>
           </div>
-          <span class="text-xs text-white/60 shrink-0 ml-3">${formatFechaCorta(b.booking_date)} · ${b.start_time.slice(0, 5)}</span>
+          <div class="text-right shrink-0">
+            <p class="text-xs text-white/60">${formatFechaCorta(b.booking_date)} · ${b.start_time.slice(0, 5)}</p>
+            <span class="text-[11px] px-1.5 py-0.5 rounded-sm ${estadoDe(b.status).pill}">${estadoDe(b.status).label}</span>
+          </div>
         </div>
       `).join('');
-
-      if (reagendadas.length) document.getElementById('reporte-reagendadas').innerHTML = renderLista(reagendadas);
-      else vacioLista('reporte-reagendadas', 'Sin reagendamientos en el período.');
-
-      if (noShow.length) document.getElementById('reporte-no-show').innerHTML = renderLista(noShow);
-      else vacioLista('reporte-no-show', 'Sin inasistencias en el período.');
     }
 
     // ---------- compartir link de agendamiento ----------
