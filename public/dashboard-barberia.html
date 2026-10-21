@@ -1239,6 +1239,10 @@
               ? `<button onclick="crearAccesoBarbero('${b.id}', '${escapeHtml(b.name)}')" class="w-full text-xs border border-white/15 rounded-sm px-2 py-1.5 text-white/60 hover:border-gold hover:text-gold transition">+ Crear acceso</button>`
               : `<p class="text-[11px] text-white/30 text-center">Los accesos de barbero no están incluidos en tu plan actual.</p>`
           }
+          ${PLANES_CON_LOGIN_BARBERO.includes(state.barbershopPlan)
+            ? `<p class="text-[11px] text-white/30 text-center mt-2">📸 Pronto podrá agregar su foto de perfil y descripción desde su acceso.</p>`
+            : `<p class="text-[11px] text-white/30 text-center mt-2">La foto de perfil y descripción del barbero no están incluidas en tu plan actual.</p>`
+          }
         </div>
       `).join('') : '<p class="col-span-2 md:col-span-3 text-white/40 text-sm text-center py-6">Sin barberos todavía.</p>';
     }
