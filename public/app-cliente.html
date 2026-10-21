@@ -33,194 +33,339 @@
 <style>
   body { font-family: 'Inter', sans-serif; }
   .font-display { font-family: 'Space Grotesk', sans-serif; letter-spacing: -0.01em; }
-  .screen { position: absolute; inset: 0; }
+
+  /* pantallas móviles: antes vivían dentro de un marco de celular de
+     375x780px fijo (se veía "celular dentro del celular" incluso en un
+     celular real). Ahora cada pantalla es simplemente un bloque de alto
+     mínimo = el viewport real menos la barra superior, y solo una está
+     visible a la vez (.hidden la saca del flujo). */
+  .screen { display: flex; flex-direction: column; min-height: calc(100dvh - 52px); }
+
+  /* acordeón de escritorio */
+  .d-section { border: 1px solid rgba(255,255,255,0.1); border-radius: 2px; transition: opacity .2s ease; background: #151517; }
+  .d-section.d-locked { opacity: .42; pointer-events: none; }
+  .d-section-head { width: 100%; display: flex; align-items: center; gap: .75rem; padding: 1rem 1.1rem; text-align: left; cursor: pointer; background: transparent; border: none; color: inherit; }
+  .d-section-num { width: 1.6rem; height: 1.6rem; border-radius: 999px; border: 1px solid rgba(217,164,65,.5); color: #D9A441; font-size: .7rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-family: 'JetBrains Mono', monospace; }
+  .d-section.d-done .d-section-num { background: #D9A441; color: #0B0B0C; border-color: #D9A441; }
+  .d-section-title { font-family: 'Space Grotesk', sans-serif; font-size: .95rem; }
+  .d-section-summary { margin-left: auto; font-size: .75rem; color: rgba(255,255,255,.5); text-align: right; }
+  .d-section-body { max-height: 0; overflow: hidden; transition: max-height .25s ease; }
+  .d-section.d-open .d-section-body { max-height: 1200px; }
+  .d-section-body-inner { padding: 0 1.1rem 1.1rem; }
 </style>
 </head>
 <body class="bg-neutral-950 text-white font-body min-h-screen">
 
-  <div class="max-w-6xl mx-auto px-5 py-8">
-    <a href="index.html" class="font-mono text-xs text-white/40 hover:text-gold transition">← CorteYa</a>
+  <div class="sticky top-0 z-20 bg-neutral-950/90 backdrop-blur border-b border-white/5 px-5 py-3.5 md:px-0">
+    <div class="md:max-w-2xl md:mx-auto">
+      <a href="index.html" class="font-mono text-xs text-white/40 hover:text-gold transition">← CorteYa</a>
+    </div>
+  </div>
 
-    <div class="flex justify-center mt-6">
-      <!-- PHONE FRAME -->
-      <div class="relative w-[375px] h-[780px] rounded-[2.25rem] bg-ink overflow-hidden shadow-2xl">
+  <!-- ======================================================================
+       MOBILE — pantallas nativas de ancho completo (sin marco de celular)
+       ====================================================================== -->
+  <div id="mobile-app" class="md:hidden">
 
-        <!-- contenedor de pantallas -->
-        <div class="absolute top-0 right-0 bottom-0 left-0">
-
-        <!-- SCREEN 1: BUSCAR -->
-        <div id="screen-buscar" class="screen">
-          <div class="h-full flex flex-col">
-            <div class="px-5 pb-3">
-              <p class="font-mono text-[11px] tracking-widest uppercase text-gold mb-1">Providencia, Santiago</p>
-              <h2 class="font-display text-xl">Encuentra tu barbería</h2>
-            </div>
-            <div class="px-5 mb-4">
-              <div class="flex items-center gap-2 border border-white/15 rounded-sm px-3 py-2.5">
-                <span class="text-white/40 text-sm">🔍</span>
-                <span class="text-white/40 text-sm">Buscar barbería o servicio</span>
-              </div>
-            </div>
-            <div class="px-5 mb-4 flex gap-2 overflow-x-auto">
-              <span class="shrink-0 text-xs font-medium bg-gold text-ink px-3 py-1.5 rounded-sm">Cerca de ti</span>
-              <span class="shrink-0 text-xs font-medium border border-white/15 text-white/70 px-3 py-1.5 rounded-sm">Disponible hoy</span>
-              <span class="shrink-0 text-xs font-medium border border-white/15 text-white/70 px-3 py-1.5 rounded-sm">Mejor calificadas</span>
-            </div>
-
-            <div class="px-5 mb-3 flex gap-5 border-b border-white/10">
-              <button id="tab-lista" onclick="showBuscarView('lista')" class="text-xs font-semibold pb-2 border-b-2 border-gold text-gold transition">Lista</button>
-              <button id="tab-mapa" onclick="showBuscarView('mapa')" class="text-xs font-semibold pb-2 border-b-2 border-transparent text-white/50 transition">Mapa</button>
-            </div>
-
-            <div id="buscar-lista" class="flex-1 overflow-y-auto px-5 space-y-3 pb-4">
-              <p class="text-white/40 text-sm text-center py-8">Cargando barberías…</p>
-            </div>
-
-            <div id="buscar-mapa" class="hidden flex-1 px-5 pb-4">
-              <div class="relative w-full h-full rounded-sm border border-white/10 overflow-hidden bg-panel">
-
-                <!-- mosaico real de OpenStreetMap (Providencia, Santiago), oscurecido para calzar con el tema -->
-                <div class="absolute top-1/2 left-1/2" style="width:512px; height:512px; transform:translate(-50%,-50%); filter: invert(94%) hue-rotate(180deg) brightness(0.8) saturate(0.7) contrast(0.95);">
-                  <img src="https://tile.openstreetmap.org/15/9956/19615.png" class="absolute" style="top:0; left:0; width:256px; height:256px;">
-                  <img src="https://tile.openstreetmap.org/15/9957/19615.png" class="absolute" style="top:0; left:256px; width:256px; height:256px;">
-                  <img src="https://tile.openstreetmap.org/15/9956/19616.png" class="absolute" style="top:256px; left:0; width:256px; height:256px;">
-                  <img src="https://tile.openstreetmap.org/15/9957/19616.png" class="absolute" style="top:256px; left:256px; width:256px; height:256px;">
-                </div>
-                <div class="absolute inset-0 bg-ink/25"></div>
-
-                <div class="absolute w-3 h-3 rounded-full bg-blue-400 ring-4 ring-blue-400/25" style="top:47%; left:44%;"></div>
-
-                <div id="mapa-pines"></div>
-              </div>
-            </div>
-
-            <div class="h-16 border-t border-white/10 flex items-center justify-around shrink-0">
-              <span class="flex flex-col items-center gap-0.5 text-gold text-[10px] font-medium"><span class="text-base">🔍</span>Buscar</span>
-              <span class="flex flex-col items-center gap-0.5 text-white/40 text-[10px] font-medium"><span class="text-base">📅</span>Reservas</span>
-              <span class="flex flex-col items-center gap-0.5 text-white/40 text-[10px] font-medium"><span class="text-base">👤</span>Perfil</span>
-            </div>
-          </div>
+    <!-- SCREEN 1: BUSCAR -->
+    <div id="screen-buscar" class="screen">
+      <div class="px-5 pt-4 pb-3">
+        <p class="font-mono text-[11px] tracking-widest uppercase text-gold mb-1">Providencia, Santiago</p>
+        <h2 class="font-display text-xl">Encuentra tu barbería</h2>
+      </div>
+      <div class="px-5 mb-4">
+        <div class="flex items-center gap-2 border border-white/15 rounded-sm px-3 py-2.5">
+          <span class="text-white/40 text-sm">🔍</span>
+          <span class="text-white/40 text-sm">Buscar barbería o servicio</span>
         </div>
+      </div>
+      <div class="px-5 mb-4 flex gap-2 overflow-x-auto">
+        <span class="shrink-0 text-xs font-medium bg-gold text-ink px-3 py-1.5 rounded-sm">Cerca de ti</span>
+        <span class="shrink-0 text-xs font-medium border border-white/15 text-white/70 px-3 py-1.5 rounded-sm">Disponible hoy</span>
+        <span class="shrink-0 text-xs font-medium border border-white/15 text-white/70 px-3 py-1.5 rounded-sm">Mejor calificadas</span>
+      </div>
 
-        <!-- SCREEN 2: DETALLE BARBERÍA -->
-        <div id="screen-detalle" class="screen hidden">
-          <div class="h-full flex flex-col">
-            <div class="relative h-40 shrink-0">
-              <img id="detalle-imagen" src="https://placehold.co/375x160/1D1D20/D9A441?text=..." class="w-full h-full object-cover">
-              <button id="detalle-back-btn" onclick="showScreen('screen-buscar')" class="absolute top-3 left-3 w-8 h-8 rounded-full bg-ink/80 flex items-center justify-center text-sm">←</button>
-            </div>
-            <div class="flex-1 overflow-y-auto px-5 pt-4 pb-4">
-              <h2 id="detalle-nombre" class="font-display text-lg">Cargando…</h2>
-              <p id="detalle-rating" class="text-xs text-gold mt-0.5"></p>
-              <p id="detalle-info" class="text-xs text-white/50 mt-1"></p>
+      <div class="px-5 mb-3 flex gap-5 border-b border-white/10">
+        <button id="tab-lista" onclick="showBuscarView('lista')" class="text-xs font-semibold pb-2 border-b-2 border-gold text-gold transition">Lista</button>
+        <button id="tab-mapa" onclick="showBuscarView('mapa')" class="text-xs font-semibold pb-2 border-b-2 border-transparent text-white/50 transition">Mapa</button>
+      </div>
 
-              <p class="font-mono text-[11px] tracking-widest uppercase text-gold mt-6 mb-3">Servicios</p>
-              <div id="detalle-servicios" class="space-y-2"></div>
+      <div id="buscar-lista" class="flex-1 overflow-y-auto px-5 space-y-3 pb-4">
+        <p class="text-white/40 text-sm text-center py-8">Cargando barberías…</p>
+      </div>
 
-              <div class="flex items-center justify-between mt-6 mb-3">
-                <p class="font-mono text-[11px] tracking-widest uppercase text-gold">Reseñas</p>
-                <button onclick="abrirModalResena()" class="text-xs text-gold hover:text-goldlight transition">+ Dejar reseña</button>
-              </div>
-              <div id="detalle-resenas" class="space-y-2"></div>
-            </div>
-            <div class="p-4 border-t border-white/10 shrink-0">
-              <button onclick="onReservarClick()" class="w-full bg-gold hover:bg-goldlight text-ink font-semibold py-3 rounded-sm transition">Reservar</button>
-            </div>
+      <div id="buscar-mapa" class="hidden flex-1 px-5 pb-4">
+        <div class="relative w-full h-full min-h-[320px] rounded-sm border border-white/10 overflow-hidden bg-panel">
+          <!-- mosaico real de OpenStreetMap (Providencia, Santiago), oscurecido para calzar con el tema -->
+          <div class="absolute top-1/2 left-1/2" style="width:512px; height:512px; transform:translate(-50%,-50%); filter: invert(94%) hue-rotate(180deg) brightness(0.8) saturate(0.7) contrast(0.95);">
+            <img src="https://tile.openstreetmap.org/15/9956/19615.png" class="absolute" style="top:0; left:0; width:256px; height:256px;">
+            <img src="https://tile.openstreetmap.org/15/9957/19615.png" class="absolute" style="top:0; left:256px; width:256px; height:256px;">
+            <img src="https://tile.openstreetmap.org/15/9956/19616.png" class="absolute" style="top:256px; left:0; width:256px; height:256px;">
+            <img src="https://tile.openstreetmap.org/15/9957/19616.png" class="absolute" style="top:256px; left:256px; width:256px; height:256px;">
           </div>
+          <div class="absolute inset-0 bg-ink/25"></div>
+          <div class="absolute w-3 h-3 rounded-full bg-blue-400 ring-4 ring-blue-400/25" style="top:47%; left:44%;"></div>
+          <div id="mapa-pines"></div>
         </div>
+      </div>
 
-        <!-- SCREEN 3: AGENDAR -->
-        <div id="screen-agendar" class="screen hidden">
-          <div class="h-full flex flex-col">
-            <div class="flex items-center gap-3 px-5 pt-2 pb-4 shrink-0">
-              <button onclick="showScreen('screen-detalle')" class="text-sm">←</button>
-              <h2 class="font-display text-base">Agendar hora</h2>
-            </div>
-            <div class="flex-1 overflow-y-auto px-5 pb-4 space-y-6">
-              <div>
-                <p class="font-mono text-[11px] tracking-widest uppercase text-gold mb-3">Barbero</p>
-                <div id="agendar-barberos" class="flex gap-2 flex-wrap"></div>
-              </div>
-              <div>
-                <p class="font-mono text-[11px] tracking-widest uppercase text-gold mb-3">Fecha</p>
-                <input id="agendar-fecha-input" type="date" onchange="selectDate(this.value)"
-                  class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2.5 text-sm text-white focus:outline-none focus:border-gold [color-scheme:dark]">
-              </div>
-              <div>
-                <p class="font-mono text-[11px] tracking-widest uppercase text-gold mb-3">Hora</p>
-                <div id="agendar-horas" class="grid grid-cols-4 gap-2">
-                  <p class="col-span-4 text-white/40 text-xs text-center py-4">Elige barbero y fecha</p>
-                </div>
-              </div>
-            </div>
-            <div class="p-4 border-t border-white/10 shrink-0">
-              <div class="flex items-center justify-between text-sm mb-3">
-                <span id="agendar-resumen" class="text-white/60">Elige un horario</span>
-                <span id="agendar-precio" class="font-mono text-gold"></span>
-              </div>
-              <button onclick="onContinuarClick()" class="w-full bg-gold hover:bg-goldlight text-ink font-semibold py-3 rounded-sm transition">Continuar</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- SCREEN 4: PAGO / CONFIRMACIÓN -->
-        <div id="screen-pago" class="screen hidden">
-          <div id="pago-form" class="h-full flex flex-col">
-            <div class="flex items-center gap-3 px-5 pt-2 pb-4 shrink-0">
-              <button onclick="showScreen('screen-agendar')" class="text-sm">←</button>
-              <h2 class="font-display text-base">Confirmar reserva</h2>
-            </div>
-            <div class="flex-1 overflow-y-auto px-5 pb-4 space-y-6">
-              <div>
-                <p class="font-mono text-[11px] tracking-widest uppercase text-gold mb-3">Tus datos</p>
-                <div class="space-y-2">
-                  <input id="input-nombre" type="text" maxlength="80" placeholder="Nombre" oninput="autoCapitalizeInput(event)" class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2.5 text-sm placeholder-white/40 focus:outline-none focus:border-gold">
-                  <div class="flex gap-2">
-                    <span class="shrink-0 flex items-center px-3 border border-white/15 rounded-sm text-sm text-white/60 bg-white/5">+56 9</span>
-                    <input id="input-telefono" type="tel" inputmode="numeric" maxlength="8" placeholder="1234 5678"
-                      oninput="this.value = this.value.replace(/\D/g, '').slice(0, 8)"
-                      class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2.5 text-sm placeholder-white/40 focus:outline-none focus:border-gold">
-                  </div>
-                  <input id="input-email" type="email" maxlength="120" placeholder="Correo (opcional)" class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2.5 text-sm placeholder-white/40 focus:outline-none focus:border-gold">
-                  <input id="input-honeypot" type="text" name="website" tabindex="-1" autocomplete="off" class="hidden">
-                </div>
-              </div>
-              <div>
-                <p class="font-mono text-[11px] tracking-widest uppercase text-gold mb-3">Resumen</p>
-                <div id="pago-resumen" class="border border-white/10 rounded-sm p-3 space-y-2 text-sm"></div>
-                <p class="text-white/40 text-xs mt-3">Pagas directo en la barbería. No se cobra nada ahora.</p>
-              </div>
-              <p id="pago-error" class="hidden text-sm text-red-400"></p>
-            </div>
-            <div class="p-4 border-t border-white/10 shrink-0">
-              <button id="btn-confirmar" onclick="submitBooking()" class="w-full bg-gold hover:bg-goldlight text-ink font-semibold py-3 rounded-sm transition">Confirmar reserva</button>
-            </div>
-          </div>
-
-          <div id="pago-exito" class="hidden h-full flex flex-col items-center justify-center px-8 text-center">
-            <svg class="w-12 h-12 text-gold mb-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
-              <circle cx="12" cy="12" r="9"/><path d="M8 12.3l2.6 2.6L16 9.5"/>
-            </svg>
-            <h2 class="font-display text-xl mb-2">Reserva confirmada</h2>
-            <p id="exito-detalle" class="text-white/60 text-sm mb-6"></p>
-            <div class="w-full flex gap-2 mb-6">
-              <a id="btn-cal-google" href="#" target="_blank" rel="noopener" class="flex-1 border border-white/15 hover:border-gold/50 rounded-sm py-2.5 text-xs font-medium text-center transition">Google Calendar</a>
-              <a id="btn-cal-ics" href="#" class="flex-1 border border-white/15 hover:border-gold/50 rounded-sm py-2.5 text-xs font-medium text-center transition">Apple Calendar</a>
-            </div>
-            <p id="aviso-navegador-app" class="hidden text-white/40 text-[11px] -mt-4 mb-6 leading-snug">
-              Si "Apple Calendar" no abrió nada: estás en el navegador de Instagram/Facebook,
-              que bloquea esa función. Toca los <strong>•••</strong> arriba y elige
-              <strong>"Abrir en el navegador"</strong> (Safari o Chrome) para que funcione.
-            </p>
-            <button onclick="resetAndGoHome()" class="w-full bg-gold hover:bg-goldlight text-ink font-semibold py-3 rounded-sm transition">Volver al inicio</button>
-          </div>
-        </div>
-
-        </div>
-        <!-- fin contenedor de pantallas -->
-
+      <div class="h-16 border-t border-white/10 flex items-center justify-around shrink-0">
+        <span class="flex flex-col items-center gap-0.5 text-gold text-[10px] font-medium"><span class="text-base">🔍</span>Buscar</span>
+        <span class="flex flex-col items-center gap-0.5 text-white/40 text-[10px] font-medium"><span class="text-base">📅</span>Reservas</span>
+        <span class="flex flex-col items-center gap-0.5 text-white/40 text-[10px] font-medium"><span class="text-base">👤</span>Perfil</span>
       </div>
     </div>
+
+    <!-- SCREEN 2: DETALLE BARBERÍA -->
+    <div id="screen-detalle" class="screen hidden">
+      <div class="relative h-44 shrink-0">
+        <img id="detalle-imagen" src="https://placehold.co/600x200/1D1D20/D9A441?text=..." class="w-full h-full object-cover">
+        <button id="detalle-back-btn" onclick="showScreen('screen-buscar')" class="absolute top-3 left-3 w-8 h-8 rounded-full bg-ink/80 flex items-center justify-center text-sm">←</button>
+      </div>
+      <div class="flex-1 overflow-y-auto px-5 pt-4 pb-4">
+        <h2 id="detalle-nombre" class="font-display text-lg">Cargando…</h2>
+        <p id="detalle-rating" class="text-xs text-gold mt-0.5"></p>
+        <p id="detalle-info" class="text-xs text-white/50 mt-1"></p>
+
+        <p class="font-mono text-[11px] tracking-widest uppercase text-gold mt-6 mb-3">Servicios</p>
+        <div id="detalle-servicios" class="space-y-2"></div>
+
+        <div class="flex items-center justify-between mt-6 mb-3">
+          <p class="font-mono text-[11px] tracking-widest uppercase text-gold">Reseñas</p>
+          <button onclick="abrirModalResena()" class="text-xs text-gold hover:text-goldlight transition">+ Dejar reseña</button>
+        </div>
+        <div id="detalle-resenas" class="space-y-2"></div>
+      </div>
+      <div class="p-4 border-t border-white/10 shrink-0">
+        <button onclick="onReservarClick()" class="w-full bg-gold hover:bg-goldlight text-ink font-semibold py-3 rounded-sm transition">Reservar</button>
+      </div>
+    </div>
+
+    <!-- SCREEN 3: AGENDAR -->
+    <div id="screen-agendar" class="screen hidden">
+      <div class="flex items-center gap-3 px-5 pt-4 pb-4 shrink-0">
+        <button onclick="showScreen('screen-detalle')" class="text-sm">←</button>
+        <h2 class="font-display text-base">Agendar hora</h2>
+      </div>
+      <div class="flex-1 overflow-y-auto px-5 pb-4 space-y-6">
+        <div>
+          <p class="font-mono text-[11px] tracking-widest uppercase text-gold mb-3">Barbero</p>
+          <div id="agendar-barberos" class="flex gap-2 flex-wrap"></div>
+        </div>
+        <div>
+          <p class="font-mono text-[11px] tracking-widest uppercase text-gold mb-3">Fecha</p>
+          <input id="agendar-fecha-input" type="date" onchange="selectDate(this.value)"
+            class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2.5 text-sm text-white focus:outline-none focus:border-gold [color-scheme:dark]">
+        </div>
+        <div>
+          <p class="font-mono text-[11px] tracking-widest uppercase text-gold mb-3">Hora</p>
+          <div id="agendar-horas" class="grid grid-cols-4 gap-2">
+            <p class="col-span-4 text-white/40 text-xs text-center py-4">Elige barbero y fecha</p>
+          </div>
+        </div>
+      </div>
+      <div class="p-4 border-t border-white/10 shrink-0">
+        <div class="flex items-center justify-between text-sm mb-3">
+          <span id="agendar-resumen" class="text-white/60">Elige un horario</span>
+          <span id="agendar-precio" class="font-mono text-gold"></span>
+        </div>
+        <button onclick="onContinuarClick()" class="w-full bg-gold hover:bg-goldlight text-ink font-semibold py-3 rounded-sm transition">Continuar</button>
+      </div>
+    </div>
+
+    <!-- SCREEN 4: PAGO / CONFIRMACIÓN -->
+    <div id="screen-pago" class="screen hidden">
+      <div id="pago-form" class="flex-1 flex flex-col">
+        <div class="flex items-center gap-3 px-5 pt-4 pb-4 shrink-0">
+          <button onclick="showScreen('screen-agendar')" class="text-sm">←</button>
+          <h2 class="font-display text-base">Confirmar reserva</h2>
+        </div>
+        <div class="flex-1 overflow-y-auto px-5 pb-4 space-y-6">
+          <div>
+            <p class="font-mono text-[11px] tracking-widest uppercase text-gold mb-3">Tus datos</p>
+            <div class="space-y-2">
+              <input id="input-nombre" type="text" maxlength="80" placeholder="Nombre" oninput="autoCapitalizeInput(event)" class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2.5 text-sm placeholder-white/40 focus:outline-none focus:border-gold">
+              <div class="flex gap-2">
+                <span class="shrink-0 flex items-center px-3 border border-white/15 rounded-sm text-sm text-white/60 bg-white/5">+56 9</span>
+                <input id="input-telefono" type="tel" inputmode="numeric" maxlength="8" placeholder="1234 5678"
+                  oninput="this.value = this.value.replace(/\D/g, '').slice(0, 8)"
+                  class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2.5 text-sm placeholder-white/40 focus:outline-none focus:border-gold">
+              </div>
+              <input id="input-email" type="email" maxlength="120" placeholder="Correo (opcional)" class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2.5 text-sm placeholder-white/40 focus:outline-none focus:border-gold">
+              <input id="input-honeypot" type="text" name="website" tabindex="-1" autocomplete="off" class="hidden">
+            </div>
+          </div>
+          <div>
+            <p class="font-mono text-[11px] tracking-widest uppercase text-gold mb-3">Resumen</p>
+            <div id="pago-resumen" class="border border-white/10 rounded-sm p-3 space-y-2 text-sm"></div>
+            <p class="text-white/40 text-xs mt-3">Pagas directo en la barbería. No se cobra nada ahora.</p>
+          </div>
+          <p id="pago-error" class="hidden text-sm text-red-400"></p>
+        </div>
+        <div class="p-4 border-t border-white/10 shrink-0">
+          <button id="btn-confirmar" onclick="submitBooking()" class="w-full bg-gold hover:bg-goldlight text-ink font-semibold py-3 rounded-sm transition">Confirmar reserva</button>
+        </div>
+      </div>
+
+      <div id="pago-loading" class="hidden flex-1 flex flex-col items-center justify-center px-8 text-center">
+        <div class="w-10 h-10 rounded-full border-2 border-gold/25 border-t-gold animate-spin mb-5"></div>
+        <p class="text-white/60 text-sm">Confirmando tu reserva…</p>
+      </div>
+
+      <div id="pago-exito" class="hidden flex-1 flex flex-col items-center justify-center px-8 text-center">
+        <svg class="w-12 h-12 text-gold mb-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+          <circle cx="12" cy="12" r="9"/><path d="M8 12.3l2.6 2.6L16 9.5"/>
+        </svg>
+        <h2 class="font-display text-xl mb-2">Reserva confirmada</h2>
+        <p id="exito-detalle" class="text-white/60 text-sm mb-6"></p>
+        <div class="w-full flex gap-2 mb-6">
+          <a id="btn-cal-google" href="#" target="_blank" rel="noopener" class="flex-1 border border-white/15 hover:border-gold/50 rounded-sm py-2.5 text-xs font-medium text-center transition">Google Calendar</a>
+          <a id="btn-cal-ics" href="#" class="flex-1 border border-white/15 hover:border-gold/50 rounded-sm py-2.5 text-xs font-medium text-center transition">Apple Calendar</a>
+        </div>
+        <p id="aviso-navegador-app" class="hidden text-white/40 text-[11px] -mt-4 mb-6 leading-snug">
+          Si "Apple Calendar" no abrió nada: estás en el navegador de Instagram/Facebook,
+          que bloquea esa función. Toca los <strong>•••</strong> arriba y elige
+          <strong>"Abrir en el navegador"</strong> (Safari o Chrome) para que funcione.
+        </p>
+        <button onclick="resetAndGoHome()" class="w-full bg-gold hover:bg-goldlight text-ink font-semibold py-3 rounded-sm transition">Volver al inicio</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ======================================================================
+       DESKTOP — secciones que se van desbloqueando a medida que avanzas
+       ====================================================================== -->
+  <div id="desktop-app" class="hidden md:block max-w-2xl mx-auto px-6 pt-8 pb-20">
+
+    <!-- selector de barbería (se oculta si se llegó por un link compartido) -->
+    <div id="d-picker">
+      <p class="font-mono text-[11px] tracking-widest uppercase text-gold mb-1">Providencia, Santiago</p>
+      <h1 class="font-display text-2xl mb-6">Encuentra tu barbería</h1>
+      <div id="d-shop-grid" class="grid grid-cols-2 gap-3">
+        <p class="col-span-2 text-white/40 text-sm text-center py-8">Cargando barberías…</p>
+      </div>
+    </div>
+
+    <!-- encabezado de la barbería elegida -->
+    <div id="d-shop-header" class="hidden mb-7 flex gap-4 items-center border border-white/10 rounded-sm p-4">
+      <img id="d-shop-img" class="w-16 h-16 rounded-sm object-cover shrink-0" src="">
+      <div class="min-w-0">
+        <h1 id="d-shop-name" class="font-display text-xl truncate"></h1>
+        <p id="d-shop-rating" class="text-xs text-gold mt-0.5"></p>
+        <p id="d-shop-addr" class="text-xs text-white/50 mt-1"></p>
+      </div>
+      <button id="d-shop-back" onclick="dBackToPicker()" class="ml-auto shrink-0 text-xs text-white/40 hover:text-gold transition">Cambiar</button>
+    </div>
+
+    <div id="d-reviews-toggle" class="hidden mb-7">
+      <button onclick="abrirModalResena()" class="text-xs text-gold hover:text-goldlight transition">+ Dejar reseña</button>
+    </div>
+
+    <!-- acordeón -->
+    <div id="d-flow" class="hidden space-y-3">
+
+      <div id="d-sec-servicio" class="d-section d-open">
+        <button class="d-section-head" onclick="dToggleSection('servicio')">
+          <span class="d-section-num">1</span>
+          <span class="d-section-title">Servicio</span>
+          <span id="d-sum-servicio" class="d-section-summary"></span>
+        </button>
+        <div class="d-section-body">
+          <div class="d-section-body-inner">
+            <div id="d-servicios-list" class="space-y-2"></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="d-sec-horario" class="d-section d-locked">
+        <button class="d-section-head" onclick="dToggleSection('horario')">
+          <span class="d-section-num">2</span>
+          <span class="d-section-title">Barbero y horario</span>
+          <span id="d-sum-horario" class="d-section-summary"></span>
+        </button>
+        <div class="d-section-body">
+          <div class="d-section-body-inner space-y-5">
+            <div>
+              <p class="font-mono text-[11px] tracking-widest uppercase text-gold mb-3">Barbero</p>
+              <div id="d-barberos" class="flex gap-2 flex-wrap"></div>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <p class="font-mono text-[11px] tracking-widest uppercase text-gold mb-3">Fecha</p>
+                <input id="d-fecha-input" type="date" onchange="selectDate(this.value)"
+                  class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2.5 text-sm text-white focus:outline-none focus:border-gold [color-scheme:dark]">
+              </div>
+            </div>
+            <div>
+              <p class="font-mono text-[11px] tracking-widest uppercase text-gold mb-3">Hora</p>
+              <div id="d-horas" class="grid grid-cols-6 gap-2">
+                <p class="col-span-6 text-white/40 text-xs text-center py-4">Elige barbero y fecha</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="d-sec-datos" class="d-section d-locked">
+        <button class="d-section-head" onclick="dToggleSection('datos')">
+          <span class="d-section-num">3</span>
+          <span class="d-section-title">Tus datos y confirmación</span>
+          <span id="d-sum-datos" class="d-section-summary"></span>
+        </button>
+        <div class="d-section-body">
+          <div class="d-section-body-inner space-y-5">
+            <div class="space-y-2">
+              <input id="d-input-nombre" type="text" maxlength="80" placeholder="Nombre" oninput="autoCapitalizeInput(event)" class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2.5 text-sm placeholder-white/40 focus:outline-none focus:border-gold">
+              <div class="flex gap-2">
+                <span class="shrink-0 flex items-center px-3 border border-white/15 rounded-sm text-sm text-white/60 bg-white/5">+56 9</span>
+                <input id="d-input-telefono" type="tel" inputmode="numeric" maxlength="8" placeholder="1234 5678"
+                  oninput="this.value = this.value.replace(/\D/g, '').slice(0, 8)"
+                  class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2.5 text-sm placeholder-white/40 focus:outline-none focus:border-gold">
+              </div>
+              <input id="d-input-email" type="email" maxlength="120" placeholder="Correo (opcional)" class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2.5 text-sm placeholder-white/40 focus:outline-none focus:border-gold">
+              <input id="d-input-honeypot" type="text" name="website" tabindex="-1" autocomplete="off" class="hidden">
+            </div>
+            <div>
+              <p class="font-mono text-[11px] tracking-widest uppercase text-gold mb-3">Resumen</p>
+              <div id="d-pago-resumen" class="border border-white/10 rounded-sm p-3 space-y-2 text-sm"></div>
+              <p class="text-white/40 text-xs mt-3">Pagas directo en la barbería. No se cobra nada ahora.</p>
+            </div>
+            <p id="d-pago-error" class="hidden text-sm text-red-400"></p>
+            <button id="d-btn-confirmar" onclick="submitBooking()" class="w-full bg-gold hover:bg-goldlight text-ink font-semibold py-3 rounded-sm transition">Confirmar reserva</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div id="d-loading" class="hidden py-20 flex flex-col items-center text-center">
+      <div class="w-10 h-10 rounded-full border-2 border-gold/25 border-t-gold animate-spin mb-5"></div>
+      <p class="text-white/60 text-sm">Confirmando tu reserva…</p>
+    </div>
+
+    <div id="d-exito" class="hidden py-14 flex flex-col items-center text-center">
+      <svg class="w-12 h-12 text-gold mb-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+        <circle cx="12" cy="12" r="9"/><path d="M8 12.3l2.6 2.6L16 9.5"/>
+      </svg>
+      <h2 class="font-display text-xl mb-2">Reserva confirmada</h2>
+      <p id="d-exito-detalle" class="text-white/60 text-sm mb-6"></p>
+      <div class="flex gap-2 mb-6 w-full max-w-xs">
+        <a id="d-btn-cal-google" href="#" target="_blank" rel="noopener" class="flex-1 border border-white/15 hover:border-gold/50 rounded-sm py-2.5 text-xs font-medium text-center transition">Google Calendar</a>
+        <a id="d-btn-cal-ics" href="#" class="flex-1 border border-white/15 hover:border-gold/50 rounded-sm py-2.5 text-xs font-medium text-center transition">Apple Calendar</a>
+      </div>
+      <button onclick="resetAndGoHome()" class="bg-gold hover:bg-goldlight text-ink font-semibold py-3 px-8 rounded-sm transition">Volver al inicio</button>
+    </div>
+
+    <!-- reseñas, debajo del flujo, visibles una vez elegida la barbería -->
+    <div id="d-resenas-wrap" class="hidden mt-10">
+      <div class="flex items-center justify-between mb-3">
+        <p class="font-mono text-[11px] tracking-widest uppercase text-gold">Reseñas</p>
+        <button onclick="abrirModalResena()" class="text-xs text-gold hover:text-goldlight transition">+ Dejar reseña</button>
+      </div>
+      <div id="d-resenas-list" class="space-y-2"></div>
+    </div>
+
   </div>
 
   <div id="modal-resena" class="hidden fixed inset-0 z-30 bg-black/70 flex items-center justify-center px-4">
@@ -269,12 +414,13 @@
       candidateBarberIds: [],
     };
 
-    // ---------- navegación ----------
+    // ---------- navegación móvil (pantallas completas) ----------
     function showScreen(id) {
       document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
       document.getElementById(id).classList.remove('hidden');
       if (id === 'screen-pago') {
         document.getElementById('pago-form').classList.remove('hidden');
+        document.getElementById('pago-loading').classList.add('hidden');
         document.getElementById('pago-exito').classList.add('hidden');
         document.getElementById('pago-error').classList.add('hidden');
       }
@@ -298,6 +444,54 @@
       const wasOpen = !document.getElementById(id)?.classList.contains('hidden');
       ['pin0', 'pin1', 'pin2'].forEach(p => document.getElementById(p)?.classList.add('hidden'));
       if (!wasOpen) document.getElementById(id)?.classList.remove('hidden');
+    }
+
+    // ---------- acordeón de escritorio ----------
+    // Lockeado/abierto/hecho se derivan solo del estado (no hay flags propias
+    // del acordeón), así que "volver atrás" a elegir otro servicio/horario
+    // relockea automáticamente lo que venía después, igual que en el flujo
+    // móvil cuando vuelves con "←".
+    function dSetSectionState(key, { locked = false, open = false, done = false }) {
+      const el = document.getElementById('d-sec-' + key);
+      if (!el) return;
+      el.classList.toggle('d-locked', locked);
+      el.classList.toggle('d-open', open);
+      el.classList.toggle('d-done', done);
+    }
+
+    function dToggleSection(key) {
+      const el = document.getElementById('d-sec-' + key);
+      if (!el || el.classList.contains('d-locked')) return;
+      const willOpen = !el.classList.contains('d-open');
+      ['servicio', 'horario', 'datos'].forEach(k => {
+        const other = document.getElementById('d-sec-' + k);
+        if (other && !other.classList.contains('d-locked')) other.classList.remove('d-open');
+      });
+      if (willOpen) el.classList.add('d-open');
+    }
+
+    function dSyncAccordion() {
+      const hasService = !!state.selectedService;
+      const hasSlot = !!state.selectedSlot;
+
+      document.getElementById('d-sum-servicio').textContent = hasService
+        ? `${state.selectedService.name} · ${clp(state.selectedService.price_clp)}` : '';
+      dSetSectionState('servicio', { locked: false, open: !hasService, done: hasService });
+
+      document.getElementById('d-sum-horario').textContent = hasSlot
+        ? `${formatFechaLabel(state.selectedDate)} · ${state.selectedSlot.slice(0, 5)}` : '';
+      dSetSectionState('horario', { locked: !hasService, open: hasService && !hasSlot, done: hasSlot });
+
+      dSetSectionState('datos', { locked: !hasSlot, open: hasSlot, done: false });
+    }
+
+    function dBackToPicker() {
+      document.getElementById('d-picker').classList.remove('hidden');
+      document.getElementById('d-shop-header').classList.add('hidden');
+      document.getElementById('d-flow').classList.add('hidden');
+      document.getElementById('d-resenas-wrap').classList.add('hidden');
+      document.getElementById('d-exito').classList.add('hidden');
+      document.getElementById('d-loading').classList.add('hidden');
     }
 
     // ---------- utilidades de fecha (siempre en hora de Santiago, nunca la del navegador) ----------
@@ -351,12 +545,14 @@
 
     async function loadBarbershops() {
       const listEl = document.getElementById('buscar-lista');
+      const gridEl = document.getElementById('d-shop-grid');
       const { data, error } = await supabaseClient
         .from('barbershops')
         .select('id, name, address, rating, review_count, image_url, slug');
 
       if (error || !data || data.length === 0) {
         listEl.innerHTML = '<p class="text-white/40 text-sm text-center py-8">No hay barberías disponibles todavía.</p>';
+        gridEl.innerHTML = '<p class="col-span-2 text-white/40 text-sm text-center py-8">No hay barberías disponibles todavía.</p>';
         document.getElementById('mapa-pines').innerHTML = '';
         return;
       }
@@ -371,6 +567,15 @@
             <p class="text-xs text-white/50 mt-0.5">⭐ ${b.rating ?? '—'}</p>
             <p class="text-xs text-gold mt-1.5">${escapeHtml(b.address)}</p>
           </div>
+        </button>
+      `).join('');
+
+      gridEl.innerHTML = data.map(b => `
+        <button onclick="selectBarbershop('${b.id}')" class="text-left border border-white/10 rounded-sm p-3 hover:border-gold/50 transition">
+          <img src="${b.image_url || 'https://placehold.co/300x160/1D1D20/D9A441?text=' + encodeURIComponent(b.name.slice(0, 2).toUpperCase())}" class="w-full h-28 rounded-sm object-cover mb-2.5">
+          <p class="font-display text-sm truncate">${escapeHtml(b.name)}</p>
+          <p class="text-xs text-white/50 mt-0.5">⭐ ${b.rating ?? '—'}</p>
+          <p class="text-xs text-gold mt-1.5 truncate">${escapeHtml(b.address)}</p>
         </button>
       `).join('');
 
@@ -412,7 +617,20 @@
       state.barbershopImageUrl = shop.image_url || null;
       state.barbershopRating = shop.rating || 0;
       state.barbershopReviewCount = shop.review_count || 0;
+
       showScreen('screen-detalle');
+
+      document.getElementById('d-picker').classList.add('hidden');
+      document.getElementById('d-shop-header').classList.remove('hidden');
+      document.getElementById('d-shop-back').classList.toggle('hidden', state.viaSharedLink);
+      document.getElementById('d-flow').classList.remove('hidden');
+      document.getElementById('d-resenas-wrap').classList.remove('hidden');
+      document.getElementById('d-exito').classList.add('hidden');
+      document.getElementById('d-loading').classList.add('hidden');
+      state.selectedService = null;
+      state.selectedSlot = null;
+      dSyncAccordion();
+
       await loadBarbershopDetail();
     }
 
@@ -424,7 +642,15 @@
         : 'Sin reseñas todavía';
       document.getElementById('detalle-info').textContent = state.barbershopAddress || '';
       document.getElementById('detalle-imagen').src = state.barbershopImageUrl
-        || 'https://placehold.co/375x160/1D1D20/D9A441?text=' + encodeURIComponent(state.barbershopName);
+        || 'https://placehold.co/600x200/1D1D20/D9A441?text=' + encodeURIComponent(state.barbershopName);
+
+      document.getElementById('d-shop-name').textContent = state.barbershopName;
+      document.getElementById('d-shop-rating').textContent = state.barbershopReviewCount
+        ? `⭐ ${state.barbershopRating} (${state.barbershopReviewCount} reseña${state.barbershopReviewCount === 1 ? '' : 's'})`
+        : 'Sin reseñas todavía';
+      document.getElementById('d-shop-addr').textContent = state.barbershopAddress || '';
+      document.getElementById('d-shop-img').src = state.barbershopImageUrl
+        || 'https://placehold.co/160x160/1D1D20/D9A441?text=' + encodeURIComponent(state.barbershopName.slice(0, 2).toUpperCase());
 
       const [{ data: services }, { data: barbers }] = await Promise.all([
         supabaseClient.from('services').select('*').eq('barbershop_id', state.barbershopId).eq('active', true),
@@ -444,12 +670,22 @@
         </button>
       `).join('');
 
+      document.getElementById('d-servicios-list').innerHTML = state.services.map(s => `
+        <button onclick="selectService('${s.id}')" data-service-id="${s.id}" class="d-servicio-item servicio-item w-full flex items-center justify-between border border-white/10 rounded-sm px-3 py-2.5 text-left transition">
+          <div>
+            <p class="text-sm font-medium">${escapeHtml(s.name)}</p>
+            <p class="text-xs text-white/40">${s.duration_minutes} min</p>
+          </div>
+          <span class="font-mono text-sm text-gold">${clp(s.price_clp)}</span>
+        </button>
+      `).join('');
+
+      dSyncAccordion();
       loadReviews();
     }
 
     // ---------- reseñas ----------
     async function loadReviews() {
-      const listEl = document.getElementById('detalle-resenas');
       const { data, error } = await supabaseClient
         .from('reviews')
         .select('customer_name, rating, comment, created_at')
@@ -457,20 +693,20 @@
         .order('created_at', { ascending: false })
         .limit(20);
 
-      if (error || !data || data.length === 0) {
-        listEl.innerHTML = '<p class="text-white/40 text-xs">Todavía no hay reseñas. ¡Sé el primero!</p>';
-        return;
-      }
+      const html = (error || !data || data.length === 0)
+        ? '<p class="text-white/40 text-xs">Todavía no hay reseñas. ¡Sé el primero!</p>'
+        : data.map(r => `
+            <div class="border border-white/10 rounded-sm p-3">
+              <div class="flex items-center justify-between">
+                <p class="text-sm font-medium">${escapeHtml(r.customer_name)}</p>
+                <span class="text-gold text-xs">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</span>
+              </div>
+              ${r.comment ? `<p class="text-xs text-white/60 mt-1.5">${escapeHtml(r.comment)}</p>` : ''}
+            </div>
+          `).join('');
 
-      listEl.innerHTML = data.map(r => `
-        <div class="border border-white/10 rounded-sm p-3">
-          <div class="flex items-center justify-between">
-            <p class="text-sm font-medium">${escapeHtml(r.customer_name)}</p>
-            <span class="text-gold text-xs">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</span>
-          </div>
-          ${r.comment ? `<p class="text-xs text-white/60 mt-1.5">${escapeHtml(r.comment)}</p>` : ''}
-        </div>
-      `).join('');
+      document.getElementById('detalle-resenas').innerHTML = html;
+      document.getElementById('d-resenas-list').innerHTML = html;
     }
 
     function renderEstrellasSelector() {
@@ -549,7 +785,9 @@
       if (shop) {
         state.barbershopRating = shop.rating || 0;
         state.barbershopReviewCount = shop.review_count || 0;
-        document.getElementById('detalle-rating').textContent = `⭐ ${state.barbershopRating} (${state.barbershopReviewCount} reseña${state.barbershopReviewCount === 1 ? '' : 's'})`;
+        const txt = `⭐ ${state.barbershopRating} (${state.barbershopReviewCount} reseña${state.barbershopReviewCount === 1 ? '' : 's'})`;
+        document.getElementById('detalle-rating').textContent = txt;
+        document.getElementById('d-shop-rating').textContent = txt;
       }
     });
 
@@ -561,6 +799,14 @@
         el.classList.toggle('bg-gold/10', active);
         el.classList.toggle('border-white/10', !active);
       });
+
+      // en escritorio no hay botón "Reservar" aparte: elegir el servicio
+      // desbloquea y abre directo la siguiente sección del acordeón.
+      state.selectedBarberId = 'any';
+      state.selectedDate = null;
+      state.selectedSlot = null;
+      loadAgendarScreen();
+      dSyncAccordion();
     }
 
     function onReservarClick() {
@@ -577,16 +823,19 @@
 
     // ---------- pantalla Agendar ----------
     function loadAgendarScreen() {
-      const barberChips = ['<button data-barber-id="any" onclick="selectBarber(\'any\')" class="chip-barbero text-xs border px-3 py-2 rounded-sm border-gold bg-gold/10 text-gold">Cualquiera</button>']
-        .concat(state.barbers.map(b => `<button data-barber-id="${b.id}" onclick="selectBarber('${b.id}')" class="chip-barbero text-xs border px-3 py-2 rounded-sm border-white/15 text-white/70">${escapeHtml(b.name)}${b.review_count ? ` · ⭐${b.rating}` : ''}</button>`));
-      document.getElementById('agendar-barberos').innerHTML = barberChips.join('');
+      const chipsHtml = (prefix) => ['<button data-barber-id="any" onclick="selectBarber(\'any\')" class="' + prefix + 'chip-barbero text-xs border px-3 py-2 rounded-sm border-gold bg-gold/10 text-gold">Cualquiera</button>']
+        .concat(state.barbers.map(b => `<button data-barber-id="${b.id}" onclick="selectBarber('${b.id}')" class="${prefix}chip-barbero text-xs border px-3 py-2 rounded-sm border-white/15 text-white/70">${escapeHtml(b.name)}${b.review_count ? ` · ⭐${b.rating}` : ''}</button>`))
+        .join('');
+      document.getElementById('agendar-barberos').innerHTML = chipsHtml('');
+      document.getElementById('d-barberos').innerHTML = chipsHtml('d-');
 
       const hoy = santiagoDateParts(0);
       const maxFecha = santiagoDateParts(29);
-      const fechaInput = document.getElementById('agendar-fecha-input');
-      fechaInput.min = hoy.iso;
-      fechaInput.max = maxFecha.iso;
-      fechaInput.value = hoy.iso;
+      [document.getElementById('agendar-fecha-input'), document.getElementById('d-fecha-input')].forEach(input => {
+        input.min = hoy.iso;
+        input.max = maxFecha.iso;
+        input.value = hoy.iso;
+      });
 
       state.selectedBarberId = 'any';
       state.selectedDate = hoy.iso;
@@ -608,13 +857,17 @@
         el.classList.toggle('text-white/70', !active);
       });
       loadHoras();
+      dSyncAccordion();
     }
 
     function selectDate(iso) {
       if (!iso) return;
       state.selectedDate = iso;
       state.selectedSlot = null;
+      document.getElementById('agendar-fecha-input').value = iso;
+      document.getElementById('d-fecha-input').value = iso;
       loadHoras();
+      dSyncAccordion();
     }
 
     async function fetchSlotsForBarber(barberId, dateIso, durationMinutes) {
@@ -628,8 +881,9 @@
     }
 
     async function loadHoras() {
-      const horasEl = document.getElementById('agendar-horas');
-      horasEl.innerHTML = '<p class="col-span-4 text-white/40 text-xs text-center py-4">Buscando horarios…</p>';
+      const loadingHtml = '<p class="col-span-4 text-white/40 text-xs text-center py-4">Buscando horarios…</p>';
+      document.getElementById('agendar-horas').innerHTML = loadingHtml;
+      document.getElementById('d-horas').innerHTML = loadingHtml.replace('col-span-4', 'col-span-6');
       document.getElementById('agendar-resumen').textContent = 'Elige un horario';
       document.getElementById('agendar-precio').textContent = '';
 
@@ -646,10 +900,14 @@
 
       const sorted = Object.keys(state.slotsMap).sort();
       if (!sorted.length) {
-        horasEl.innerHTML = '<p class="col-span-4 text-white/40 text-xs text-center py-4">Sin horarios disponibles ese día.</p>';
+        document.getElementById('agendar-horas').innerHTML = '<p class="col-span-4 text-white/40 text-xs text-center py-4">Sin horarios disponibles ese día.</p>';
+        document.getElementById('d-horas').innerHTML = '<p class="col-span-6 text-white/40 text-xs text-center py-4">Sin horarios disponibles ese día.</p>';
         return;
       }
-      horasEl.innerHTML = sorted.map(s => `
+      document.getElementById('agendar-horas').innerHTML = sorted.map(s => `
+        <button data-slot="${s}" onclick="selectSlot('${s}')" class="chip-hora text-xs text-center border border-white/15 text-white/70 py-2 rounded-sm">${s.slice(0, 5)}</button>
+      `).join('');
+      document.getElementById('d-horas').innerHTML = sorted.map(s => `
         <button data-slot="${s}" onclick="selectSlot('${s}')" class="chip-hora text-xs text-center border border-white/15 text-white/70 py-2 rounded-sm">${s.slice(0, 5)}</button>
       `).join('');
     }
@@ -667,6 +925,8 @@
       });
       document.getElementById('agendar-resumen').textContent = `${state.selectedService.name} · ${timeStr.slice(0, 5)}`;
       document.getElementById('agendar-precio').textContent = clp(state.selectedService.price_clp);
+      renderPagoResumen();
+      dSyncAccordion();
     }
 
     function onContinuarClick() {
@@ -675,14 +935,17 @@
       renderPagoResumen();
     }
 
-    // ---------- pantalla Confirmación ----------
+    // ---------- Confirmación ----------
     function renderPagoResumen() {
+      if (!state.selectedSlot) return;
       const s = state.selectedService;
-      document.getElementById('pago-resumen').innerHTML = `
+      const html = `
         <div class="flex justify-between text-white/70"><span>${escapeHtml(state.barbershopName)}</span><span>${formatFechaLabel(state.selectedDate)}, ${state.selectedSlot.slice(0, 5)}</span></div>
         <div class="flex justify-between text-white/70"><span>${escapeHtml(s.name)}</span><span class="font-mono">${clp(s.price_clp)}</span></div>
         <div class="flex justify-between font-semibold pt-2 border-t border-white/10"><span>Total</span><span class="font-mono text-gold">${clp(s.price_clp)}</span></div>
       `;
+      document.getElementById('pago-resumen').innerHTML = html;
+      document.getElementById('d-pago-resumen').innerHTML = html;
     }
 
     // ---------- calendario (Google / Apple) ----------
@@ -728,6 +991,7 @@
         + '&details=' + encodeURIComponent(details)
         + '&location=' + encodeURIComponent(location);
       document.getElementById('btn-cal-google').href = gUrl;
+      document.getElementById('d-btn-cal-google').href = gUrl;
 
       const ics = [
         'BEGIN:VCALENDAR',
@@ -749,22 +1013,36 @@
         'END:VEVENT',
         'END:VCALENDAR',
       ].join('\r\n');
-      document.getElementById('btn-cal-ics').href = '/.netlify/functions/ics?content=' + encodeURIComponent(ics);
+      const icsHref = '/.netlify/functions/ics?content=' + encodeURIComponent(ics);
+      document.getElementById('btn-cal-ics').href = icsHref;
+      document.getElementById('d-btn-cal-ics').href = icsHref;
 
       document.getElementById('aviso-navegador-app').classList.toggle('hidden', !isInAppBrowser());
     }
 
     async function submitBooking() {
-      const errorEl = document.getElementById('pago-error');
+      // en escritorio y celular los campos están duplicados — toma el que
+      // corresponda según el layout visible (isDesktop, más abajo).
+      const nombreMovil = document.getElementById('input-nombre').value.trim();
+      const nombreDesktop = document.getElementById('d-input-nombre').value.trim();
+      const telMovil = document.getElementById('input-telefono').value.trim();
+      const telDesktop = document.getElementById('d-input-telefono').value.trim();
+      const emailMovil = document.getElementById('input-email').value.trim();
+      const emailDesktop = document.getElementById('d-input-email').value.trim();
+      const honeyMovil = document.getElementById('input-honeypot').value;
+      const honeyDesktop = document.getElementById('d-input-honeypot').value;
+
+      const isDesktop = window.matchMedia('(min-width: 768px)').matches;
+      const errorEl = isDesktop ? document.getElementById('d-pago-error') : document.getElementById('pago-error');
       errorEl.classList.add('hidden');
 
-      if (document.getElementById('input-honeypot').value) return;
+      if (honeyMovil || honeyDesktop) return;
 
-      const nombre = document.getElementById('input-nombre').value.trim();
-      const telefono = document.getElementById('input-telefono').value.trim();
-      const email = document.getElementById('input-email').value.trim();
+      const nombreFinal = isDesktop ? nombreDesktop : nombreMovil;
+      const telefono = isDesktop ? telDesktop : telMovil;
+      const email = isDesktop ? emailDesktop : emailMovil;
 
-      if (!nombre || !telefono) {
+      if (!nombreFinal || !telefono) {
         errorEl.textContent = 'Ingresa tu nombre y teléfono.';
         errorEl.classList.remove('hidden');
         return;
@@ -776,9 +1054,9 @@
       }
       const telefonoCompleto = `+56 9 ${telefono.slice(0, 4)} ${telefono.slice(4)}`;
 
-      const btn = document.getElementById('btn-confirmar');
-      btn.disabled = true;
-      btn.textContent = 'Reservando…';
+      const btnMovil = document.getElementById('btn-confirmar');
+      const btnDesktop = document.getElementById('d-btn-confirmar');
+      [btnMovil, btnDesktop].forEach(b => { b.disabled = true; b.textContent = 'Reservando…'; });
 
       const svc = state.selectedService;
       const [h, m] = state.selectedSlot.split(':').map(Number);
@@ -795,7 +1073,7 @@
           barbershop_id: state.barbershopId,
           barber_id: barberId,
           service_id: svc.id,
-          customer_name: nombre,
+          customer_name: nombreFinal,
           customer_phone: telefonoCompleto,
           customer_email: email || null,
           booking_date: state.selectedDate,
@@ -803,22 +1081,20 @@
           end_time: endTime,
         });
         if (!error) {
-          document.getElementById('pago-form').classList.add('hidden');
-          document.getElementById('pago-exito').classList.remove('hidden');
-          document.getElementById('exito-detalle').innerHTML = `${escapeHtml(state.barbershopName)} · ${formatFechaLabel(state.selectedDate)} ${state.selectedSlot.slice(0, 5)}<br>${escapeHtml(svc.name)} · ${clp(svc.price_clp)}`;
           buildCalendarLinks(svc, endTime);
+          await mostrarExitoConEspera(svc);
           return;
         }
         lastError = error;
         if (error.code !== '23P01') break;
       }
 
-      btn.disabled = false;
-      btn.textContent = 'Confirmar reserva';
+      [btnMovil, btnDesktop].forEach(b => { b.disabled = false; b.textContent = 'Confirmar reserva'; });
       if (lastError && lastError.code === '23P01') {
         errorEl.textContent = 'Justo se ocupó ese horario. Elige otro.';
         errorEl.classList.remove('hidden');
         showScreen('screen-agendar');
+        dToggleSection('horario');
         loadHoras();
       } else {
         console.error(lastError);
@@ -827,24 +1103,60 @@
       }
     }
 
+    // Deja un par de segundos de "cargando" antes de mostrar la confirmación
+    // — le da tiempo real al trigger de WhatsApp (aviso al barbero +
+    // confirmación al cliente) y, de paso, transmite que la reserva de
+    // verdad se procesó, en vez de sentirse instantánea/poco creíble.
+    async function mostrarExitoConEspera(svc) {
+      document.getElementById('pago-form').classList.add('hidden');
+      document.getElementById('pago-loading').classList.remove('hidden');
+      document.getElementById('d-flow').classList.add('hidden');
+      document.getElementById('d-loading').classList.remove('hidden');
+
+      await new Promise(r => setTimeout(r, 2200 + Math.random() * 600));
+
+      const detalle = `${escapeHtml(state.barbershopName)} · ${formatFechaLabel(state.selectedDate)} ${state.selectedSlot.slice(0, 5)}<br>${escapeHtml(svc.name)} · ${clp(svc.price_clp)}`;
+
+      document.getElementById('pago-loading').classList.add('hidden');
+      document.getElementById('pago-exito').classList.remove('hidden');
+      document.getElementById('exito-detalle').innerHTML = detalle;
+
+      document.getElementById('d-loading').classList.add('hidden');
+      document.getElementById('d-exito').classList.remove('hidden');
+      document.getElementById('d-exito-detalle').innerHTML = detalle;
+    }
+
     function resetAndGoHome() {
       document.getElementById('pago-form').classList.remove('hidden');
+      document.getElementById('pago-loading').classList.add('hidden');
       document.getElementById('pago-exito').classList.add('hidden');
       document.getElementById('btn-confirmar').disabled = false;
       document.getElementById('btn-confirmar').textContent = 'Confirmar reserva';
       document.getElementById('input-nombre').value = '';
       document.getElementById('input-telefono').value = '';
       document.getElementById('input-email').value = '';
+
+      document.getElementById('d-btn-confirmar').disabled = false;
+      document.getElementById('d-btn-confirmar').textContent = 'Confirmar reserva';
+      document.getElementById('d-input-nombre').value = '';
+      document.getElementById('d-input-telefono').value = '';
+      document.getElementById('d-input-email').value = '';
+      document.getElementById('d-exito').classList.add('hidden');
+      document.getElementById('d-flow').classList.remove('hidden');
+
       state.selectedService = null;
       state.selectedBarberId = 'any';
       state.selectedDate = null;
       state.selectedSlot = null;
       state.candidateBarberIds = [];
+      dSyncAccordion();
+
       if (state.viaSharedLink) {
         showScreen('screen-detalle');
         loadBarbershopDetail();
       } else {
         showScreen('screen-buscar');
+        dBackToPicker();
       }
     }
 
