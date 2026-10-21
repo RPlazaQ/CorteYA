@@ -420,6 +420,7 @@
       resenaRating: 0,
       services: [],
       barbers: [],
+      barberServiceMap: {},
       selectedService: null,
       selectedBarberId: 'any',
       selectedDate: null,
@@ -674,6 +675,18 @@
       state.barbers = barbers || [];
       state.selectedService = null;
 
+      // service_id -> Set(barber_id) que saben hacerlo. Un servicio sin
+      // ninguna fila en barber_services (todavía no asignado por el dueño)
+      // se trata como "lo hacen todos" — ver getEligibleBarbers().
+      const barberIds = state.barbers.map(b => b.id);
+      const { data: barberServices } = barberIds.length
+        ? await supabaseClient.from('barber_services').select('barber_id, service_id').in('barber_id', barberIds)
+        : { data: [] };
+      state.barberServiceMap = {};
+      (barberServices || []).forEach(r => {
+        (state.barberServiceMap[r.service_id] ||= new Set()).add(r.barber_id);
+      });
+
       document.getElementById('detalle-servicios').innerHTML = state.services.map(s => `
         <button onclick="selectService('${s.id}')" data-service-id="${s.id}" class="servicio-item w-full flex items-center justify-between border border-white/10 rounded-sm px-3 py-2.5 text-left transition">
           <div>
@@ -835,10 +848,19 @@
       loadAgendarScreen();
     }
 
+    // devuelve los barberos de state.barbers que saben hacer el servicio
+    // elegido. Si el servicio no tiene ninguna asignación todavía, se
+    // asume que lo hacen todos (ver loadBarbershopDetail).
+    function getEligibleBarbers() {
+      const asignados = state.barberServiceMap[state.selectedService.id];
+      return (asignados && asignados.size) ? state.barbers.filter(b => asignados.has(b.id)) : state.barbers;
+    }
+
     // ---------- pantalla Agendar ----------
     function loadAgendarScreen() {
+      const eligibleBarbers = getEligibleBarbers();
       const chipsHtml = (prefix) => ['<button data-barber-id="any" onclick="selectBarber(\'any\')" class="' + prefix + 'chip-barbero text-xs border px-3 py-2 rounded-sm border-gold bg-gold/10 text-gold">Cualquiera</button>']
-        .concat(state.barbers.map(b => `<button data-barber-id="${b.id}" onclick="selectBarber('${b.id}')" class="${prefix}chip-barbero text-xs border px-3 py-2 rounded-sm border-white/15 text-white/70">${escapeHtml(b.name)}${b.review_count ? ` · ⭐${b.rating}` : ''}</button>`))
+        .concat(eligibleBarbers.map(b => `<button data-barber-id="${b.id}" onclick="selectBarber('${b.id}')" class="${prefix}chip-barbero text-xs border px-3 py-2 rounded-sm border-white/15 text-white/70">${escapeHtml(b.name)}${b.review_count ? ` · ⭐${b.rating}` : ''}</button>`))
         .join('');
       document.getElementById('agendar-barberos').innerHTML = chipsHtml('');
       document.getElementById('d-barberos').innerHTML = chipsHtml('d-');
@@ -902,7 +924,7 @@
       document.getElementById('agendar-precio').textContent = '';
 
       const duration = state.selectedService.duration_minutes;
-      const barberIds = state.selectedBarberId === 'any' ? state.barbers.map(b => b.id) : [state.selectedBarberId];
+      const barberIds = state.selectedBarberId === 'any' ? getEligibleBarbers().map(b => b.id) : [state.selectedBarberId];
       const results = await Promise.all(barberIds.map(id => fetchSlotsForBarber(id, state.selectedDate, duration)));
 
       state.slotsMap = {};

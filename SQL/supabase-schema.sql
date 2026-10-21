@@ -52,6 +52,15 @@ create table services (
   created_at       timestamptz not null default now()
 );
 
+-- qué servicios sabe hacer cada barbero. Un servicio sin ninguna fila acá
+-- se trata como "lo hacen todos los barberos" (ver get_available_slots /
+-- la app de reserva, que hacen ese fallback).
+create table barber_services (
+  barber_id   uuid not null references barbers(id) on delete cascade,
+  service_id  uuid not null references services(id) on delete cascade,
+  primary key (barber_id, service_id)
+);
+
 -- weekday: 0=domingo .. 6=sábado (convención de Postgres extract(dow from date))
 create table barber_working_hours (
   id          uuid primary key default gen_random_uuid(),
@@ -259,6 +268,7 @@ for each row execute function update_barber_rating();
 alter table barbershops enable row level security;
 alter table barbers enable row level security;
 alter table services enable row level security;
+alter table barber_services enable row level security;
 alter table barber_working_hours enable row level security;
 alter table barber_time_off enable row level security;
 alter table bookings enable row level security;
@@ -303,6 +313,18 @@ create policy "public read active services" on services
 create policy "owner manages own services" on services
   for all using (barbershop_id in (select id from barbershops where owner_id = auth.uid()))
   with check (barbershop_id in (select id from barbershops where owner_id = auth.uid()));
+
+-- barber_services: lectura pública (la app de reserva filtra por esto), el
+-- dueño administra las asignaciones de su propia barbería
+create policy "public read barber_services" on barber_services
+  for select using (true);
+create policy "owner manages own barber_services" on barber_services
+  for all using (
+    barber_id in (select b.id from barbers b join barbershops s on s.id = b.barbershop_id where s.owner_id = auth.uid())
+  ) with check (
+    barber_id in (select b.id from barbers b join barbershops s on s.id = b.barbershop_id where s.owner_id = auth.uid())
+    and service_id in (select sv.id from services sv join barbershops s on s.id = sv.barbershop_id where s.owner_id = auth.uid())
+  );
 
 -- horarios y ausencias: NO son de lectura pública (solo la función de disponibilidad
 -- los usa "por dentro"); el dueño administra los de su propia barbería

@@ -311,6 +311,18 @@
     </form>
   </div>
 
+  <div id="modal-asignar" class="hidden fixed inset-0 z-30 bg-black/70 flex items-center justify-center px-4">
+    <div class="w-full max-w-sm bg-panel border border-white/10 rounded-sm p-5 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between mb-2">
+        <h2 id="asignar-titulo" class="font-display text-lg">Asignar</h2>
+        <button type="button" onclick="cerrarModalAsignar()" class="text-white/50 hover:text-white text-lg leading-none">✕</button>
+      </div>
+      <p id="asignar-subtitulo" class="text-white/50 text-xs mb-4"></p>
+      <div id="asignar-lista" class="space-y-1 mb-4"></div>
+      <button type="button" onclick="guardarAsignacion()" class="w-full bg-gold hover:bg-goldlight text-ink font-semibold py-2.5 rounded-sm transition">Guardar</button>
+    </div>
+  </div>
+
   <div id="modal-qr" class="hidden fixed inset-0 z-30 bg-black/70 flex items-center justify-center px-4">
     <div class="w-full max-w-sm bg-panel border border-white/10 rounded-sm p-5 text-center">
       <div class="flex items-center justify-between mb-4">
@@ -1111,7 +1123,8 @@
           <span class="flex-1 min-w-[120px] text-sm font-medium">${escapeHtml(s.name)}</span>
           <span class="text-xs text-white/50 w-20">${s.duration_minutes} min</span>
           <span class="font-mono text-sm text-gold w-24 text-right">${clp(s.price_clp)}</span>
-          <button onclick="deleteServicio('${s.id}')" class="text-xs text-white/40 ml-auto md:ml-6 hover:text-red-400 transition">Eliminar</button>
+          <button onclick="abrirModalAsignarBarberosAServicio('${s.id}', '${escapeHtml(s.name)}', false)" class="text-xs text-white/40 hover:text-gold transition">Barberos</button>
+          <button onclick="deleteServicio('${s.id}')" class="text-xs text-white/40 hover:text-red-400 transition">Eliminar</button>
         </div>
       `).join('') : '<p class="px-4 py-6 text-sm text-white/40 text-center">Sin servicios todavía.</p>';
     }
@@ -1123,9 +1136,80 @@
       const duration = parseInt(prompt('Duración en minutos:', '30'), 10);
       const price = parseInt(prompt('Precio en pesos:', '8000'), 10);
       if (!duration || !price) { alert('Duración y precio deben ser números.'); return; }
-      const { error } = await supabaseClient.from('services').insert({ barbershop_id: state.barbershopId, name, duration_minutes: duration, price_clp: price });
+      const { data, error } = await supabaseClient.from('services').insert({ barbershop_id: state.barbershopId, name, duration_minutes: duration, price_clp: price }).select().single();
       if (error) { alert('Error: ' + error.message); return; }
       loadServicios();
+      abrirModalAsignarBarberosAServicio(data.id, data.name, true);
+    }
+
+    // ---------- Asignación barbero <-> servicio ----------
+    let asignarContext = null;
+
+    async function abrirModalAsignarBarberosAServicio(servicioId, servicioName, esNuevo) {
+      const { data: barberos } = await supabaseClient.from('barbers').select('id,name').eq('barbershop_id', state.barbershopId).eq('active', true).order('created_at');
+      if (!barberos || !barberos.length) {
+        if (!esNuevo) alert('Todavía no tienes barberos agregados.');
+        return;
+      }
+      let asignados = new Set(barberos.map(b => b.id));
+      if (!esNuevo) {
+        const { data: filas } = await supabaseClient.from('barber_services').select('barber_id').eq('service_id', servicioId);
+        asignados = new Set((filas || []).map(f => f.barber_id));
+      }
+      asignarContext = { modo: 'servicio', servicioId };
+      document.getElementById('asignar-titulo').textContent = `¿Quién hace "${servicioName}"?`;
+      document.getElementById('asignar-subtitulo').textContent = 'Marca los barberos que saben realizar este servicio.';
+      document.getElementById('asignar-lista').innerHTML = barberos.map(b => `
+        <label class="flex items-center gap-2 text-sm py-1.5">
+          <input type="checkbox" value="${b.id}" ${asignados.has(b.id) ? 'checked' : ''} class="accent-gold w-4 h-4">
+          ${escapeHtml(b.name)}
+        </label>
+      `).join('');
+      document.getElementById('modal-asignar').classList.remove('hidden');
+    }
+
+    async function abrirModalAsignarServiciosABarbero(barberoId, barberoName, esNuevo) {
+      const { data: servicios } = await supabaseClient.from('services').select('id,name').eq('barbershop_id', state.barbershopId).eq('active', true).order('created_at');
+      if (!servicios || !servicios.length) {
+        if (!esNuevo) alert('Todavía no tienes servicios agregados.');
+        return;
+      }
+      let asignados = new Set(servicios.map(s => s.id));
+      if (!esNuevo) {
+        const { data: filas } = await supabaseClient.from('barber_services').select('service_id').eq('barber_id', barberoId);
+        asignados = new Set((filas || []).map(f => f.service_id));
+      }
+      asignarContext = { modo: 'barbero', barberoId };
+      document.getElementById('asignar-titulo').textContent = `¿Qué sabe hacer ${barberoName}?`;
+      document.getElementById('asignar-subtitulo').textContent = 'Marca los servicios que este barbero puede realizar.';
+      document.getElementById('asignar-lista').innerHTML = servicios.map(s => `
+        <label class="flex items-center gap-2 text-sm py-1.5">
+          <input type="checkbox" value="${s.id}" ${asignados.has(s.id) ? 'checked' : ''} class="accent-gold w-4 h-4">
+          ${escapeHtml(s.name)}
+        </label>
+      `).join('');
+      document.getElementById('modal-asignar').classList.remove('hidden');
+    }
+
+    async function guardarAsignacion() {
+      const marcados = Array.from(document.querySelectorAll('#asignar-lista input:checked')).map(el => el.value);
+      if (asignarContext.modo === 'servicio') {
+        await supabaseClient.from('barber_services').delete().eq('service_id', asignarContext.servicioId);
+        if (marcados.length) {
+          await supabaseClient.from('barber_services').insert(marcados.map(barberId => ({ barber_id: barberId, service_id: asignarContext.servicioId })));
+        }
+      } else {
+        await supabaseClient.from('barber_services').delete().eq('barber_id', asignarContext.barberoId);
+        if (marcados.length) {
+          await supabaseClient.from('barber_services').insert(marcados.map(serviceId => ({ barber_id: asignarContext.barberoId, service_id: serviceId })));
+        }
+      }
+      cerrarModalAsignar();
+    }
+
+    function cerrarModalAsignar() {
+      document.getElementById('modal-asignar').classList.add('hidden');
+      asignarContext = null;
     }
 
     async function deleteServicio(id) {
@@ -1143,6 +1227,7 @@
           <p class="text-sm font-medium mb-2">${escapeHtml(b.name)}</p>
           <div class="flex items-center justify-between gap-2 mb-2">
             <span class="text-xs ${b.active ? 'bg-green-500/15 text-green-400' : 'bg-white/10 text-white/40'} px-2 py-0.5 rounded-sm">${b.active ? 'Disponible' : 'Inactivo'}</span>
+            <button onclick="abrirModalAsignarServiciosABarbero('${b.id}', '${escapeHtml(b.name)}', false)" class="text-xs text-white/40 hover:text-gold transition">Servicios</button>
             <button onclick="toggleBarberoActivo('${b.id}', ${b.active})" class="text-xs text-white/40 hover:${b.active ? 'text-red-400' : 'text-green-400'} transition">${b.active ? 'Eliminar' : 'Reactivar'}</button>
           </div>
           ${b.user_id
@@ -1211,6 +1296,7 @@
       const horario = [1, 2, 3, 4, 5, 6].map(weekday => ({ barber_id: data.id, weekday, start_time: '10:00', end_time: '20:00' }));
       await supabaseClient.from('barber_working_hours').insert(horario);
       loadBarberos();
+      abrirModalAsignarServiciosABarbero(data.id, data.name, true);
     }
 
     // ---------- Modal: agregar cita manual ----------
