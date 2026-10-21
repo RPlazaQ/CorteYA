@@ -52,6 +52,12 @@
   .d-section-body { max-height: 0; overflow: hidden; transition: max-height .25s ease; }
   .d-section.d-open .d-section-body { max-height: 1200px; }
   .d-section-body-inner { padding: 0 1.1rem 1.1rem; }
+
+  /* iOS Safari hace zoom automático al enfocar un input con font-size
+     menor a 16px, y a veces ese zoom queda pegado al cerrar el teclado.
+     Forzamos 16px solo en los campos de formulario (el texto se ve igual
+     de chico gracias al line-height reducido) para evitar el zoom. */
+  input, select, textarea { font-size: 16px !important; }
 </style>
 </head>
 <body class="bg-neutral-950 text-white font-body min-h-screen">
