@@ -57,7 +57,10 @@
      menor a 16px, y a veces ese zoom queda pegado al cerrar el teclado.
      Forzamos 16px solo en los campos de formulario (el texto se ve igual
      de chico gracias al line-height reducido) para evitar el zoom. */
-  input, select, textarea { font-size: 16px !important; }
+  /* el input de fecha abre el selector nativo (no teclado), así que no
+     sufre el zoom de iOS — y a 16px su texto nativo no entra en el ancho
+     del recuadro y se sale de la pantalla. Se deja en su tamaño normal. */
+  input:not([type="date"]), select, textarea { font-size: 16px !important; }
 </style>
 </head>
 <body class="bg-neutral-950 text-white font-body min-h-screen">
