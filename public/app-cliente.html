@@ -122,122 +122,125 @@
       </div>
     </div>
 
-    <!-- SCREEN 2: DETALLE BARBERÍA -->
+    <!-- SCREEN 2: DETALLE BARBERÍA + RESERVA — mismo acordeón que la versión
+         de escritorio (Servicio / Barbero y horario / Datos), en vez de
+         pantallas separadas por paso. -->
     <div id="screen-detalle" class="screen hidden">
       <div class="relative h-44 shrink-0">
         <img id="detalle-imagen" src="https://placehold.co/600x200/1D1D20/D9A441?text=..." class="w-full h-full object-cover">
         <button id="detalle-back-btn" onclick="showScreen('screen-buscar')" class="absolute top-3 left-3 w-8 h-8 rounded-full bg-ink/80 flex items-center justify-center text-sm">←</button>
       </div>
-      <div class="flex-1 overflow-y-auto px-5 pt-4 pb-4">
+      <div class="flex-1 overflow-y-auto px-5 pt-4 pb-8">
         <h2 id="detalle-nombre" class="font-display text-lg">Cargando…</h2>
         <p id="detalle-rating" class="text-xs text-gold mt-0.5"></p>
         <p id="detalle-info" class="text-xs text-white/50 mt-1"></p>
 
-        <p class="font-mono text-[11px] tracking-widest uppercase text-gold mt-6 mb-3">Servicios</p>
-        <div id="detalle-servicios" class="space-y-2"></div>
+        <div id="pago-form" class="mt-6 space-y-3">
 
-        <div class="flex items-center justify-between mt-6 mb-3">
+          <div id="m-sec-servicio" class="d-section d-open">
+            <button class="d-section-head" onclick="toggleSection('m', 'servicio')">
+              <span class="d-section-num">1</span>
+              <span class="d-section-title">Servicio</span>
+              <span id="m-sum-servicio" class="d-section-summary"></span>
+            </button>
+            <div class="d-section-body">
+              <div class="d-section-body-inner">
+                <div id="detalle-servicios" class="space-y-2"></div>
+              </div>
+            </div>
+          </div>
+
+          <div id="m-sec-horario" class="d-section d-locked">
+            <button class="d-section-head" onclick="toggleSection('m', 'horario')">
+              <span class="d-section-num">2</span>
+              <span class="d-section-title">Barbero y horario</span>
+              <span id="m-sum-horario" class="d-section-summary"></span>
+            </button>
+            <div class="d-section-body">
+              <div class="d-section-body-inner space-y-5">
+                <div>
+                  <p class="font-mono text-[11px] tracking-widest uppercase text-gold mb-3">Barbero</p>
+                  <div id="agendar-barberos" class="flex gap-2 flex-wrap"></div>
+                </div>
+                <div>
+                  <p class="font-mono text-[11px] tracking-widest uppercase text-gold mb-3">Fecha</p>
+                  <input id="agendar-fecha-input" type="date" onchange="selectDate(this.value)"
+                    class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2.5 text-sm text-white focus:outline-none focus:border-gold [color-scheme:dark]">
+                </div>
+                <div>
+                  <p class="font-mono text-[11px] tracking-widest uppercase text-gold mb-3">Hora</p>
+                  <div id="agendar-horas" class="grid grid-cols-4 gap-2">
+                    <p class="col-span-4 text-white/40 text-xs text-center py-4">Elige barbero y fecha</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="m-sec-datos" class="d-section d-locked">
+            <button class="d-section-head" onclick="toggleSection('m', 'datos')">
+              <span class="d-section-num">3</span>
+              <span class="d-section-title">Tus datos y confirmación</span>
+              <span id="m-sum-datos" class="d-section-summary"></span>
+            </button>
+            <div class="d-section-body">
+              <div class="d-section-body-inner space-y-5">
+                <div class="space-y-2">
+                  <input id="input-nombre" type="text" maxlength="80" placeholder="Nombre" oninput="autoCapitalizeInput(event)" class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2.5 text-sm placeholder-white/40 focus:outline-none focus:border-gold">
+                  <div class="flex gap-2">
+                    <span class="shrink-0 flex items-center px-3 border border-white/15 rounded-sm text-sm text-white/60 bg-white/5">+56 9</span>
+                    <input id="input-telefono" type="tel" inputmode="numeric" maxlength="8" placeholder="1234 5678"
+                      oninput="this.value = this.value.replace(/\D/g, '').slice(0, 8)"
+                      class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2.5 text-sm placeholder-white/40 focus:outline-none focus:border-gold">
+                  </div>
+                  <input id="input-email" type="email" maxlength="120" placeholder="Correo (opcional)" class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2.5 text-sm placeholder-white/40 focus:outline-none focus:border-gold">
+                  <input id="input-honeypot" type="text" name="website" tabindex="-1" autocomplete="off" class="hidden">
+                </div>
+                <div>
+                  <p class="font-mono text-[11px] tracking-widest uppercase text-gold mb-3">Resumen</p>
+                  <div id="pago-resumen" class="border border-white/10 rounded-sm p-3 space-y-2 text-sm"></div>
+                  <p class="text-white/40 text-xs mt-3">Pagas directo en la barbería. No se cobra nada ahora.</p>
+                </div>
+                <p id="pago-error" class="hidden text-sm text-red-400"></p>
+                <button id="btn-confirmar" onclick="submitBooking()" class="w-full bg-gold hover:bg-goldlight text-ink font-semibold py-3 rounded-sm transition">Confirmar reserva</button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div id="pago-loading" class="hidden py-14 flex flex-col items-center text-center">
+          <div class="relative w-14 h-14 mb-5 text-gold">
+            <svg class="loading-icon li-tijera absolute inset-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4l16 16M10 14l-6 6M14 10l6-6"/><circle cx="7" cy="7" r="2.3"/><circle cx="7" cy="17" r="2.3"/></svg>
+            <svg class="loading-icon li-navaja hidden absolute inset-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 20.5l6-6"/><path d="M9.5 14.5L18 6c.8-.8 2-.8 2.8 0 .8.8.8 2 0 2.8L12 17.5"/><path d="M12 17.5l-2.5-3"/></svg>
+            <svg class="loading-icon li-cilindro hidden absolute inset-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="6" width="8" height="12" rx="2"/><rect x="9" y="3" width="6" height="2.2" rx="1"/><rect x="9" y="18.8" width="6" height="2.2" rx="1"/><path d="M8.5 7.5L15.5 16.5M9.8 7l5.7 8M11.1 7l5 7.3"/></svg>
+          </div>
+          <p class="text-white/60 text-sm">Confirmando tu reserva…</p>
+        </div>
+
+        <div id="pago-exito" class="hidden py-10 flex flex-col items-center text-center">
+          <svg class="w-12 h-12 text-gold mb-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+            <circle cx="12" cy="12" r="9"/><path d="M8 12.3l2.6 2.6L16 9.5"/>
+          </svg>
+          <h2 class="font-display text-xl mb-2">Reserva confirmada</h2>
+          <p id="exito-detalle" class="text-white/60 text-sm mb-6"></p>
+          <div class="w-full flex gap-2 mb-6">
+            <a id="btn-cal-google" href="#" target="_blank" rel="noopener" class="flex-1 border border-white/15 hover:border-gold/50 rounded-sm py-2.5 text-xs font-medium text-center transition">Google Calendar</a>
+            <a id="btn-cal-ics" href="#" class="flex-1 border border-white/15 hover:border-gold/50 rounded-sm py-2.5 text-xs font-medium text-center transition">Apple Calendar</a>
+          </div>
+          <p id="aviso-navegador-app" class="hidden text-white/40 text-[11px] -mt-4 mb-6 leading-snug">
+            Si "Apple Calendar" no abrió nada: estás en el navegador de Instagram/Facebook,
+            que bloquea esa función. Toca los <strong>•••</strong> arriba y elige
+            <strong>"Abrir en el navegador"</strong> (Safari o Chrome) para que funcione.
+          </p>
+          <button onclick="resetAndGoHome()" class="w-full bg-gold hover:bg-goldlight text-ink font-semibold py-3 rounded-sm transition">Volver al inicio</button>
+        </div>
+
+        <div class="flex items-center justify-between mt-8 mb-3">
           <p class="font-mono text-[11px] tracking-widest uppercase text-gold">Reseñas</p>
           <button onclick="abrirModalResena()" class="text-xs text-gold hover:text-goldlight transition">+ Dejar reseña</button>
         </div>
         <div id="detalle-resenas" class="space-y-2"></div>
-      </div>
-      <div class="p-4 border-t border-white/10 shrink-0">
-        <button onclick="onReservarClick()" class="w-full bg-gold hover:bg-goldlight text-ink font-semibold py-3 rounded-sm transition">Reservar</button>
-      </div>
-    </div>
-
-    <!-- SCREEN 3: AGENDAR -->
-    <div id="screen-agendar" class="screen hidden">
-      <div class="flex items-center gap-3 px-5 pt-4 pb-4 shrink-0">
-        <button onclick="showScreen('screen-detalle')" class="text-sm">←</button>
-        <h2 class="font-display text-base">Agendar hora</h2>
-      </div>
-      <div class="flex-1 overflow-y-auto px-5 pb-4 space-y-6">
-        <div>
-          <p class="font-mono text-[11px] tracking-widest uppercase text-gold mb-3">Barbero</p>
-          <div id="agendar-barberos" class="flex gap-2 flex-wrap"></div>
-        </div>
-        <div>
-          <p class="font-mono text-[11px] tracking-widest uppercase text-gold mb-3">Fecha</p>
-          <input id="agendar-fecha-input" type="date" onchange="selectDate(this.value)"
-            class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2.5 text-sm text-white focus:outline-none focus:border-gold [color-scheme:dark]">
-        </div>
-        <div>
-          <p class="font-mono text-[11px] tracking-widest uppercase text-gold mb-3">Hora</p>
-          <div id="agendar-horas" class="grid grid-cols-4 gap-2">
-            <p class="col-span-4 text-white/40 text-xs text-center py-4">Elige barbero y fecha</p>
-          </div>
-        </div>
-      </div>
-      <div class="p-4 border-t border-white/10 shrink-0">
-        <div class="flex items-center justify-between text-sm mb-3">
-          <span id="agendar-resumen" class="text-white/60">Elige un horario</span>
-          <span id="agendar-precio" class="font-mono text-gold"></span>
-        </div>
-        <button onclick="onContinuarClick()" class="w-full bg-gold hover:bg-goldlight text-ink font-semibold py-3 rounded-sm transition">Continuar</button>
-      </div>
-    </div>
-
-    <!-- SCREEN 4: PAGO / CONFIRMACIÓN -->
-    <div id="screen-pago" class="screen hidden">
-      <div id="pago-form" class="flex-1 flex flex-col">
-        <div class="flex items-center gap-3 px-5 pt-4 pb-4 shrink-0">
-          <button onclick="showScreen('screen-agendar')" class="text-sm">←</button>
-          <h2 class="font-display text-base">Confirmar reserva</h2>
-        </div>
-        <div class="flex-1 overflow-y-auto px-5 pb-4 space-y-6">
-          <div>
-            <p class="font-mono text-[11px] tracking-widest uppercase text-gold mb-3">Tus datos</p>
-            <div class="space-y-2">
-              <input id="input-nombre" type="text" maxlength="80" placeholder="Nombre" oninput="autoCapitalizeInput(event)" class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2.5 text-sm placeholder-white/40 focus:outline-none focus:border-gold">
-              <div class="flex gap-2">
-                <span class="shrink-0 flex items-center px-3 border border-white/15 rounded-sm text-sm text-white/60 bg-white/5">+56 9</span>
-                <input id="input-telefono" type="tel" inputmode="numeric" maxlength="8" placeholder="1234 5678"
-                  oninput="this.value = this.value.replace(/\D/g, '').slice(0, 8)"
-                  class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2.5 text-sm placeholder-white/40 focus:outline-none focus:border-gold">
-              </div>
-              <input id="input-email" type="email" maxlength="120" placeholder="Correo (opcional)" class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2.5 text-sm placeholder-white/40 focus:outline-none focus:border-gold">
-              <input id="input-honeypot" type="text" name="website" tabindex="-1" autocomplete="off" class="hidden">
-            </div>
-          </div>
-          <div>
-            <p class="font-mono text-[11px] tracking-widest uppercase text-gold mb-3">Resumen</p>
-            <div id="pago-resumen" class="border border-white/10 rounded-sm p-3 space-y-2 text-sm"></div>
-            <p class="text-white/40 text-xs mt-3">Pagas directo en la barbería. No se cobra nada ahora.</p>
-          </div>
-          <p id="pago-error" class="hidden text-sm text-red-400"></p>
-        </div>
-        <div class="p-4 border-t border-white/10 shrink-0">
-          <button id="btn-confirmar" onclick="submitBooking()" class="w-full bg-gold hover:bg-goldlight text-ink font-semibold py-3 rounded-sm transition">Confirmar reserva</button>
-        </div>
-      </div>
-
-      <div id="pago-loading" class="hidden flex-1 flex flex-col items-center justify-center px-8 text-center">
-        <div class="relative w-14 h-14 mb-5 text-gold">
-          <svg class="loading-icon li-tijera absolute inset-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4l16 16M10 14l-6 6M14 10l6-6"/><circle cx="7" cy="7" r="2.3"/><circle cx="7" cy="17" r="2.3"/></svg>
-          <svg class="loading-icon li-navaja hidden absolute inset-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 20.5l6-6"/><path d="M9.5 14.5L18 6c.8-.8 2-.8 2.8 0 .8.8.8 2 0 2.8L12 17.5"/><path d="M12 17.5l-2.5-3"/></svg>
-          <svg class="loading-icon li-cilindro hidden absolute inset-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="6" width="8" height="12" rx="2"/><rect x="9" y="3" width="6" height="2.2" rx="1"/><rect x="9" y="18.8" width="6" height="2.2" rx="1"/><path d="M8.5 7.5L15.5 16.5M9.8 7l5.7 8M11.1 7l5 7.3"/></svg>
-        </div>
-        <p class="text-white/60 text-sm">Confirmando tu reserva…</p>
-      </div>
-
-      <div id="pago-exito" class="hidden flex-1 flex flex-col items-center justify-center px-8 text-center">
-        <svg class="w-12 h-12 text-gold mb-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
-          <circle cx="12" cy="12" r="9"/><path d="M8 12.3l2.6 2.6L16 9.5"/>
-        </svg>
-        <h2 class="font-display text-xl mb-2">Reserva confirmada</h2>
-        <p id="exito-detalle" class="text-white/60 text-sm mb-6"></p>
-        <div class="w-full flex gap-2 mb-6">
-          <a id="btn-cal-google" href="#" target="_blank" rel="noopener" class="flex-1 border border-white/15 hover:border-gold/50 rounded-sm py-2.5 text-xs font-medium text-center transition">Google Calendar</a>
-          <a id="btn-cal-ics" href="#" class="flex-1 border border-white/15 hover:border-gold/50 rounded-sm py-2.5 text-xs font-medium text-center transition">Apple Calendar</a>
-        </div>
-        <p id="aviso-navegador-app" class="hidden text-white/40 text-[11px] -mt-4 mb-6 leading-snug">
-          Si "Apple Calendar" no abrió nada: estás en el navegador de Instagram/Facebook,
-          que bloquea esa función. Toca los <strong>•••</strong> arriba y elige
-          <strong>"Abrir en el navegador"</strong> (Safari o Chrome) para que funcione.
-        </p>
-        <button onclick="resetAndGoHome()" class="w-full bg-gold hover:bg-goldlight text-ink font-semibold py-3 rounded-sm transition">Volver al inicio</button>
       </div>
     </div>
 
@@ -276,7 +279,7 @@
     <div id="d-flow" class="hidden space-y-3">
 
       <div id="d-sec-servicio" class="d-section d-open">
-        <button class="d-section-head" onclick="dToggleSection('servicio')">
+        <button class="d-section-head" onclick="toggleSection('d', 'servicio')">
           <span class="d-section-num">1</span>
           <span class="d-section-title">Servicio</span>
           <span id="d-sum-servicio" class="d-section-summary"></span>
@@ -289,7 +292,7 @@
       </div>
 
       <div id="d-sec-horario" class="d-section d-locked">
-        <button class="d-section-head" onclick="dToggleSection('horario')">
+        <button class="d-section-head" onclick="toggleSection('d', 'horario')">
           <span class="d-section-num">2</span>
           <span class="d-section-title">Barbero y horario</span>
           <span id="d-sum-horario" class="d-section-summary"></span>
@@ -318,7 +321,7 @@
       </div>
 
       <div id="d-sec-datos" class="d-section d-locked">
-        <button class="d-section-head" onclick="dToggleSection('datos')">
+        <button class="d-section-head" onclick="toggleSection('d', 'datos')">
           <span class="d-section-num">3</span>
           <span class="d-section-title">Tus datos y confirmación</span>
           <span id="d-sum-datos" class="d-section-summary"></span>
@@ -433,12 +436,6 @@
     function showScreen(id) {
       document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
       document.getElementById(id).classList.remove('hidden');
-      if (id === 'screen-pago') {
-        document.getElementById('pago-form').classList.remove('hidden');
-        document.getElementById('pago-loading').classList.add('hidden');
-        document.getElementById('pago-exito').classList.add('hidden');
-        document.getElementById('pago-error').classList.add('hidden');
-      }
     }
 
     function showBuscarView(view) {
@@ -461,43 +458,45 @@
       if (!wasOpen) document.getElementById(id)?.classList.remove('hidden');
     }
 
-    // ---------- acordeón de escritorio ----------
+    // ---------- acordeón (móvil 'm' y escritorio 'd' comparten la misma
+    // lógica; solo cambia el prefijo de los ids) ----------
     // Lockeado/abierto/hecho se derivan solo del estado (no hay flags propias
     // del acordeón), así que "volver atrás" a elegir otro servicio/horario
-    // relockea automáticamente lo que venía después, igual que en el flujo
-    // móvil cuando vuelves con "←".
-    function dSetSectionState(key, { locked = false, open = false, done = false }) {
-      const el = document.getElementById('d-sec-' + key);
+    // relockea automáticamente lo que venía después.
+    function setSectionState(scope, key, { locked = false, open = false, done = false }) {
+      const el = document.getElementById(scope + '-sec-' + key);
       if (!el) return;
       el.classList.toggle('d-locked', locked);
       el.classList.toggle('d-open', open);
       el.classList.toggle('d-done', done);
     }
 
-    function dToggleSection(key) {
-      const el = document.getElementById('d-sec-' + key);
+    function toggleSection(scope, key) {
+      const el = document.getElementById(scope + '-sec-' + key);
       if (!el || el.classList.contains('d-locked')) return;
       const willOpen = !el.classList.contains('d-open');
       ['servicio', 'horario', 'datos'].forEach(k => {
-        const other = document.getElementById('d-sec-' + k);
+        const other = document.getElementById(scope + '-sec-' + k);
         if (other && !other.classList.contains('d-locked')) other.classList.remove('d-open');
       });
       if (willOpen) el.classList.add('d-open');
     }
 
-    function dSyncAccordion() {
+    function syncAccordion() {
       const hasService = !!state.selectedService;
       const hasSlot = !!state.selectedSlot;
 
-      document.getElementById('d-sum-servicio').textContent = hasService
-        ? `${state.selectedService.name} · ${clp(state.selectedService.price_clp)}` : '';
-      dSetSectionState('servicio', { locked: false, open: !hasService, done: hasService });
+      ['d', 'm'].forEach(scope => {
+        document.getElementById(scope + '-sum-servicio').textContent = hasService
+          ? `${state.selectedService.name} · ${clp(state.selectedService.price_clp)}` : '';
+        setSectionState(scope, 'servicio', { locked: false, open: !hasService, done: hasService });
 
-      document.getElementById('d-sum-horario').textContent = hasSlot
-        ? `${formatFechaLabel(state.selectedDate)} · ${state.selectedSlot.slice(0, 5)}` : '';
-      dSetSectionState('horario', { locked: !hasService, open: hasService && !hasSlot, done: hasSlot });
+        document.getElementById(scope + '-sum-horario').textContent = hasSlot
+          ? `${formatFechaLabel(state.selectedDate)} · ${state.selectedSlot.slice(0, 5)}` : '';
+        setSectionState(scope, 'horario', { locked: !hasService, open: hasService && !hasSlot, done: hasSlot });
 
-      dSetSectionState('datos', { locked: !hasSlot, open: hasSlot, done: false });
+        setSectionState(scope, 'datos', { locked: !hasSlot, open: hasSlot, done: false });
+      });
     }
 
     function dBackToPicker() {
@@ -644,7 +643,7 @@
       document.getElementById('d-loading').classList.add('hidden');
       state.selectedService = null;
       state.selectedSlot = null;
-      dSyncAccordion();
+      syncAccordion();
 
       await loadBarbershopDetail();
     }
@@ -707,7 +706,7 @@
         </button>
       `).join('');
 
-      dSyncAccordion();
+      syncAccordion();
       loadReviews();
     }
 
@@ -827,25 +826,13 @@
         el.classList.toggle('border-white/10', !active);
       });
 
-      // en escritorio no hay botón "Reservar" aparte: elegir el servicio
-      // desbloquea y abre directo la siguiente sección del acordeón.
+      // no hay botón "Reservar" aparte: elegir el servicio desbloquea y
+      // abre directo la siguiente sección del acordeón (igual en ambos).
       state.selectedBarberId = 'any';
       state.selectedDate = null;
       state.selectedSlot = null;
       loadAgendarScreen();
-      dSyncAccordion();
-    }
-
-    function onReservarClick() {
-      if (!state.selectedService && state.services.length) {
-        selectService(state.services[0].id);
-      }
-      if (!state.selectedService) return;
-      state.selectedBarberId = 'any';
-      state.selectedDate = null;
-      state.selectedSlot = null;
-      showScreen('screen-agendar');
-      loadAgendarScreen();
+      syncAccordion();
     }
 
     // devuelve los barberos de state.barbers que saben hacer el servicio
@@ -876,8 +863,6 @@
       state.selectedBarberId = 'any';
       state.selectedDate = hoy.iso;
       state.selectedSlot = null;
-      document.getElementById('agendar-resumen').textContent = 'Elige un horario';
-      document.getElementById('agendar-precio').textContent = '';
       loadHoras();
     }
 
@@ -893,7 +878,7 @@
         el.classList.toggle('text-white/70', !active);
       });
       loadHoras();
-      dSyncAccordion();
+      syncAccordion();
     }
 
     function selectDate(iso) {
@@ -903,7 +888,7 @@
       document.getElementById('agendar-fecha-input').value = iso;
       document.getElementById('d-fecha-input').value = iso;
       loadHoras();
-      dSyncAccordion();
+      syncAccordion();
     }
 
     async function fetchSlotsForBarber(barberId, dateIso, durationMinutes) {
@@ -920,8 +905,6 @@
       const loadingHtml = '<p class="col-span-4 text-white/40 text-xs text-center py-4">Buscando horarios…</p>';
       document.getElementById('agendar-horas').innerHTML = loadingHtml;
       document.getElementById('d-horas').innerHTML = loadingHtml.replace('col-span-4', 'col-span-6');
-      document.getElementById('agendar-resumen').textContent = 'Elige un horario';
-      document.getElementById('agendar-precio').textContent = '';
 
       const duration = state.selectedService.duration_minutes;
       const barberIds = state.selectedBarberId === 'any' ? getEligibleBarbers().map(b => b.id) : [state.selectedBarberId];
@@ -959,16 +942,8 @@
         el.classList.toggle('border-white/15', !active);
         el.classList.toggle('text-white/70', !active);
       });
-      document.getElementById('agendar-resumen').textContent = `${state.selectedService.name} · ${timeStr.slice(0, 5)}`;
-      document.getElementById('agendar-precio').textContent = clp(state.selectedService.price_clp);
       renderPagoResumen();
-      dSyncAccordion();
-    }
-
-    function onContinuarClick() {
-      if (!state.selectedSlot) return;
-      showScreen('screen-pago');
-      renderPagoResumen();
+      syncAccordion();
     }
 
     // ---------- Confirmación ----------
@@ -1129,8 +1104,8 @@
       if (lastError && lastError.code === '23P01') {
         errorEl.textContent = 'Justo se ocupó ese horario. Elige otro.';
         errorEl.classList.remove('hidden');
-        showScreen('screen-agendar');
-        dToggleSection('horario');
+        state.selectedSlot = null;
+        syncAccordion();
         loadHoras();
       } else {
         console.error(lastError);
@@ -1209,7 +1184,7 @@
       state.selectedDate = null;
       state.selectedSlot = null;
       state.candidateBarberIds = [];
-      dSyncAccordion();
+      syncAccordion();
 
       if (state.viaSharedLink) {
         showScreen('screen-detalle');
