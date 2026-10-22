@@ -61,6 +61,15 @@
      sufre el zoom de iOS — y a 16px su texto nativo no entra en el ancho
      del recuadro y se sale de la pantalla. Se deja en su tamaño normal. */
   input:not([type="date"]), select, textarea { font-size: 16px !important; }
+
+  /* iOS ignora el font-size del VALOR que muestra el selector de fecha
+     nativo (bug conocido de WebKit) — por más chico que se ponga en CSS,
+     el texto renderizado sigue siendo grande y se sale del recuadro.
+     Como font-size no funciona ahí, achicamos visualmente todo el control
+     con transform (eso sí respeta lo que WebKit pinta, incluido lo que se
+     sale de la caja). transform-origin:left evita que se corra hacia la
+     derecha al achicarse. */
+  input[type="date"] { transform: scale(0.85); transform-origin: left center; }
 </style>
 </head>
 <body class="bg-neutral-950 text-white font-body min-h-screen">
