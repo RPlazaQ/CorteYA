@@ -171,7 +171,8 @@
             <div class="d-section-body">
               <div class="d-section-body-inner">
                 <input id="agendar-fecha-input" type="date" onchange="selectDate(this.value)"
-                  class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2.5 text-sm text-white focus:outline-none focus:border-gold [color-scheme:dark]">
+                  class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2.5 text-sm text-white focus:outline-none focus:border-gold [color-scheme:dark] mb-3">
+                <button type="button" onclick="confirmarFecha()" class="w-full bg-gold hover:bg-goldlight text-ink font-semibold py-3 rounded-sm transition">Continuar</button>
               </div>
             </div>
           </div>
@@ -188,7 +189,7 @@
                   <p class="font-mono text-[11px] tracking-widest uppercase text-gold mb-3">Barbero</p>
                   <div id="agendar-barberos" class="space-y-2"></div>
                 </div>
-                <div>
+                <div class="barbero-horas-global-wrap">
                   <p class="font-mono text-[11px] tracking-widest uppercase text-gold mb-3">Hora</p>
                   <div id="agendar-horas" class="grid grid-cols-4 gap-2">
                     <p class="col-span-4 text-white/40 text-xs text-center py-4">Elige barbero</p>
@@ -344,7 +345,8 @@
         <div class="d-section-body">
           <div class="d-section-body-inner">
             <input id="d-fecha-input" type="date" onchange="selectDate(this.value)"
-              class="w-full max-w-xs bg-transparent border border-white/15 rounded-sm px-3 py-2.5 text-sm text-white focus:outline-none focus:border-gold [color-scheme:dark]">
+              class="w-full max-w-xs bg-transparent border border-white/15 rounded-sm px-3 py-2.5 text-sm text-white focus:outline-none focus:border-gold [color-scheme:dark] mb-3">
+            <button type="button" onclick="confirmarFecha()" class="w-full max-w-xs bg-gold hover:bg-goldlight text-ink font-semibold py-3 rounded-sm transition">Continuar</button>
           </div>
         </div>
       </div>
@@ -361,7 +363,7 @@
               <p class="font-mono text-[11px] tracking-widest uppercase text-gold mb-3">Barbero</p>
               <div id="d-barberos" class="space-y-2"></div>
             </div>
-            <div>
+            <div class="barbero-horas-global-wrap">
               <p class="font-mono text-[11px] tracking-widest uppercase text-gold mb-3">Hora</p>
               <div id="d-horas" class="grid grid-cols-6 gap-2">
                 <p class="col-span-6 text-white/40 text-xs text-center py-4">Elige barbero</p>
@@ -922,7 +924,9 @@
       });
 
       // no hay botón "Reservar" aparte: elegir el servicio desbloquea y
-      // abre directo la sección de fecha (igual en ambos layouts).
+      // abre directo la sección de fecha (igual en ambos layouts). La fecha
+      // se precarga en "hoy" como sugerencia, pero no se confirma sola —
+      // el cliente tiene que tocar "Continuar" (o cambiarla) para avanzar.
       renderBarberoList();
 
       const hoy = santiagoDateParts(0);
@@ -930,8 +934,16 @@
       [document.getElementById('agendar-fecha-input'), document.getElementById('d-fecha-input')].forEach(input => {
         input.min = hoy.iso;
         input.max = maxFecha.iso;
+        input.value = hoy.iso;
       });
-      selectDate(hoy.iso); // precarga hoy; el cliente puede cambiarla igual
+
+      state.selectedDate = null;
+      state.selectedBarberId = null;
+      state.selectedSlot = null;
+      state.datosOk = false;
+      state.metodoPago = null;
+      renderMetodoPago();
+      syncAccordion();
     }
 
     // devuelve los barberos de state.barbers que saben hacer el servicio
@@ -943,29 +955,30 @@
     }
 
     // ---------- paso Fecha ----------
+    // Botón "Continuar": confirma lo que ya esté en el input (venga
+    // precargado en "hoy" o cambiado a mano) sin necesitar un segundo toque.
+    function confirmarFecha() {
+      const isDesktop = window.matchMedia('(min-width: 768px)').matches;
+      const iso = document.getElementById(isDesktop ? 'd-fecha-input' : 'agendar-fecha-input').value;
+      selectDate(iso);
+    }
+
     function selectDate(iso) {
       if (!iso) return;
       state.selectedDate = iso;
-      // cambiar de fecha relockea barbero/hora/datos/pago en cascada — se
-      // deriva solo del estado, así que basta con resetear estos campos.
-      state.selectedBarberId = null;
-      state.selectedSlot = null;
-      state.datosOk = false;
-      state.metodoPago = null;
       document.getElementById('agendar-fecha-input').value = iso;
       document.getElementById('d-fecha-input').value = iso;
-      const sinBarbero = '<p class="col-span-4 text-white/40 text-xs text-center py-4">Elige barbero</p>';
-      document.getElementById('agendar-horas').innerHTML = sinBarbero;
-      document.getElementById('d-horas').innerHTML = sinBarbero.replace('col-span-4', 'col-span-6');
-      document.querySelectorAll('.barbero-item').forEach(el => {
-        el.classList.remove('border-gold', 'bg-gold/10');
-        el.classList.add('border-white/15');
-      });
-      renderMetodoPago();
-      syncAccordion();
+      // "Cualquiera" es la opción predeterminada al entrar a este paso —
+      // selectBarber('any') ya resetea barbero/hora/datos/pago, carga los
+      // horarios y sincroniza el acordeón.
+      selectBarber('any');
     }
 
-    // ---------- paso Barbero y hora (foto + descripción, listado en vez de chips) ----------
+    // ---------- paso Barbero y hora ----------
+    // "Cualquiera" se queda como está (lista + bloque de horas abajo de
+    // todo). Un barbero específico "agranda" su propia tarjeta y las horas
+    // aparecen adentro de ella — por eso cada tarjeta trae su propio panel
+    // de horas (oculto por defecto) además del bloque de horas global.
     function renderBarberoList() {
       const anyCard = `
         <button data-barber-id="any" onclick="selectBarber('any')" class="barbero-item w-full text-left flex items-center gap-3 border border-white/15 rounded-sm p-3 transition">
@@ -976,13 +989,20 @@
           </div>
         </button>`;
       const barberoCard = (b) => `
-        <button data-barber-id="${b.id}" onclick="selectBarber('${b.id}')" class="barbero-item w-full text-left flex gap-3 border border-white/15 rounded-sm p-3 transition">
-          <img src="${b.photo_url || 'https://placehold.co/56x56/1D1D20/D9A441?text=' + encodeURIComponent(b.name.charAt(0))}" class="w-14 h-14 rounded-sm object-cover shrink-0">
-          <div class="min-w-0">
-            <p class="text-sm font-medium">${escapeHtml(b.name)}${b.review_count ? ` · ⭐${b.rating}` : ''}</p>
-            ${b.bio ? `<p class="text-xs text-white/50 mt-0.5" style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${escapeHtml(b.bio)}</p>` : ''}
+        <div data-barber-id="${b.id}">
+          <button data-barber-id="${b.id}" onclick="selectBarber('${b.id}')" class="barbero-item w-full text-left flex gap-3 border border-white/15 rounded-sm p-3 transition">
+            <img src="${b.photo_url || 'https://placehold.co/56x56/1D1D20/D9A441?text=' + encodeURIComponent(b.name.charAt(0))}" class="w-14 h-14 rounded-sm object-cover shrink-0">
+            <div class="min-w-0">
+              <p class="text-sm font-medium">${escapeHtml(b.name)}${b.review_count ? ` · ⭐${b.rating}` : ''}</p>
+              ${b.bio ? `<p class="text-xs text-white/50 mt-0.5" style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${escapeHtml(b.bio)}</p>` : ''}
+            </div>
+          </button>
+          <div class="barbero-horas hidden border border-t-0 border-gold rounded-b-sm -mt-px p-3">
+            <div class="barbero-horas-grid grid grid-cols-4 gap-2">
+              <p class="col-span-4 text-white/40 text-xs text-center py-4">Buscando horarios…</p>
+            </div>
           </div>
-        </button>`;
+        </div>`;
       const html = anyCard + getEligibleBarbers().map(barberoCard).join('');
       document.getElementById('agendar-barberos').innerHTML = html;
       document.getElementById('d-barberos').innerHTML = html;
@@ -993,15 +1013,39 @@
       state.selectedSlot = null;
       state.datosOk = false;
       state.metodoPago = null;
+
+      const esCualquiera = id === 'any';
       document.querySelectorAll('.barbero-item').forEach(el => {
         const active = el.dataset.barberId === id;
         el.classList.toggle('border-gold', active);
         el.classList.toggle('bg-gold/10', active);
         el.classList.toggle('border-white/15', !active);
+        // si tiene panel de horas propio (no es "Cualquiera"), solo
+        // redondea las esquinas de arriba cuando ese panel está visible,
+        // para que tarjeta + panel se vean como un solo recuadro agrandado
+        if (el.dataset.barberId !== 'any') {
+          el.classList.toggle('rounded-t-sm', active);
+          el.classList.toggle('rounded-sm', !active);
+        }
       });
+
+      document.querySelectorAll('.barbero-horas-global-wrap').forEach(el => el.classList.toggle('hidden', !esCualquiera));
+      document.querySelectorAll('.barbero-horas').forEach(el => {
+        el.classList.toggle('hidden', esCualquiera || el.parentElement.dataset.barberId !== id);
+      });
+
       renderMetodoPago();
       loadHoras();
       syncAccordion();
+    }
+
+    // apunta al bloque global (modo "Cualquiera") o a los dos paneles
+    // embebidos en la tarjeta del barbero elegido (uno por layout).
+    function getHoraTargets() {
+      if (state.selectedBarberId === 'any') {
+        return [document.getElementById('agendar-horas'), document.getElementById('d-horas')];
+      }
+      return [...document.querySelectorAll(`[data-barber-id="${state.selectedBarberId}"] .barbero-horas-grid`)];
     }
 
     async function fetchSlotsForBarber(barberId, dateIso, durationMinutes) {
@@ -1015,9 +1059,11 @@
     }
 
     async function loadHoras() {
-      const loadingHtml = '<p class="col-span-4 text-white/40 text-xs text-center py-4">Buscando horarios…</p>';
-      document.getElementById('agendar-horas').innerHTML = loadingHtml;
-      document.getElementById('d-horas').innerHTML = loadingHtml.replace('col-span-4', 'col-span-6');
+      const targets = getHoraTargets();
+      const colsOf = (el) => el.classList.contains('grid-cols-6') ? 6 : 4;
+      targets.forEach(el => {
+        el.innerHTML = `<p class="col-span-${colsOf(el)} text-white/40 text-xs text-center py-4">Buscando horarios…</p>`;
+      });
 
       const duration = state.selectedService.duration_minutes;
       const barberIds = state.selectedBarberId === 'any' ? getEligibleBarbers().map(b => b.id) : [state.selectedBarberId];
@@ -1031,17 +1077,13 @@
       });
 
       const sorted = Object.keys(state.slotsMap).sort();
-      if (!sorted.length) {
-        document.getElementById('agendar-horas').innerHTML = '<p class="col-span-4 text-white/40 text-xs text-center py-4">Sin horarios disponibles ese día.</p>';
-        document.getElementById('d-horas').innerHTML = '<p class="col-span-6 text-white/40 text-xs text-center py-4">Sin horarios disponibles ese día.</p>';
-        return;
-      }
-      document.getElementById('agendar-horas').innerHTML = sorted.map(s => `
+      const slotsHtml = sorted.map(s => `
         <button data-slot="${s}" onclick="selectSlot('${s}')" class="chip-hora text-xs text-center border border-white/15 text-white/70 py-2 rounded-sm">${s.slice(0, 5)}</button>
       `).join('');
-      document.getElementById('d-horas').innerHTML = sorted.map(s => `
-        <button data-slot="${s}" onclick="selectSlot('${s}')" class="chip-hora text-xs text-center border border-white/15 text-white/70 py-2 rounded-sm">${s.slice(0, 5)}</button>
-      `).join('');
+
+      targets.forEach(el => {
+        el.innerHTML = sorted.length ? slotsHtml : `<p class="col-span-${colsOf(el)} text-white/40 text-xs text-center py-4">Sin horarios disponibles ese día.</p>`;
+      });
     }
 
     function selectSlot(timeStr) {
