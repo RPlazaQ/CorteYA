@@ -162,36 +162,36 @@
             </div>
           </div>
 
-          <div id="m-sec-barbero" class="d-section d-locked">
-            <button class="d-section-head" onclick="toggleSection('m', 'barbero')">
+          <div id="m-sec-fecha" class="d-section d-locked">
+            <button class="d-section-head" onclick="toggleSection('m', 'fecha')">
               <span class="d-section-num">2</span>
-              <span class="d-section-title">Barbero</span>
-              <span id="m-sum-barbero" class="d-section-summary"></span>
+              <span class="d-section-title">Fecha</span>
+              <span id="m-sum-fecha" class="d-section-summary"></span>
             </button>
             <div class="d-section-body">
               <div class="d-section-body-inner">
-                <div id="agendar-barberos" class="space-y-2"></div>
+                <input id="agendar-fecha-input" type="date" onchange="selectDate(this.value)"
+                  class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2.5 text-sm text-white focus:outline-none focus:border-gold [color-scheme:dark]">
               </div>
             </div>
           </div>
 
-          <div id="m-sec-horario" class="d-section d-locked">
-            <button class="d-section-head" onclick="toggleSection('m', 'horario')">
+          <div id="m-sec-barberohora" class="d-section d-locked">
+            <button class="d-section-head" onclick="toggleSection('m', 'barberohora')">
               <span class="d-section-num">3</span>
-              <span class="d-section-title">Horario</span>
-              <span id="m-sum-horario" class="d-section-summary"></span>
+              <span class="d-section-title">Barbero y hora</span>
+              <span id="m-sum-barberohora" class="d-section-summary"></span>
             </button>
             <div class="d-section-body">
               <div class="d-section-body-inner space-y-5">
                 <div>
-                  <p class="font-mono text-[11px] tracking-widest uppercase text-gold mb-3">Fecha</p>
-                  <input id="agendar-fecha-input" type="date" onchange="selectDate(this.value)"
-                    class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2.5 text-sm text-white focus:outline-none focus:border-gold [color-scheme:dark]">
+                  <p class="font-mono text-[11px] tracking-widest uppercase text-gold mb-3">Barbero</p>
+                  <div id="agendar-barberos" class="space-y-2"></div>
                 </div>
                 <div>
                   <p class="font-mono text-[11px] tracking-widest uppercase text-gold mb-3">Hora</p>
                   <div id="agendar-horas" class="grid grid-cols-4 gap-2">
-                    <p class="col-span-4 text-white/40 text-xs text-center py-4">Elige fecha</p>
+                    <p class="col-span-4 text-white/40 text-xs text-center py-4">Elige barbero</p>
                   </div>
                 </div>
               </div>
@@ -201,7 +201,7 @@
           <div id="m-sec-datos" class="d-section d-locked">
             <button class="d-section-head" onclick="toggleSection('m', 'datos')">
               <span class="d-section-num">4</span>
-              <span class="d-section-title">Tus datos y confirmación</span>
+              <span class="d-section-title">Tus datos</span>
               <span id="m-sum-datos" class="d-section-summary"></span>
             </button>
             <div class="d-section-body">
@@ -217,10 +217,33 @@
                   <input id="input-email" type="email" maxlength="120" placeholder="Correo (opcional)" class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2.5 text-sm placeholder-white/40 focus:outline-none focus:border-gold">
                   <input id="input-honeypot" type="text" name="website" tabindex="-1" autocomplete="off" class="hidden">
                 </div>
+                <p id="datos-error" class="hidden text-sm text-red-400"></p>
+                <button type="button" onclick="onContinuarDatos()" class="w-full bg-gold hover:bg-goldlight text-ink font-semibold py-3 rounded-sm transition">Continuar</button>
+              </div>
+            </div>
+          </div>
+
+          <div id="m-sec-pago" class="d-section d-locked">
+            <button class="d-section-head" onclick="toggleSection('m', 'pago')">
+              <span class="d-section-num">5</span>
+              <span class="d-section-title">Método de pago</span>
+              <span id="m-sum-pago" class="d-section-summary"></span>
+            </button>
+            <div class="d-section-body">
+              <div class="d-section-body-inner space-y-5">
+                <div class="space-y-2">
+                  <button type="button" data-metodo="local" onclick="selectMetodoPago('local')" class="metodo-pago-item w-full text-left border border-white/15 rounded-sm p-3 transition">
+                    <p class="text-sm font-medium">Pago en local</p>
+                    <p class="text-xs text-white/50 mt-0.5">Pagas directo en la barbería. No se cobra nada ahora.</p>
+                  </button>
+                  <div class="w-full text-left border border-white/10 rounded-sm p-3 opacity-40">
+                    <p class="text-sm font-medium">Transbank</p>
+                    <p class="text-xs text-white/50 mt-0.5">Próximamente — paga online con tarjeta al agendar.</p>
+                  </div>
+                </div>
                 <div>
                   <p class="font-mono text-[11px] tracking-widest uppercase text-gold mb-3">Resumen</p>
                   <div id="pago-resumen" class="border border-white/10 rounded-sm p-3 space-y-2 text-sm"></div>
-                  <p class="text-white/40 text-xs mt-3">Pagas directo en la barbería. No se cobra nada ahora.</p>
                 </div>
                 <p id="pago-error" class="hidden text-sm text-red-400"></p>
                 <button id="btn-confirmar" onclick="submitBooking()" class="w-full bg-gold hover:bg-goldlight text-ink font-semibold py-3 rounded-sm transition">Confirmar reserva</button>
@@ -312,38 +335,36 @@
         </div>
       </div>
 
-      <div id="d-sec-barbero" class="d-section d-locked">
-        <button class="d-section-head" onclick="toggleSection('d', 'barbero')">
+      <div id="d-sec-fecha" class="d-section d-locked">
+        <button class="d-section-head" onclick="toggleSection('d', 'fecha')">
           <span class="d-section-num">2</span>
-          <span class="d-section-title">Barbero</span>
-          <span id="d-sum-barbero" class="d-section-summary"></span>
+          <span class="d-section-title">Fecha</span>
+          <span id="d-sum-fecha" class="d-section-summary"></span>
         </button>
         <div class="d-section-body">
           <div class="d-section-body-inner">
-            <div id="d-barberos" class="space-y-2"></div>
+            <input id="d-fecha-input" type="date" onchange="selectDate(this.value)"
+              class="w-full max-w-xs bg-transparent border border-white/15 rounded-sm px-3 py-2.5 text-sm text-white focus:outline-none focus:border-gold [color-scheme:dark]">
           </div>
         </div>
       </div>
 
-      <div id="d-sec-horario" class="d-section d-locked">
-        <button class="d-section-head" onclick="toggleSection('d', 'horario')">
+      <div id="d-sec-barberohora" class="d-section d-locked">
+        <button class="d-section-head" onclick="toggleSection('d', 'barberohora')">
           <span class="d-section-num">3</span>
-          <span class="d-section-title">Horario</span>
-          <span id="d-sum-horario" class="d-section-summary"></span>
+          <span class="d-section-title">Barbero y hora</span>
+          <span id="d-sum-barberohora" class="d-section-summary"></span>
         </button>
         <div class="d-section-body">
           <div class="d-section-body-inner space-y-5">
-            <div class="grid grid-cols-2 gap-4">
-              <div>
-                <p class="font-mono text-[11px] tracking-widest uppercase text-gold mb-3">Fecha</p>
-                <input id="d-fecha-input" type="date" onchange="selectDate(this.value)"
-                  class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2.5 text-sm text-white focus:outline-none focus:border-gold [color-scheme:dark]">
-              </div>
+            <div>
+              <p class="font-mono text-[11px] tracking-widest uppercase text-gold mb-3">Barbero</p>
+              <div id="d-barberos" class="space-y-2"></div>
             </div>
             <div>
               <p class="font-mono text-[11px] tracking-widest uppercase text-gold mb-3">Hora</p>
               <div id="d-horas" class="grid grid-cols-6 gap-2">
-                <p class="col-span-6 text-white/40 text-xs text-center py-4">Elige fecha</p>
+                <p class="col-span-6 text-white/40 text-xs text-center py-4">Elige barbero</p>
               </div>
             </div>
           </div>
@@ -353,7 +374,7 @@
       <div id="d-sec-datos" class="d-section d-locked">
         <button class="d-section-head" onclick="toggleSection('d', 'datos')">
           <span class="d-section-num">4</span>
-          <span class="d-section-title">Tus datos y confirmación</span>
+          <span class="d-section-title">Tus datos</span>
           <span id="d-sum-datos" class="d-section-summary"></span>
         </button>
         <div class="d-section-body">
@@ -369,10 +390,33 @@
               <input id="d-input-email" type="email" maxlength="120" placeholder="Correo (opcional)" class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2.5 text-sm placeholder-white/40 focus:outline-none focus:border-gold">
               <input id="d-input-honeypot" type="text" name="website" tabindex="-1" autocomplete="off" class="hidden">
             </div>
+            <p id="d-datos-error" class="hidden text-sm text-red-400"></p>
+            <button type="button" onclick="onContinuarDatos()" class="w-full bg-gold hover:bg-goldlight text-ink font-semibold py-3 rounded-sm transition">Continuar</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="d-sec-pago" class="d-section d-locked">
+        <button class="d-section-head" onclick="toggleSection('d', 'pago')">
+          <span class="d-section-num">5</span>
+          <span class="d-section-title">Método de pago</span>
+          <span id="d-sum-pago" class="d-section-summary"></span>
+        </button>
+        <div class="d-section-body">
+          <div class="d-section-body-inner space-y-5">
+            <div class="space-y-2">
+              <button type="button" data-metodo="local" onclick="selectMetodoPago('local')" class="metodo-pago-item w-full text-left border border-white/15 rounded-sm p-3 transition">
+                <p class="text-sm font-medium">Pago en local</p>
+                <p class="text-xs text-white/50 mt-0.5">Pagas directo en la barbería. No se cobra nada ahora.</p>
+              </button>
+              <div class="w-full text-left border border-white/10 rounded-sm p-3 opacity-40">
+                <p class="text-sm font-medium">Transbank</p>
+                <p class="text-xs text-white/50 mt-0.5">Próximamente — paga online con tarjeta al agendar.</p>
+              </div>
+            </div>
             <div>
               <p class="font-mono text-[11px] tracking-widest uppercase text-gold mb-3">Resumen</p>
               <div id="d-pago-resumen" class="border border-white/10 rounded-sm p-3 space-y-2 text-sm"></div>
-              <p class="text-white/40 text-xs mt-3">Pagas directo en la barbería. No se cobra nada ahora.</p>
             </div>
             <p id="d-pago-error" class="hidden text-sm text-red-400"></p>
             <button id="d-btn-confirmar" onclick="submitBooking()" class="w-full bg-gold hover:bg-goldlight text-ink font-semibold py-3 rounded-sm transition">Confirmar reserva</button>
@@ -455,11 +499,13 @@
       barbers: [],
       barberServiceMap: {},
       selectedService: null,
-      selectedBarberId: null,
       selectedDate: null,
+      selectedBarberId: null,
       selectedSlot: null,
       slotsMap: {},
       candidateBarberIds: [],
+      datosOk: false,
+      metodoPago: null,
     };
 
     // ---------- navegación móvil (pantallas completas) ----------
@@ -501,7 +547,7 @@
       el.classList.toggle('d-done', done);
     }
 
-    const ACCORDION_KEYS = ['servicio', 'barbero', 'horario', 'datos'];
+    const ACCORDION_KEYS = ['servicio', 'fecha', 'barberohora', 'datos', 'pago'];
 
     function toggleSection(scope, key) {
       const el = document.getElementById(scope + '-sec-' + key);
@@ -516,26 +562,30 @@
 
     function syncAccordion() {
       const hasService = !!state.selectedService;
-      // null = todavía no elegido; 'any' o un uuid = ya es una elección real
-      const hasBarbero = state.selectedBarberId !== null;
+      const hasDate = !!state.selectedDate;
+      // selectedSlot solo se setea después de elegir barbero (ver loadHoras),
+      // así que hasSlot ya implica que también hay un barbero elegido.
       const hasSlot = !!state.selectedSlot;
+      const hasDatosOk = !!state.datosOk;
 
       ['d', 'm'].forEach(scope => {
         document.getElementById(scope + '-sum-servicio').textContent = hasService
           ? `${state.selectedService.name} · ${clp(state.selectedService.price_clp)}` : '';
         setSectionState(scope, 'servicio', { locked: false, open: !hasService, done: hasService });
 
+        document.getElementById(scope + '-sum-fecha').textContent = hasDate ? formatFechaLabel(state.selectedDate) : '';
+        setSectionState(scope, 'fecha', { locked: !hasService, open: hasService && !hasDate, done: hasDate });
+
         const barberoElegido = state.selectedBarberId === 'any'
           ? 'Cualquiera'
-          : (hasBarbero ? (state.barbers.find(b => b.id === state.selectedBarberId)?.name || '') : '');
-        document.getElementById(scope + '-sum-barbero').textContent = barberoElegido;
-        setSectionState(scope, 'barbero', { locked: !hasService, open: hasService && !hasBarbero, done: hasBarbero });
+          : (state.selectedBarberId ? (state.barbers.find(b => b.id === state.selectedBarberId)?.name || '') : '');
+        document.getElementById(scope + '-sum-barberohora').textContent = hasSlot
+          ? `${barberoElegido} · ${state.selectedSlot.slice(0, 5)}` : '';
+        setSectionState(scope, 'barberohora', { locked: !hasDate, open: hasDate && !hasSlot, done: hasSlot });
 
-        document.getElementById(scope + '-sum-horario').textContent = hasSlot
-          ? `${formatFechaLabel(state.selectedDate)} · ${state.selectedSlot.slice(0, 5)}` : '';
-        setSectionState(scope, 'horario', { locked: !hasBarbero, open: hasBarbero && !hasSlot, done: hasSlot });
+        setSectionState(scope, 'datos', { locked: !hasSlot, open: hasSlot && !hasDatosOk, done: hasDatosOk });
 
-        setSectionState(scope, 'datos', { locked: !hasSlot, open: hasSlot, done: false });
+        setSectionState(scope, 'pago', { locked: !hasDatosOk, open: hasDatosOk, done: false });
       });
     }
 
@@ -682,8 +732,12 @@
       document.getElementById('d-exito').classList.add('hidden');
       document.getElementById('d-loading').classList.add('hidden');
       state.selectedService = null;
+      state.selectedDate = null;
       state.selectedBarberId = null;
       state.selectedSlot = null;
+      state.datosOk = false;
+      state.metodoPago = null;
+      renderMetodoPago();
       syncAccordion();
 
       await loadBarbershopDetail();
@@ -868,12 +922,8 @@
       });
 
       // no hay botón "Reservar" aparte: elegir el servicio desbloquea y
-      // abre directo la sección de barbero (igual en ambos layouts). El
-      // barbero pasa a ser su propio paso (antes iba junto con la hora)
-      // para poder mostrar foto y descripción de cada uno con espacio.
-      state.selectedBarberId = null;
-      state.selectedDate = null;
-      state.selectedSlot = null;
+      // abre directo la sección de fecha (igual en ambos layouts).
+      renderBarberoList();
 
       const hoy = santiagoDateParts(0);
       const maxFecha = santiagoDateParts(29);
@@ -881,9 +931,7 @@
         input.min = hoy.iso;
         input.max = maxFecha.iso;
       });
-
-      renderBarberoList();
-      syncAccordion();
+      selectDate(hoy.iso); // precarga hoy; el cliente puede cambiarla igual
     }
 
     // devuelve los barberos de state.barbers que saben hacer el servicio
@@ -894,7 +942,30 @@
       return (asignados && asignados.size) ? state.barbers.filter(b => asignados.has(b.id)) : state.barbers;
     }
 
-    // ---------- paso Barbero (foto + descripción, listado en vez de chips) ----------
+    // ---------- paso Fecha ----------
+    function selectDate(iso) {
+      if (!iso) return;
+      state.selectedDate = iso;
+      // cambiar de fecha relockea barbero/hora/datos/pago en cascada — se
+      // deriva solo del estado, así que basta con resetear estos campos.
+      state.selectedBarberId = null;
+      state.selectedSlot = null;
+      state.datosOk = false;
+      state.metodoPago = null;
+      document.getElementById('agendar-fecha-input').value = iso;
+      document.getElementById('d-fecha-input').value = iso;
+      const sinBarbero = '<p class="col-span-4 text-white/40 text-xs text-center py-4">Elige barbero</p>';
+      document.getElementById('agendar-horas').innerHTML = sinBarbero;
+      document.getElementById('d-horas').innerHTML = sinBarbero.replace('col-span-4', 'col-span-6');
+      document.querySelectorAll('.barbero-item').forEach(el => {
+        el.classList.remove('border-gold', 'bg-gold/10');
+        el.classList.add('border-white/15');
+      });
+      renderMetodoPago();
+      syncAccordion();
+    }
+
+    // ---------- paso Barbero y hora (foto + descripción, listado en vez de chips) ----------
     function renderBarberoList() {
       const anyCard = `
         <button data-barber-id="any" onclick="selectBarber('any')" class="barbero-item w-full text-left flex items-center gap-3 border border-white/15 rounded-sm p-3 transition">
@@ -920,26 +991,15 @@
     function selectBarber(id) {
       state.selectedBarberId = id;
       state.selectedSlot = null;
-      if (!state.selectedDate) state.selectedDate = santiagoDateParts(0).iso;
-      [document.getElementById('agendar-fecha-input'), document.getElementById('d-fecha-input')].forEach(input => {
-        input.value = state.selectedDate;
-      });
+      state.datosOk = false;
+      state.metodoPago = null;
       document.querySelectorAll('.barbero-item').forEach(el => {
         const active = el.dataset.barberId === id;
         el.classList.toggle('border-gold', active);
         el.classList.toggle('bg-gold/10', active);
         el.classList.toggle('border-white/15', !active);
       });
-      loadHoras();
-      syncAccordion();
-    }
-
-    function selectDate(iso) {
-      if (!iso) return;
-      state.selectedDate = iso;
-      state.selectedSlot = null;
-      document.getElementById('agendar-fecha-input').value = iso;
-      document.getElementById('d-fecha-input').value = iso;
+      renderMetodoPago();
       loadHoras();
       syncAccordion();
     }
@@ -987,6 +1047,8 @@
     function selectSlot(timeStr) {
       state.selectedSlot = timeStr;
       state.candidateBarberIds = state.slotsMap[timeStr] || [];
+      state.datosOk = false;
+      state.metodoPago = null;
       document.querySelectorAll('.chip-hora').forEach(el => {
         const active = el.dataset.slot === timeStr;
         el.classList.toggle('border-gold', active);
@@ -996,6 +1058,7 @@
         el.classList.toggle('text-white/70', !active);
       });
       renderPagoResumen();
+      renderMetodoPago();
       syncAccordion();
     }
 
@@ -1010,6 +1073,24 @@
       `;
       document.getElementById('pago-resumen').innerHTML = html;
       document.getElementById('d-pago-resumen').innerHTML = html;
+    }
+
+    // ---------- paso Método de pago ----------
+    // Transbank todavía no está integrado (solo queda la opción marcada
+    // como "Próximamente" en el HTML, sin onclick) — por ahora la única
+    // forma de pago real es en el local.
+    function renderMetodoPago() {
+      document.querySelectorAll('.metodo-pago-item').forEach(el => {
+        const active = el.dataset.metodo === state.metodoPago;
+        el.classList.toggle('border-gold', active);
+        el.classList.toggle('bg-gold/10', active);
+        el.classList.toggle('border-white/15', !active);
+      });
+    }
+
+    function selectMetodoPago(metodo) {
+      state.metodoPago = metodo;
+      renderMetodoPago();
     }
 
     // ---------- calendario (Google / Apple) ----------
@@ -1084,9 +1165,10 @@
       document.getElementById('aviso-navegador-app').classList.toggle('hidden', !isInAppBrowser());
     }
 
-    async function submitBooking() {
-      // en escritorio y celular los campos están duplicados — toma el que
-      // corresponda según el layout visible (isDesktop, más abajo).
+    // en escritorio y celular los campos de datos están duplicados — toma
+    // el que corresponda según el layout visible. Devuelve null si es el
+    // honeypot (bot), { error } si falta algo, o los datos ya validados.
+    function validarDatosCliente(isDesktop) {
       const nombreMovil = document.getElementById('input-nombre').value.trim();
       const nombreDesktop = document.getElementById('d-input-nombre').value.trim();
       const telMovil = document.getElementById('input-telefono').value.trim();
@@ -1096,27 +1178,53 @@
       const honeyMovil = document.getElementById('input-honeypot').value;
       const honeyDesktop = document.getElementById('d-input-honeypot').value;
 
-      const isDesktop = window.matchMedia('(min-width: 768px)').matches;
-      const errorEl = isDesktop ? document.getElementById('d-pago-error') : document.getElementById('pago-error');
-      errorEl.classList.add('hidden');
-
-      if (honeyMovil || honeyDesktop) return;
+      if (honeyMovil || honeyDesktop) return null;
 
       const nombreFinal = isDesktop ? nombreDesktop : nombreMovil;
       const telefono = isDesktop ? telDesktop : telMovil;
       const email = isDesktop ? emailDesktop : emailMovil;
 
-      if (!nombreFinal || !telefono) {
-        errorEl.textContent = 'Ingresa tu nombre y teléfono.';
+      if (!nombreFinal || !telefono) return { error: 'Ingresa tu nombre y teléfono.' };
+      if (!/^\d{8}$/.test(telefono)) return { error: 'Ingresa un número válido (8 dígitos).' };
+
+      return { nombre: nombreFinal, telefono: `+56 9 ${telefono.slice(0, 4)} ${telefono.slice(4)}`, email: email || null };
+    }
+
+    // ---------- paso Datos: "Continuar" solo valida y desbloquea el pago,
+    // el insert real pasa en submitBooking() (paso Método de pago) ----------
+    function onContinuarDatos() {
+      const isDesktop = window.matchMedia('(min-width: 768px)').matches;
+      const errorEl = isDesktop ? document.getElementById('d-datos-error') : document.getElementById('datos-error');
+      errorEl.classList.add('hidden');
+
+      const result = validarDatosCliente(isDesktop);
+      if (!result) return;
+      if (result.error) {
+        errorEl.textContent = result.error;
         errorEl.classList.remove('hidden');
         return;
       }
-      if (!/^\d{8}$/.test(telefono)) {
-        errorEl.textContent = 'Ingresa un número válido (8 dígitos).';
+      state.datosOk = true;
+      syncAccordion();
+    }
+
+    async function submitBooking() {
+      const isDesktop = window.matchMedia('(min-width: 768px)').matches;
+      const errorEl = isDesktop ? document.getElementById('d-pago-error') : document.getElementById('pago-error');
+      errorEl.classList.add('hidden');
+
+      const result = validarDatosCliente(isDesktop);
+      if (!result) return;
+      if (result.error) {
+        errorEl.textContent = result.error;
         errorEl.classList.remove('hidden');
         return;
       }
-      const telefonoCompleto = `+56 9 ${telefono.slice(0, 4)} ${telefono.slice(4)}`;
+      if (!state.metodoPago) {
+        errorEl.textContent = 'Elige una forma de pago.';
+        errorEl.classList.remove('hidden');
+        return;
+      }
 
       const btnMovil = document.getElementById('btn-confirmar');
       const btnDesktop = document.getElementById('d-btn-confirmar');
@@ -1137,9 +1245,9 @@
           barbershop_id: state.barbershopId,
           barber_id: barberId,
           service_id: svc.id,
-          customer_name: nombreFinal,
-          customer_phone: telefonoCompleto,
-          customer_email: email || null,
+          customer_name: result.nombre,
+          customer_phone: result.telefono,
+          customer_email: result.email,
           booking_date: state.selectedDate,
           start_time: state.selectedSlot,
           end_time: endTime,
@@ -1233,10 +1341,13 @@
       document.getElementById('d-flow').classList.remove('hidden');
 
       state.selectedService = null;
-      state.selectedBarberId = null;
       state.selectedDate = null;
+      state.selectedBarberId = null;
       state.selectedSlot = null;
       state.candidateBarberIds = [];
+      state.datosOk = false;
+      state.metodoPago = null;
+      renderMetodoPago();
       syncAccordion();
 
       if (state.viaSharedLink) {
