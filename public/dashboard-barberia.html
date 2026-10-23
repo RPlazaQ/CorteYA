@@ -184,6 +184,25 @@
         <section id="view-info" class="view">
           <h1 class="font-display text-2xl mb-6">Nuestra información</h1>
 
+          <div data-barbero-only class="border border-white/10 rounded-sm p-4 mb-8 max-w-md">
+            <div class="flex items-center gap-4 mb-4">
+              <label for="barbero-foto-upload" class="relative shrink-0 cursor-pointer group" title="Cambiar foto">
+                <img id="barbero-foto-preview" src="https://placehold.co/56x56/1D1D20/D9A441?text=..." class="w-14 h-14 rounded-sm object-cover">
+                <span class="absolute inset-0 rounded-sm bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center text-[10px] transition">✎ Cambiar</span>
+              </label>
+              <input id="barbero-foto-upload" type="file" accept="image/png,image/jpeg,image/webp" class="hidden">
+              <div>
+                <p class="font-mono text-[11px] tracking-widest uppercase text-white/40 mb-1">Mi perfil</p>
+                <p class="text-xs text-white/40">Foto y descripción que ven tus clientes al elegirte (PNG/JPG/WEBP, menos de 2MB)</p>
+                <p id="barbero-foto-status" class="hidden text-xs text-white/50 mt-1"></p>
+              </div>
+            </div>
+            <label class="block text-xs text-white/60 mb-1">Descripción</label>
+            <textarea id="barbero-bio" maxlength="300" rows="3" placeholder="Cuéntales a tus clientes tu estilo, especialidad, años de experiencia…" class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2 text-sm mb-3 focus:outline-none focus:border-gold"></textarea>
+            <p id="barbero-bio-status" class="hidden text-xs mb-2"></p>
+            <button onclick="guardarPerfilBarbero()" class="text-xs border border-gold text-gold rounded-sm px-3 py-1.5 hover:bg-gold/10 transition">Guardar</button>
+          </div>
+
           <div data-owner-only class="border border-white/10 rounded-sm p-4 mb-8 max-w-md flex items-center gap-4">
             <label for="logo-upload-info" class="relative shrink-0 cursor-pointer group" title="Cambiar logo">
               <img id="info-logo" src="https://placehold.co/56x56/1D1D20/D9A441?text=..." class="w-14 h-14 rounded-sm object-cover">
@@ -360,7 +379,7 @@
   </div>
 
   <script>
-    const state = { barbershopId: null, barbershopName: '', calendarioOffset: 0, calendarioBarberosVisibles: null, vistaActual: 'resumen', ultimoCheckCitas: null, horariosSinGuardar: new Set(), role: null, barberId: null, barberName: '', barbershopPlan: null };
+    const state = { barbershopId: null, barbershopName: '', calendarioOffset: 0, calendarioBarberosVisibles: null, vistaActual: 'resumen', ultimoCheckCitas: null, horariosSinGuardar: new Set(), role: null, barberId: null, barberName: '', barberPhotoUrl: null, barbershopPlan: null };
 
     // planes que incluyen la función de logins de barbero. 'piloto' queda
     // afuera a propósito: sin el plan pagado de Supabase, "Confirm email"
@@ -832,6 +851,7 @@
     // aunque abra estas vistas igual desde la consola)
     function applyRoleVisibility() {
       document.querySelectorAll('[data-owner-only]').forEach(el => el.classList.toggle('hidden', state.role !== 'owner'));
+      document.querySelectorAll('[data-barbero-only]').forEach(el => el.classList.toggle('hidden', state.role !== 'barbero'));
     }
 
     function startPolling() {
@@ -855,8 +875,74 @@
       state.barberName = barber.name;
       applyCommonShopState(shop);
       applyRoleVisibility();
+      renderPerfilBarbero(barber);
       loadResumen();
       startPolling();
+    }
+
+    // ---------- perfil del barbero (foto + descripción, las administra él) ----------
+    function renderPerfilBarbero(barber) {
+      state.barberPhotoUrl = barber.photo_url || null;
+      document.getElementById('barbero-foto-preview').src = barber.photo_url
+        || 'https://placehold.co/56x56/1D1D20/D9A441?text=' + encodeURIComponent(initials(barber.name));
+      document.getElementById('barbero-bio').value = barber.bio || '';
+    }
+
+    async function subirFotoBarbero(file) {
+      const statusEl = document.getElementById('barbero-foto-status');
+      statusEl.className = 'text-xs text-white/50 mt-1';
+      statusEl.textContent = 'Subiendo…';
+      statusEl.classList.remove('hidden');
+
+      const ext = (file.name.split('.').pop() || 'png').toLowerCase();
+      const path = `${state.barberId}/photo.${ext}`;
+      const { error: uploadError } = await supabaseClient.storage
+        .from('barber-photos')
+        .upload(path, file, { upsert: true, contentType: file.type });
+      if (uploadError) {
+        statusEl.textContent = 'No se pudo subir la foto (revisa que sea PNG/JPG/WEBP de menos de 2MB).';
+        statusEl.classList.add('text-red-400');
+        return;
+      }
+
+      const { data: pub } = supabaseClient.storage.from('barber-photos').getPublicUrl(path);
+      const { error: saveError } = await supabaseClient.rpc('update_barber_profile', {
+        p_photo_url: pub.publicUrl,
+        p_bio: document.getElementById('barbero-bio').value.trim() || null,
+      });
+      if (saveError) {
+        statusEl.textContent = 'La foto se subió pero no se pudo guardar, intenta de nuevo.';
+        statusEl.classList.add('text-red-400');
+        return;
+      }
+
+      state.barberPhotoUrl = pub.publicUrl;
+      document.getElementById('barbero-foto-preview').src = pub.publicUrl + '?t=' + Date.now();
+      statusEl.classList.add('hidden');
+    }
+    document.getElementById('barbero-foto-upload').addEventListener('change', async (e) => {
+      if (e.target.files[0]) await subirFotoBarbero(e.target.files[0]);
+      e.target.value = '';
+    });
+
+    async function guardarPerfilBarbero() {
+      const statusEl = document.getElementById('barbero-bio-status');
+      statusEl.className = 'text-xs mb-2';
+      statusEl.textContent = 'Guardando…';
+      statusEl.classList.remove('hidden');
+
+      const { error } = await supabaseClient.rpc('update_barber_profile', {
+        p_photo_url: state.barberPhotoUrl,
+        p_bio: document.getElementById('barbero-bio').value.trim() || null,
+      });
+      if (error) {
+        statusEl.textContent = 'Error: ' + error.message;
+        statusEl.classList.add('text-red-400');
+        return;
+      }
+      statusEl.textContent = '✓ Guardado';
+      statusEl.classList.add('text-green-400');
+      setTimeout(() => statusEl.classList.add('hidden'), 2000);
     }
 
     async function handleLogout() {
@@ -1275,7 +1361,7 @@
               : `<p class="text-[11px] text-white/30 text-center">Los accesos de barbero no están incluidos en tu plan actual.</p>`
           }
           ${PLANES_CON_LOGIN_BARBERO.includes(state.barbershopPlan)
-            ? `<p class="text-[11px] text-white/30 text-center mt-2">📸 Pronto podrá agregar su foto de perfil y descripción desde su acceso.</p>`
+            ? `<p class="text-[11px] text-white/30 text-center mt-2">📸 Puede agregar su foto de perfil y descripción desde su acceso (Info → Mi perfil).</p>`
             : `<p class="text-[11px] text-white/30 text-center mt-2">La foto de perfil y descripción del barbero no están incluidas en tu plan actual.</p>`
           }
         </div>
