@@ -1079,7 +1079,14 @@
       return data.map(r => r.slot_start);
     }
 
+    // si loadHoras() se dispara más de una vez seguida (fecha u horario
+    // cambiado rápido, dos veces), una respuesta más lenta podía llegar
+    // después y pisar el resultado de una más nueva. Con este token solo
+    // la llamada más reciente puede escribir en la pantalla.
+    let horasRequestId = 0;
+
     async function loadHoras() {
+      const requestId = ++horasRequestId;
       const targets = getHoraTargets();
       const colsOf = (el) => el.classList.contains('grid-cols-6') ? 6 : 4;
       targets.forEach(el => {
@@ -1089,6 +1096,8 @@
       const duration = state.selectedService.duration_minutes;
       const barberIds = state.selectedBarberId === 'any' ? getEligibleBarbers().map(b => b.id) : [state.selectedBarberId];
       const results = await Promise.all(barberIds.map(id => fetchSlotsForBarber(id, state.selectedDate, duration)));
+
+      if (requestId !== horasRequestId) return; // llegó una llamada más nueva mientras esperábamos
 
       state.slotsMap = {};
       results.forEach((slots, idx) => {
