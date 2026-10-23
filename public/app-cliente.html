@@ -944,6 +944,27 @@
       state.metodoPago = null;
       renderMetodoPago();
       syncAccordion();
+
+      precargarFechaSiHoySinHoras(state.selectedService);
+    }
+
+    // Si "hoy" ya no tiene ningún horario disponible para ningún barbero
+    // elegible (ej: ya pasó la hora de cierre), precarga "mañana" en vez
+    // de "hoy" — así el cliente no se encuentra con un paso vacío que
+    // parece un error. Corre en segundo plano, sin bloquear la pantalla.
+    async function precargarFechaSiHoySinHoras(svc) {
+      const hoy = santiagoDateParts(0).iso;
+      const barberIds = getEligibleBarbers().map(b => b.id);
+      const results = await Promise.all(barberIds.map(id => fetchSlotsForBarber(id, hoy, svc.duration_minutes)));
+      const hayHorasHoy = results.some(slots => slots.length > 0);
+
+      // si mientras esperaba la respuesta el cliente ya cambió de servicio
+      // o ya confirmó una fecha, no pisar nada
+      if (hayHorasHoy || state.selectedService !== svc || state.selectedDate) return;
+
+      const manana = santiagoDateParts(1).iso;
+      document.getElementById('agendar-fecha-input').value = manana;
+      document.getElementById('d-fecha-input').value = manana;
     }
 
     // devuelve los barberos de state.barbers que saben hacer el servicio
