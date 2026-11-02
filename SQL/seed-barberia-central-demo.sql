@@ -279,6 +279,21 @@ select '44444444-4444-4444-8444-444444444442'::uuid, wd, '11:00'::time, '20:00':
 union all
 select '44444444-4444-4444-8444-444444444443'::uuid, wd, '10:00'::time, '19:00'::time from generate_series(2, 6) wd;
 
+-- extiende el horario de HOY (nada más que el día de semana de hoy, no
+-- el resto de la semana) hasta las 23:00 para los 3 barberos, así las
+-- citas "relativas a ahora" de más abajo (sección 3) siempre caben
+-- dentro de horario y nunca se corren a mañana. Como todo este bloque
+-- se borra y se vuelve a armar en cada corrida, esto nunca deja un
+-- día de semana "viejo" con horario extendido de una corrida anterior.
+insert into barber_working_hours (barber_id, weekday, start_time, end_time)
+select bid, extract(dow from (now() at time zone 'America/Santiago')::date)::int, '09:00'::time, '23:00'::time
+from unnest(array[
+  '44444444-4444-4444-8444-444444444441'::uuid,
+  '44444444-4444-4444-8444-444444444442'::uuid,
+  '44444444-4444-4444-8444-444444444443'::uuid
+]) as bid
+on conflict (barber_id, weekday) do update set end_time = excluded.end_time;
+
 insert into services (id, barbershop_id, name, duration_minutes, price_clp, active) values
   ('44444444-4444-4444-8444-444444444451', '44444444-4444-4444-8444-444444444444', 'Corte clásico',        30,  8000,  true),
   ('44444444-4444-4444-8444-444444444452', '44444444-4444-4444-8444-444444444444', 'Corte + Barba',        45,  12000, true),
@@ -312,7 +327,7 @@ delete from barber_time_off where barber_id in (
 
 -- bloqueo de ejemplo: Tomás mañana de 13:00 a 14:00
 insert into barber_time_off (barber_id, start_date, end_date, start_time, end_time) values
-  ('44444444-4444-4444-8444-444444444442', current_date + 1, current_date + 1, '13:00', '14:00');
+  ('44444444-4444-4444-8444-444444444442', (now() at time zone 'America/Santiago')::date + 1, (now() at time zone 'America/Santiago')::date + 1, '13:00', '14:00');
 
 -- 3a. últimos 14 días (~42 citas históricas): un barbero fijo por fila
 -- con su servicio habitual, created_at en el pasado (igual a la fecha de
@@ -336,7 +351,7 @@ clientes as (
 historicos as (
   select
     b.barber_id, b.service_id, b.duracion, b.idx, d,
-    (current_date - d) as fecha,
+    ((now() at time zone 'America/Santiago')::date - d) as fecha,
     ('09:00'::time + (((d + b.idx) % 8) * interval '1 hour')) as hora_inicio
   from generate_series(1, 14) as d
   cross join barberos b
@@ -375,7 +390,7 @@ insert into bookings (barbershop_id, barber_id, service_id, customer_name, custo
 select
   '44444444-4444-4444-8444-444444444444'::uuid,
   barber_id, service_id, nombre, telefono,
-  current_date, hora, hora + (duracion || ' minutes')::interval,
+  (now() at time zone 'America/Santiago')::date, hora, hora + (duracion || ' minutes')::interval,
   case
     when hora < (now() at time zone 'America/Santiago')::time
       then (array['paid_cash', 'paid_transfer', 'paid_card'])[1 + (extract(hour from hora)::int % 3)]
@@ -383,6 +398,69 @@ select
   end,
   now()
 from hoy_citas;
+
+-- 3b-bis. 3 citas "relativas a ahora" (ahora+30/60/90 min, redondeadas
+-- hacia arriba a la media hora), una por barbero, todavía sin pagar
+-- ("confirmed") — así "Hoy" siempre tiene una próxima cita y citas por
+-- venir sin importar a qué hora se corra el script. Se acotan a las
+-- 22:00 como hora de inicio más tarde (un Corte clásico de 30 min
+-- siempre alcanza a terminar antes de que cierre a las 23:00) y nunca
+-- cambian de fecha — si "ahora" está cerca de medianoche, se quedan
+-- pegadas a las 22:00 de HOY en vez de pasarse a mañana.
+with ahora as (
+  select (now() at time zone 'America/Santiago') as ts
+),
+objetivo as (
+  select
+    n,
+    a.ts::date as fecha,
+    -- el clamp compara timestamps completos (fecha+hora), no solo la
+    -- hora — así, si "ahora" está cerca de medianoche y el redondeo se
+    -- pasa al día siguiente, igual se detecta como "más tarde que las
+    -- 22:00 de hoy" y se acota, en vez de verse como una hora temprana
+    least(
+      date_trunc('hour', a.ts + (n * interval '30 min'))
+        + ceil(extract(minute from (a.ts + (n * interval '30 min')))::numeric / 30) * interval '30 min',
+      a.ts::date + '22:00'::time
+    )::time as hora
+  from ahora a, generate_series(1, 3) as n
+),
+relativas as (
+  select
+    o.fecha,
+    o.hora,
+    case o.n
+      when 1 then '44444444-4444-4444-8444-444444444441'::uuid  -- Nico
+      when 2 then '44444444-4444-4444-8444-444444444442'::uuid  -- Tomás
+      else        '44444444-4444-4444-8444-444444444443'::uuid  -- Caro
+    end as barber_id,
+    case o.n
+      when 1 then 'Franco Herrera'
+      when 2 then 'Maximiliano Vega'
+      else        'Josefa Alarcón'
+    end as nombre,
+    '+56 9 0000 020' || o.n as telefono
+  from objetivo o
+)
+insert into bookings (barbershop_id, barber_id, service_id, customer_name, customer_phone, booking_date, start_time, end_time, status, created_at)
+select
+  '44444444-4444-4444-8444-444444444444'::uuid,
+  r.barber_id,
+  '44444444-4444-4444-8444-444444444451'::uuid, -- Corte clásico, 30 min
+  r.nombre, r.telefono,
+  r.fecha, r.hora, r.hora + interval '30 minutes',
+  'confirmed', now()
+from relativas r
+-- guarda contra la rara coincidencia de que la hora relativa caiga
+-- justo encima de una de las citas fijas de "hoy" (3b) — si se corre el
+-- script muy de mañana, "ahora+30min" podría pisar la primera cita fija
+where not exists (
+  select 1 from bookings bk
+  where bk.barber_id = r.barber_id
+    and bk.booking_date = r.fecha
+    and bk.status not in ('cancelled', 'no_show')
+    and bk.time_range && tsrange(r.fecha + r.hora, r.fecha + r.hora + interval '30 minutes', '[)')
+);
 
 -- 3c. próximos 3 días (10 citas futuras, todas "confirmed")
 with proximos as (
@@ -403,20 +481,25 @@ insert into bookings (barbershop_id, barber_id, service_id, customer_name, custo
 select
   '44444444-4444-4444-8444-444444444444'::uuid,
   barber_id, service_id, nombre, telefono,
-  current_date + dia_offset, hora, hora + (duracion || ' minutes')::interval,
+  (now() at time zone 'America/Santiago')::date + dia_offset, hora, hora + (duracion || ' minutes')::interval,
   'confirmed', now()
 from proximos;
 
 -- =========================================================
 -- Cómo probar:
 --   1. select count(*) from bookings where barbershop_id = '44444444-4444-4444-8444-444444444444';
---      -> debería dar ~60 (42 históricas + 8 hoy + 10 próximos).
+--      -> debería dar ~63 (42 históricas + 8 hoy en horario fijo + 3
+--      relativas a "ahora" + 10 próximos días).
 --   2. Entra con demo.central@corteya.app y la contraseña que te pasé por
---      chat. Hoy debería verse con citas pasadas ya pagadas y futuras
---      pendientes; Reportes debería mostrar números de los últimos 14
---      días; Calendario debería verse con movimiento en los próximos 3 días.
+--      chat. Hoy debería verse con citas pasadas ya pagadas, las 3 citas
+--      relativas a "ahora" (+30/+60/+90 min) sin pagar todavía, y el resto
+--      futuras pendientes; Reportes debería mostrar números de los
+--      últimos 14 días; Calendario debería verse con movimiento en los
+--      próximos 3 días, y hoy con horario hasta las 23:00.
 --   3. Revisa que NO haya llegado ningún WhatsApp real a los teléfonos
 --      +56 9 0000 0XXX (ni al dueño ni a ningún "cliente").
---   4. Para refrescar la demo más adelante, vuelve a correr este archivo
---      completo tal cual — se borra y regenera todo lo de la sección 3.
+--   4. Para refrescar la demo más adelante (a cualquier hora del día),
+--      vuelve a correr este archivo completo tal cual — se borra y
+--      regenera todo lo de la sección 3, incluido el horario extendido
+--      de "hoy" (sección 2), siempre relativo a la hora real de Chile.
 -- =========================================================
