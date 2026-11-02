@@ -1,0 +1,35 @@
+-- Permite citas sin teléfono para el flujo "+ Nueva cita" del panel
+-- (cliente que llega sin hora y no quiere/puede dar su número). La app del
+-- cliente sigue pidiéndolo siempre — eso es validación de front, no cambia.
+--
+-- El CHECK de formato (customer_phone ~ '^\+56 9 \d{4} \d{4}$') ya tolera
+-- NULL sin tocarlo: en Postgres un CHECK se da por cumplido cuando la
+-- expresión da NULL, así que sigue validando el formato en cualquier
+-- teléfono que SÍ se guarde.
+--
+-- Cómo probar antes de producción (en un proyecto de Supabase de prueba
+-- o con un branch de base de datos):
+--   1. Corre este archivo.
+--   2. insert into bookings (barbershop_id, barber_id, service_id,
+--        customer_name, customer_phone, booking_date, start_time, end_time)
+--        values (<ids reales>, 'Prueba sin teléfono', null, <fecha futura>,
+--        '11:00', '11:30');
+--      → debe insertarse sin error.
+--   3. Repite el mismo insert con customer_phone = '+56 9 1234 5678'
+--      → debe insertarse sin error (formato válido).
+--   4. Repite con customer_phone = '123' → debe fallar por el CHECK (formato
+--      inválido), igual que antes.
+--   5. Revisa que notify_whatsapp_confirmacion_cliente (ver
+--      allow-null-customer-phone-whatsapp-safety.sql) no haya quedado
+--      pendiente de aplicar — sin esa migración, el trigger de confirmación
+--      al cliente ya tolera NULL (hace return antes), pero el de aviso al
+--      barbero puede mandar "text": null a la API de Meta y fallar la
+--      llamada entera. Aplícalas juntas.
+--
+-- Reversible: para volver atrás,
+--   update bookings set customer_phone = '+56 9 0000 0000' where customer_phone is null;
+--   alter table bookings alter column customer_phone set not null;
+-- (el update de arriba es necesario porque set not null falla si ya hay
+-- filas en NULL; ajusta el valor de relleno a lo que prefieras).
+
+alter table bookings alter column customer_phone drop not null;

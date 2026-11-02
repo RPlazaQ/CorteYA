@@ -71,7 +71,7 @@
         <button data-owner-only onclick="showView('servicios', this)" class="nav-item text-white/60 flex-1 flex flex-col items-center justify-center gap-0.5 text-[10px] md:flex-none md:flex-row md:items-center md:justify-start md:gap-3 md:px-3 md:py-2.5 md:text-sm rounded-sm font-medium transition md:w-full md:text-left">
           <span>✂️</span> Servicios
         </button>
-        <button data-owner-only onclick="showView('barberos', this)" class="nav-item text-white/60 flex-1 flex flex-col items-center justify-center gap-0.5 text-[10px] md:flex-none md:flex-row md:items-center md:justify-start md:gap-3 md:px-3 md:py-2.5 md:text-sm rounded-sm font-medium transition md:w-full md:text-left">
+        <button id="nav-btn-barberos" data-owner-only onclick="showView('barberos', this)" class="nav-item text-white/60 flex-1 flex flex-col items-center justify-center gap-0.5 text-[10px] md:flex-none md:flex-row md:items-center md:justify-start md:gap-3 md:px-3 md:py-2.5 md:text-sm rounded-sm font-medium transition md:w-full md:text-left">
           <span>👤</span> Barberos
         </button>
         <button onclick="showView('info', this)" class="nav-item text-white/60 flex-1 flex flex-col items-center justify-center gap-0.5 text-[10px] md:flex-none md:flex-row md:items-center md:justify-start md:gap-3 md:px-3 md:py-2.5 md:text-sm rounded-sm font-medium transition md:w-full md:text-left">
@@ -99,6 +99,15 @@
       <button onclick="document.getElementById('toast-cita').classList.add('hidden')" class="text-white/50 hover:text-white text-sm leading-none">✕</button>
     </div>
 
+    <div id="toast-deshacer" class="hidden fixed top-4 left-1/2 -translate-x-1/2 z-40 bg-panel border border-gold rounded-sm px-4 py-2.5 shadow-lg flex items-center gap-3">
+      <p class="text-sm">Marcada como no llegó</p>
+      <button onclick="deshacerNoLlegada()" class="text-xs text-gold hover:text-goldlight font-medium">Deshacer</button>
+    </div>
+
+    <button id="fab-nueva-cita" onclick="abrirModalCita()" class="hidden fixed z-20 bottom-20 right-4 md:bottom-6 md:right-6 items-center gap-2 bg-gold hover:bg-goldlight text-ink font-semibold text-sm px-4 py-3 rounded-sm shadow-lg transition">
+      <span class="text-base leading-none">+</span> Nueva cita
+    </button>
+
     <!-- MAIN -->
     <main class="flex-1 overflow-y-auto">
       <header class="h-16 border-b border-white/10 flex items-center justify-between px-4 md:px-8 sticky top-0 bg-ink z-10">
@@ -115,7 +124,20 @@
         <!-- RESUMEN -->
         <section id="view-resumen" class="view active">
           <h1 class="font-display text-2xl mb-6">Resumen del día</h1>
-          <div class="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4 mb-8">
+
+          <div id="proxima-cita-card" class="hidden border border-gold/40 bg-gold/5 rounded-sm p-4 mb-6">
+            <p class="font-mono text-[11px] tracking-widest uppercase text-gold mb-2">Próxima cita</p>
+            <div class="flex items-center justify-between gap-3">
+              <div class="min-w-0">
+                <p id="proxima-cita-countdown" class="font-display text-xl text-gold"></p>
+                <p id="proxima-cita-detalle" class="text-sm text-white/70 mt-1"></p>
+              </div>
+              <a id="proxima-cita-whatsapp" href="#" target="_blank" rel="noopener" class="hidden shrink-0 text-xs border border-gold text-gold rounded-sm px-3 py-2 hover:bg-gold/10 transition">WhatsApp</a>
+            </div>
+          </div>
+          <p id="proxima-cita-vacio" class="hidden border border-white/10 rounded-sm p-4 mb-6 text-sm text-white/40 text-center">Sin más citas por hoy.</p>
+
+          <div class="grid grid-cols-3 gap-3 md:gap-4 mb-8">
             <div class="border border-white/10 rounded-sm p-4">
               <p class="font-mono text-[11px] tracking-widest uppercase text-white/40 mb-2">Citas hoy</p>
               <p id="stat-citas" class="font-display text-2xl md:text-3xl text-gold">—</p>
@@ -127,10 +149,6 @@
             <div class="border border-white/10 rounded-sm p-4">
               <p class="font-mono text-[11px] tracking-widest uppercase text-white/40 mb-2">Ocupación</p>
               <p id="stat-ocupacion" class="font-display text-2xl md:text-3xl text-gold">—</p>
-            </div>
-            <div class="border border-white/10 rounded-sm p-4">
-              <p class="font-mono text-[11px] tracking-widest uppercase text-white/40 mb-2">Próxima cita</p>
-              <p id="stat-proxima" class="font-display text-xl text-gold">—</p>
             </div>
           </div>
 
@@ -149,7 +167,6 @@
               <input id="calendario-fecha-input" type="date" onchange="seleccionarFechaCalendario(this.value)"
                 class="bg-transparent border border-white/15 rounded-sm px-2 py-1.5 text-xs text-white/80 text-center focus:outline-none focus:border-gold [color-scheme:dark] w-36">
               <button onclick="cambiarDiaCalendario(1)" class="border border-white/15 rounded-sm w-8 h-8 flex items-center justify-center text-white/60 hover:border-white/30 transition">›</button>
-              <button data-owner-only onclick="abrirModalCita()" class="text-xs border border-gold text-gold rounded-sm px-3 py-1.5 hover:bg-gold/10 transition">+ Agregar cita</button>
             </div>
           </div>
           <div id="calendario-filtro-barberos" class="flex flex-wrap gap-2 mb-4"></div>
@@ -237,8 +254,8 @@
           </div>
 
           <div data-owner-only>
-            <p class="font-mono text-[11px] tracking-widest uppercase text-white/40 mb-3">Horarios por barbero</p>
-            <div id="info-horarios" class="space-y-4 max-w-md">
+            <p class="font-mono text-[11px] tracking-widest uppercase text-white/40 mb-3">Horario de cada barbero</p>
+            <div id="info-horarios" class="space-y-2 max-w-md">
               <p class="text-white/40 text-sm text-center py-6">Cargando…</p>
             </div>
           </div>
@@ -312,38 +329,36 @@
   <div id="modal-cita" class="hidden fixed inset-0 z-30 bg-black/70 flex items-center justify-center px-4">
     <form id="form-cita" class="w-full max-w-sm bg-panel border border-white/10 rounded-sm p-5 max-h-[90vh] overflow-y-auto">
       <div class="flex items-center justify-between mb-4">
-        <h2 class="font-display text-lg">Agregar cita</h2>
+        <h2 class="font-display text-lg">+ Nueva cita</h2>
         <button type="button" onclick="cerrarModalCita()" class="text-white/50 hover:text-white text-lg leading-none">✕</button>
       </div>
       <p class="text-white/50 text-xs mb-4">Para citas coordinadas por fuera de la app (WhatsApp, Instagram, teléfono, etc).</p>
 
-      <label class="block text-xs text-white/60 mb-1">Barbero</label>
-      <select id="cita-barbero" class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2 text-sm mb-3 focus:outline-none focus:border-gold"></select>
+      <label class="block text-xs text-white/60 mb-1.5">Barbero</label>
+      <div id="cita-barberos-chips" class="flex flex-wrap gap-2 mb-3"></div>
 
-      <label class="block text-xs text-white/60 mb-1">Servicio</label>
-      <select id="cita-servicio" class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2 text-sm mb-3 focus:outline-none focus:border-gold"></select>
+      <label class="block text-xs text-white/60 mb-1.5">Servicio</label>
+      <div id="cita-servicios-chips" class="flex flex-wrap gap-2 mb-3"></div>
 
-      <div class="grid grid-cols-2 gap-3 mb-3">
-        <div>
-          <label class="block text-xs text-white/60 mb-1">Fecha</label>
-          <input id="cita-fecha" type="date" required class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2 text-sm [color-scheme:dark] focus:outline-none focus:border-gold">
-        </div>
-        <div>
-          <label class="block text-xs text-white/60 mb-1">Hora</label>
-          <input id="cita-hora" type="time" required class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2 text-sm [color-scheme:dark] focus:outline-none focus:border-gold">
-        </div>
+      <label class="block text-xs text-white/60 mb-1">Fecha</label>
+      <input id="cita-fecha" type="date" required onchange="loadCitaHoras()" class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2 text-sm [color-scheme:dark] focus:outline-none focus:border-gold mb-3">
+
+      <label class="block text-xs text-white/60 mb-1.5">Hora</label>
+      <div id="cita-horas-chips" class="grid grid-cols-4 gap-2 mb-3">
+        <p class="col-span-4 text-white/40 text-xs text-center py-4">Elige barbero y servicio</p>
       </div>
 
       <label class="block text-xs text-white/60 mb-1">Nombre del cliente</label>
       <input id="cita-nombre" type="text" maxlength="80" required oninput="autoCapitalizeInput(event)" class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2 text-sm mb-3 focus:outline-none focus:border-gold">
 
-      <label class="block text-xs text-white/60 mb-1">Teléfono</label>
-      <div class="flex gap-2 mb-3">
+      <label class="block text-xs text-white/60 mb-1">Teléfono (opcional)</label>
+      <div class="flex gap-2 mb-1">
         <span class="shrink-0 flex items-center px-3 border border-white/15 rounded-sm text-sm text-white/60 bg-white/5">+56 9</span>
-        <input id="cita-telefono" type="tel" inputmode="numeric" maxlength="8" placeholder="1234 5678" required
+        <input id="cita-telefono" type="tel" inputmode="numeric" maxlength="8" placeholder="1234 5678"
           oninput="this.value = this.value.replace(/\D/g, '').slice(0, 8)"
           class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2 text-sm focus:outline-none focus:border-gold">
       </div>
+      <p class="text-xs text-white/40 mb-3">Opcional — sin teléfono no se envía confirmación ni recordatorio.</p>
 
       <label class="block text-xs text-white/60 mb-1">Notas (opcional)</label>
       <textarea id="cita-notas" maxlength="300" rows="2" class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2 text-sm mb-3 focus:outline-none focus:border-gold"></textarea>
@@ -351,6 +366,71 @@
       <p id="cita-error" class="hidden text-sm text-red-400 mb-3"></p>
       <button type="submit" class="w-full bg-gold hover:bg-goldlight text-ink font-semibold py-2.5 rounded-sm transition">Guardar cita</button>
     </form>
+  </div>
+
+  <!-- MODAL: ¿cómo pagó? (acción "Llegó") -->
+  <div id="modal-llegada" class="hidden fixed inset-0 z-30 bg-black/70 flex items-end md:items-center justify-center px-4">
+    <div class="w-full max-w-sm bg-panel border border-white/10 rounded-sm p-5">
+      <div class="flex items-center justify-between mb-1">
+        <h2 class="font-display text-lg">¿Cómo pagó?</h2>
+        <button type="button" onclick="cerrarModalLlegada()" class="text-white/50 hover:text-white text-lg leading-none">✕</button>
+      </div>
+      <p id="llegada-cliente" class="text-white/50 text-xs mb-4"></p>
+      <div class="space-y-2">
+        <button type="button" data-metodo="paid_cash" onclick="confirmarLlegada('paid_cash')" class="metodo-llegada-item w-full flex items-center justify-between text-left border border-white/15 rounded-sm p-3.5 text-sm font-medium transition">
+          <span>Efectivo</span>
+          <span class="metodo-ultimo-badge hidden text-xs text-gold/70 font-normal">último usado</span>
+        </button>
+        <button type="button" data-metodo="paid_transfer" onclick="confirmarLlegada('paid_transfer')" class="metodo-llegada-item w-full flex items-center justify-between text-left border border-white/15 rounded-sm p-3.5 text-sm font-medium transition">
+          <span>Transferencia</span>
+          <span class="metodo-ultimo-badge hidden text-xs text-gold/70 font-normal">último usado</span>
+        </button>
+        <button type="button" data-metodo="paid_card" onclick="confirmarLlegada('paid_card')" class="metodo-llegada-item w-full flex items-center justify-between text-left border border-white/15 rounded-sm p-3.5 text-sm font-medium transition">
+          <span>Tarjeta</span>
+          <span class="metodo-ultimo-badge hidden text-xs text-gold/70 font-normal">último usado</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: más opciones de una cita (Reagendada / Cancelar) -->
+  <div id="modal-menu-cita" class="hidden fixed inset-0 z-30 bg-black/70 flex items-end md:items-center justify-center px-4">
+    <div class="w-full max-w-sm bg-panel border border-white/10 rounded-sm p-5">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="font-display text-lg">Más opciones</h2>
+        <button type="button" onclick="cerrarMenuCita()" class="text-white/50 hover:text-white text-lg leading-none">✕</button>
+      </div>
+      <div id="menu-cita-opciones" class="space-y-2"></div>
+    </div>
+  </div>
+
+  <!-- MODAL: detalle de una cita -->
+  <div id="modal-detalle-cita" class="hidden fixed inset-0 z-30 bg-black/70 flex items-center justify-center px-4">
+    <div class="w-full max-w-sm bg-panel border border-white/10 rounded-sm p-5 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="font-display text-lg">Detalle de la cita</h2>
+        <button type="button" onclick="document.getElementById('modal-detalle-cita').classList.add('hidden')" class="text-white/50 hover:text-white text-lg leading-none">✕</button>
+      </div>
+      <div id="detalle-cita-cuerpo" class="space-y-3 text-sm"></div>
+    </div>
+  </div>
+
+  <!-- MODAL: detalle de un barbero (foto, descripción, horario, bloqueos) -->
+  <div id="modal-detalle-barbero" class="hidden fixed inset-0 z-30 bg-black/70 flex items-center justify-center px-4">
+    <div class="w-full max-w-sm bg-panel border border-white/10 rounded-sm p-5 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="font-display text-lg">Detalle del barbero</h2>
+        <button type="button" onclick="cerrarModalDetalleBarbero()" class="text-white/50 hover:text-white text-lg leading-none">✕</button>
+      </div>
+      <div class="flex items-center gap-3 mb-4">
+        <img id="detalle-barbero-foto" class="w-16 h-16 rounded-sm object-cover shrink-0">
+        <div class="min-w-0">
+          <p id="detalle-barbero-nombre" class="font-display text-base"></p>
+          <p id="detalle-barbero-bio" class="text-xs text-white/50 mt-0.5"></p>
+        </div>
+      </div>
+      <div id="detalle-barbero-cuerpo"></div>
+    </div>
   </div>
 
   <div id="modal-asignar" class="hidden fixed inset-0 z-30 bg-black/70 flex items-center justify-center px-4">
@@ -442,18 +522,15 @@
         contenedor.innerHTML = '<p class="text-white/40 text-sm text-center py-6">Agrega barberos para configurar horarios.</p>';
         return;
       }
-      const barberIds = barbers.map(b => b.id);
-      const [{ data: horarios }, { data: diasLibres }] = await Promise.all([
-        supabaseClient.from('barber_working_hours').select('barber_id,weekday,start_time,end_time').in('barber_id', barberIds),
-        supabaseClient.from('barber_time_off').select('id,barber_id,start_date,end_date').in('barber_id', barberIds).order('start_date'),
-      ]);
-
-      state.horariosSinGuardar.clear();
-      contenedor.innerHTML = barbers.map(b => renderTarjetaHorario(
-        b,
-        (horarios || []).filter(h => h.barber_id === b.id),
-        (diasLibres || []).filter(d => d.barber_id === b.id)
-      )).join('');
+      // el detalle completo (horario semanal + bloqueos) ahora vive en la
+      // ficha de cada barbero (pestaña Barberos) — acá solo queda el acceso
+      // directo, como pide la mejora #5
+      contenedor.innerHTML = barbers.map(b => `
+        <button onclick="showView('barberos', document.getElementById('nav-btn-barberos')); abrirDetalleBarbero('${b.id}')" class="w-full flex items-center justify-between border border-white/10 rounded-sm px-4 py-3 text-sm hover:border-gold/40 transition">
+          <span>${escapeHtml(b.name)}</span>
+          <span class="text-white/40 text-xs">Ver horario →</span>
+        </button>
+      `).join('');
     }
 
     function formatFechaCorta(iso) {
@@ -480,12 +557,16 @@
         `;
       }).join('');
 
-      const listaLibres = diasLibres.length ? diasLibres.map(d => `
+      const listaLibres = diasLibres.length ? diasLibres.map(d => {
+        const fechaTxt = d.start_date === d.end_date ? formatFechaCorta(d.start_date) : `${formatFechaCorta(d.start_date)} a ${formatFechaCorta(d.end_date)}`;
+        const tramoTxt = d.start_time ? ` · ${d.start_time.slice(0, 5)} a ${d.end_time.slice(0, 5)}` : ' · día completo';
+        return `
         <div class="flex items-center justify-between text-xs bg-white/5 rounded-sm px-2.5 py-1.5">
-          <span>${d.start_date === d.end_date ? formatFechaCorta(d.start_date) : `${formatFechaCorta(d.start_date)} a ${formatFechaCorta(d.end_date)}`}</span>
+          <span>${fechaTxt}${tramoTxt}</span>
           <button onclick="eliminarDiaLibre('${d.id}')" class="text-white/40 hover:text-red-400 transition">✕</button>
         </div>
-      `).join('') : '<p class="text-xs text-white/40">Sin días libres agendados.</p>';
+      `;
+      }).join('') : '<p class="text-xs text-white/40">Sin bloqueos agendados.</p>';
 
       return `
         <div class="border border-white/10 rounded-sm p-4" data-barber-id="${barber.id}">
@@ -495,8 +576,16 @@
           <button onclick="guardarHorarioBarbero('${barber.id}')" class="mt-3 text-xs border border-gold text-gold rounded-sm px-3 py-1.5 hover:bg-gold/10 transition">Guardar horario</button>
 
           <div class="border-t border-white/10 mt-4 pt-4">
-            <p class="font-mono text-[10px] tracking-widest uppercase text-white/40 mb-2">Días libres (vacaciones, feriados)</p>
+            <p class="font-mono text-[10px] tracking-widest uppercase text-white/40 mb-2">Bloquear hora (trámite, día libre)</p>
             <div class="libres-lista space-y-1.5 mb-3">${listaLibres}</div>
+            <div class="flex gap-4 mb-2 text-xs">
+              <label class="flex items-center gap-1.5 cursor-pointer">
+                <input type="radio" name="libre-tipo-${barber.id}" class="libre-tipo accent-gold" value="dia" checked onchange="toggleTramoLibre(this)"> Día completo
+              </label>
+              <label class="flex items-center gap-1.5 cursor-pointer">
+                <input type="radio" name="libre-tipo-${barber.id}" class="libre-tipo accent-gold" value="tramo" onchange="toggleTramoLibre(this)"> Solo un tramo
+              </label>
+            </div>
             <div class="flex flex-wrap items-end gap-2">
               <div>
                 <label class="block text-[10px] text-white/50 mb-1">Desde</label>
@@ -506,12 +595,56 @@
                 <label class="block text-[10px] text-white/50 mb-1">Hasta</label>
                 <input type="date" class="libre-hasta border border-white/15 bg-transparent rounded-sm px-2 py-1 text-xs [color-scheme:dark]">
               </div>
-              <button onclick="agregarDiaLibre('${barber.id}')" class="text-xs border border-white/15 rounded-sm px-3 py-1.5 text-white/60 hover:border-white/30 transition">+ Agregar</button>
+              <div class="libre-tramo-horas hidden gap-2">
+                <div>
+                  <label class="block text-[10px] text-white/50 mb-1">De</label>
+                  <input type="time" class="libre-hora-desde border border-white/15 bg-transparent rounded-sm px-2 py-1 text-xs [color-scheme:dark]">
+                </div>
+                <div>
+                  <label class="block text-[10px] text-white/50 mb-1">A</label>
+                  <input type="time" class="libre-hora-hasta border border-white/15 bg-transparent rounded-sm px-2 py-1 text-xs [color-scheme:dark]">
+                </div>
+              </div>
+              <button onclick="agregarDiaLibre('${barber.id}')" class="text-xs border border-white/15 rounded-sm px-3 py-1.5 text-white/60 hover:border-white/30 transition">+ Bloquear</button>
             </div>
             <p class="libre-status hidden text-xs mt-2"></p>
           </div>
         </div>
       `;
+    }
+
+    function toggleTramoLibre(radio) {
+      const tarjeta = radio.closest('[data-barber-id]');
+      const wrap = tarjeta.querySelector('.libre-tramo-horas');
+      const esTramo = radio.value === 'tramo';
+      wrap.classList.toggle('hidden', !esTramo);
+      wrap.classList.toggle('flex', esTramo);
+    }
+
+    // ---------- detalle de un barbero (ficha con foto, descripción, horario y bloqueos) ----------
+    async function abrirDetalleBarbero(barberId) {
+      state.detalleBarberoId = barberId;
+      state.horariosSinGuardar.clear();
+      const { data: barber } = await supabaseClient.from('barbers').select('*').eq('id', barberId).single();
+      if (!barber) return;
+      const [{ data: horarios }, { data: diasLibres }] = await Promise.all([
+        supabaseClient.from('barber_working_hours').select('weekday,start_time,end_time').eq('barber_id', barberId),
+        supabaseClient.from('barber_time_off').select('id,start_date,end_date,start_time,end_time').eq('barber_id', barberId).order('start_date'),
+      ]);
+      document.getElementById('detalle-barbero-foto').src = barber.photo_url
+        || 'https://placehold.co/64x64/1D1D20/D9A441?text=' + encodeURIComponent(initials(barber.name));
+      document.getElementById('detalle-barbero-nombre').textContent = barber.name;
+      document.getElementById('detalle-barbero-bio').textContent = barber.bio || 'Sin descripción todavía.';
+      document.getElementById('detalle-barbero-cuerpo').innerHTML = renderTarjetaHorario(barber, horarios || [], diasLibres || []);
+      document.getElementById('modal-detalle-barbero').classList.remove('hidden');
+    }
+
+    function cerrarModalDetalleBarbero() {
+      if (state.horariosSinGuardar.size > 0) {
+        if (!confirm('Tienes cambios de horario sin guardar. ¿Salir igual? Se van a perder.')) return;
+        state.horariosSinGuardar.clear();
+      }
+      document.getElementById('modal-detalle-barbero').classList.add('hidden');
     }
 
     async function agregarDiaLibre(barberId) {
@@ -520,20 +653,44 @@
       const desde = tarjeta.querySelector('.libre-desde').value;
       const hastaInput = tarjeta.querySelector('.libre-hasta');
       const hasta = hastaInput.value || desde;
+      const esTramo = tarjeta.querySelector('.libre-tipo:checked').value === 'tramo';
+      const horaDesde = esTramo ? tarjeta.querySelector('.libre-hora-desde').value : null;
+      const horaHasta = esTramo ? tarjeta.querySelector('.libre-hora-hasta').value : null;
 
       statusEl.className = 'libre-status text-xs mt-2';
       if (!desde) { statusEl.textContent = 'Elige al menos la fecha "Desde".'; statusEl.classList.add('text-red-400'); statusEl.classList.remove('hidden'); return; }
       if (hasta < desde) { statusEl.textContent = 'La fecha "Hasta" no puede ser antes que "Desde".'; statusEl.classList.add('text-red-400'); statusEl.classList.remove('hidden'); return; }
+      if (esTramo && (!horaDesde || !horaHasta || horaDesde >= horaHasta)) {
+        statusEl.textContent = 'Elige un tramo válido (la hora de inicio debe ser antes que la de fin).';
+        statusEl.classList.add('text-red-400'); statusEl.classList.remove('hidden');
+        return;
+      }
 
-      const { error } = await supabaseClient.from('barber_time_off').insert({ barber_id: barberId, start_date: desde, end_date: hasta });
+      // avisa si ya hay citas agendadas dentro de lo que se va a bloquear — no
+      // las borra, el barbero decide si bloquea igual
+      let countQuery = supabaseClient.from('bookings').select('id', { count: 'exact', head: true })
+        .eq('barber_id', barberId)
+        .not('status', 'in', '(cancelled,no_show)')
+        .gte('booking_date', desde).lte('booking_date', hasta);
+      if (esTramo) countQuery = countQuery.lt('start_time', horaHasta + ':00').gt('end_time', horaDesde + ':00');
+      const { count } = await countQuery;
+      if (count > 0) {
+        const mensaje = `Hay ${count} cita${count === 1 ? '' : 's'} agendada${count === 1 ? '' : 's'} en ese rango. No se van a borrar. ¿Bloquear igual?`;
+        if (!confirm(mensaje)) return;
+      }
+
+      const { error } = await supabaseClient.from('barber_time_off').insert({
+        barber_id: barberId, start_date: desde, end_date: hasta,
+        start_time: horaDesde || null, end_time: horaHasta || null,
+      });
       if (error) { statusEl.textContent = 'Error al guardar: ' + error.message; statusEl.classList.add('text-red-400'); statusEl.classList.remove('hidden'); return; }
-      loadInfo();
+      abrirDetalleBarbero(barberId);
     }
 
     async function eliminarDiaLibre(id) {
-      if (!confirm('¿Quitar este día libre? El barbero volverá a estar disponible esas fechas.')) return;
+      if (!confirm('¿Quitar este bloqueo? Esas horas vuelven a estar disponibles.')) return;
       await supabaseClient.from('barber_time_off').delete().eq('id', id);
-      loadInfo();
+      if (state.detalleBarberoId) abrirDetalleBarbero(state.detalleBarberoId);
     }
 
     function toggleDiaHorario(checkbox) {
@@ -633,8 +790,6 @@
     }
 
     // ---------- reportes ----------
-    const PAGOS_RESERVA = ['paid_cash', 'paid_transfer', 'paid_card'];
-
     async function loadReportes() {
       const desdeInput = document.getElementById('reporte-desde');
       const hastaInput = document.getElementById('reporte-hasta');
@@ -852,6 +1007,16 @@
     function applyRoleVisibility() {
       document.querySelectorAll('[data-owner-only]').forEach(el => el.classList.toggle('hidden', state.role !== 'owner'));
       document.querySelectorAll('[data-barbero-only]').forEach(el => el.classList.toggle('hidden', state.role !== 'barbero'));
+      actualizarFabNuevaCita();
+    }
+
+    // el FAB "+ Nueva cita" solo tiene sentido en Resumen/Calendario, y solo
+    // para el dueño (igual que el antiguo botón "+ Agregar cita" que reemplaza)
+    function actualizarFabNuevaCita() {
+      const fab = document.getElementById('fab-nueva-cita');
+      const visible = state.role === 'owner' && (state.vistaActual === 'resumen' || state.vistaActual === 'calendario');
+      fab.classList.toggle('hidden', !visible);
+      fab.classList.toggle('flex', visible);
     }
 
     function startPolling() {
@@ -978,6 +1143,7 @@
       btn.classList.remove('text-white/60');
 
       state.vistaActual = name;
+      actualizarFabNuevaCita();
       const loaders = { resumen: loadResumen, calendario: loadCalendario, servicios: loadServicios, barberos: loadBarberos, info: loadInfo, reportes: loadReportes };
       loaders[name]?.();
     }
@@ -1029,25 +1195,164 @@
       no_show:       { label: 'No asistió',           pill: 'bg-white/10 text-white/50',        bloque: 'bg-white/5 border-white/20' },
     };
     function estadoDe(status) { return ESTADOS[status] || ESTADOS.confirmed; }
-    function opcionesEstado(status) {
-      return Object.entries(ESTADOS).map(([v, e]) => `<option value="${v}" ${v === status ? 'selected' : ''}>${e.label}</option>`).join('');
+
+    // una cita "pendiente" (confirmed/rescheduled) todavía no se resolvió:
+    // se muestra con botones Llegó/No llegó en vez de un pill de estado
+    const PAGOS_RESERVA = ['paid_cash', 'paid_transfer', 'paid_card'];
+    function esPendiente(status) { return status === 'confirmed' || status === 'rescheduled'; }
+
+    function refrescarVistaActual() {
+      document.getElementById('modal-detalle-cita').classList.add('hidden');
+      document.getElementById('modal-menu-cita').classList.add('hidden');
+      if (state.vistaActual === 'resumen') loadResumen();
+      if (state.vistaActual === 'calendario') loadCalendario();
     }
-    function renderSelectorEstado(bookingId, status, variant) {
-      const clase = variant === 'mini'
-        ? `estado-select w-full mt-0.5 text-[10px] bg-transparent border-0 focus:outline-none text-white/80`
-        : `estado-select text-xs px-2 py-0.5 rounded-sm border-0 ${estadoDe(status).pill} focus:outline-none`;
-      return `<select data-booking-id="${bookingId}" data-variant="${variant || ''}" onchange="cambiarEstadoReserva(this)" class="${clase}">${opcionesEstado(status)}</select>`;
-    }
-    async function cambiarEstadoReserva(select) {
-      const id = select.dataset.bookingId;
-      const status = select.value;
-      if (select.dataset.variant !== 'mini') {
-        select.className = `estado-select text-xs px-2 py-0.5 rounded-sm border-0 ${estadoDe(status).pill} focus:outline-none`;
+
+    function renderAccionesCita(b, variant) {
+      const nombreEscape = escapeHtml(b.customer_name).replace(/'/g, "\\'");
+      if (esPendiente(b.status)) {
+        if (variant === 'mini') {
+          return `
+            <div class="flex items-center gap-1 mt-1">
+              <button type="button" onclick="event.stopPropagation(); marcarLlegada('${b.id}', '${b.status}', '${nombreEscape}')" class="flex-1 text-xs bg-gold/15 text-gold rounded-sm py-0.5 hover:bg-gold/25 transition">Llegó</button>
+              <button type="button" onclick="event.stopPropagation(); marcarNoLlego('${b.id}', '${b.status}')" class="flex-1 text-xs bg-white/5 text-white/50 rounded-sm py-0.5 hover:bg-red-500/15 hover:text-red-400 transition">No llegó</button>
+            </div>`;
+        }
+        return `
+          <div class="flex items-center gap-1.5 shrink-0">
+            <button type="button" onclick="event.stopPropagation(); marcarLlegada('${b.id}', '${b.status}', '${nombreEscape}')" class="text-xs font-medium bg-gold/15 text-gold rounded-sm px-3 py-1.5 hover:bg-gold/25 transition">Llegó</button>
+            <button type="button" onclick="event.stopPropagation(); marcarNoLlego('${b.id}', '${b.status}')" class="text-xs font-medium border border-white/15 text-white/50 rounded-sm px-3 py-1.5 hover:border-red-400/50 hover:text-red-400 transition">No llegó</button>
+            <button type="button" onclick="event.stopPropagation(); toggleMenuCita('${b.id}', '${b.status}')" class="text-white/40 hover:text-white text-base px-1.5 py-1 leading-none">⋯</button>
+          </div>`;
       }
-      const { error } = await supabaseClient.from('bookings').update({ status }).eq('id', id);
-      if (error) { alert('No se pudo actualizar el estado: ' + error.message); return; }
-      if (document.getElementById('view-resumen').classList.contains('active')) loadResumen();
-      if (document.getElementById('view-calendario').classList.contains('active')) loadCalendario();
+      const info = estadoDe(b.status);
+      const sePuedeCorregir = PAGOS_RESERVA.includes(b.status);
+      const accion = sePuedeCorregir ? `onclick="event.stopPropagation(); abrirModalLlegada('${b.id}', '${nombreEscape}')"` : '';
+      return `<span ${accion} class="text-xs px-2 py-0.5 rounded-sm ${info.pill} ${sePuedeCorregir ? 'cursor-pointer' : ''}">${info.label}</span>`;
+    }
+
+    // ---------- Llegó: abre el bottom sheet de método de pago (o marca
+    // directo si ya viniera pagada online — hoy no ocurre en la práctica,
+    // Transbank todavía no está integrado, pero se deja la guarda lista) ----------
+    function marcarLlegada(bookingId, status, clienteNombre) {
+      if (PAGOS_RESERVA.includes(status)) return;
+      abrirModalLlegada(bookingId, clienteNombre);
+    }
+
+    let llegadaContext = null;
+    function abrirModalLlegada(bookingId, clienteNombre) {
+      document.getElementById('modal-detalle-cita').classList.add('hidden');
+      llegadaContext = { bookingId };
+      document.getElementById('llegada-cliente').textContent = clienteNombre || '';
+      let ultimo = null;
+      try { ultimo = localStorage.getItem(`corteya_ultimo_metodo_${state.barbershopId}`); } catch (e) { /* localStorage no disponible */ }
+      document.querySelectorAll('.metodo-llegada-item').forEach(btn => {
+        const esUltimo = btn.dataset.metodo === ultimo;
+        btn.classList.toggle('border-gold/50', esUltimo);
+        btn.classList.toggle('border-white/15', !esUltimo);
+        btn.querySelector('.metodo-ultimo-badge').classList.toggle('hidden', !esUltimo);
+      });
+      document.getElementById('modal-llegada').classList.remove('hidden');
+    }
+    function cerrarModalLlegada() {
+      document.getElementById('modal-llegada').classList.add('hidden');
+      llegadaContext = null;
+    }
+    async function confirmarLlegada(metodo) {
+      if (!llegadaContext) return;
+      const { bookingId } = llegadaContext;
+      const { error } = await supabaseClient.from('bookings').update({ status: metodo }).eq('id', bookingId);
+      if (error) { alert('No se pudo guardar: ' + error.message); return; }
+      try { localStorage.setItem(`corteya_ultimo_metodo_${state.barbershopId}`, metodo); } catch (e) { /* no pasa nada si no se puede guardar */ }
+      cerrarModalLlegada();
+      refrescarVistaActual();
+    }
+
+    // ---------- No llegó: un toque, con deshacer durante unos segundos ----------
+    let undoNoShow = null;
+    async function marcarNoLlego(bookingId, previousStatus) {
+      const { error } = await supabaseClient.from('bookings').update({ status: 'no_show' }).eq('id', bookingId);
+      if (error) { alert('No se pudo actualizar: ' + error.message); return; }
+      refrescarVistaActual();
+      clearTimeout(undoNoShow?.timeoutId);
+      undoNoShow = { bookingId, previousStatus };
+      document.getElementById('toast-deshacer').classList.remove('hidden');
+      undoNoShow.timeoutId = setTimeout(() => {
+        document.getElementById('toast-deshacer').classList.add('hidden');
+        undoNoShow = null;
+      }, 7000);
+    }
+    async function deshacerNoLlegada() {
+      if (!undoNoShow) return;
+      clearTimeout(undoNoShow.timeoutId);
+      const { bookingId, previousStatus } = undoNoShow;
+      document.getElementById('toast-deshacer').classList.add('hidden');
+      undoNoShow = null;
+      await supabaseClient.from('bookings').update({ status: previousStatus }).eq('id', bookingId);
+      refrescarVistaActual();
+    }
+
+    // ---------- menú secundario: Reagendada / Cancelar ----------
+    function toggleMenuCita(bookingId, status) {
+      document.getElementById('modal-detalle-cita').classList.add('hidden');
+      const opciones = [];
+      if (status !== 'rescheduled') opciones.push({ label: 'Marcar como reagendada', status: 'rescheduled' });
+      opciones.push({ label: 'Cancelar cita', status: 'cancelled', clase: 'text-red-400' });
+      document.getElementById('menu-cita-opciones').innerHTML = opciones.map(o => `
+        <button type="button" onclick="cambiarEstadoCita('${bookingId}', '${o.status}')" class="w-full text-left border border-white/15 rounded-sm px-3 py-2.5 text-sm hover:border-white/30 transition ${o.clase || ''}">${o.label}</button>
+      `).join('');
+      document.getElementById('modal-menu-cita').classList.remove('hidden');
+    }
+    function cerrarMenuCita() {
+      document.getElementById('modal-menu-cita').classList.add('hidden');
+    }
+    async function cambiarEstadoCita(bookingId, status) {
+      const { error } = await supabaseClient.from('bookings').update({ status }).eq('id', bookingId);
+      cerrarMenuCita();
+      if (error) { alert('No se pudo actualizar: ' + error.message); return; }
+      refrescarVistaActual();
+    }
+
+    // ---------- detalle de una cita ----------
+    async function abrirDetalleCita(bookingId) {
+      const { data: b, error } = await supabaseClient.from('bookings')
+        .select('id,customer_name,customer_phone,notes,booking_date,start_time,status,services(name,price_clp),barbers(name)')
+        .eq('id', bookingId).single();
+      if (error || !b) return;
+      renderDetalleCita(b);
+      document.getElementById('modal-detalle-cita').classList.remove('hidden');
+    }
+
+    function renderDetalleCita(b) {
+      const telDigits = (b.customer_phone || '').replace(/\D/g, '');
+      const waBtn = b.customer_phone
+        ? `<a href="https://wa.me/${telDigits}" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 text-xs border border-gold text-gold rounded-sm px-3 py-1.5 hover:bg-gold/10 transition">WhatsApp</a>`
+        : '';
+      const acciones = esPendiente(b.status)
+        ? renderAccionesCita(b, 'detalle')
+        : PAGOS_RESERVA.includes(b.status)
+          ? `<button type="button" onclick="abrirModalLlegada('${b.id}', '${escapeHtml(b.customer_name).replace(/'/g, "\\'")}')" class="text-xs border border-white/15 rounded-sm px-3 py-1.5 text-white/60 hover:border-gold hover:text-gold transition">Cambiar método de pago</button>`
+          : `<span class="text-xs px-2 py-0.5 rounded-sm ${estadoDe(b.status).pill}">${estadoDe(b.status).label}</span>`;
+
+      document.getElementById('detalle-cita-cuerpo').innerHTML = `
+        <div>
+          <p class="font-medium">${escapeHtml(b.customer_name)}</p>
+          <p class="text-white/50 text-xs mt-0.5">${escapeHtml(b.customer_phone || 'Sin teléfono')}</p>
+        </div>
+        <div class="border-t border-white/10 pt-3">
+          <p>${escapeHtml(b.services?.name || '')} · <span class="font-mono text-gold">${clp(b.services?.price_clp || 0)}</span></p>
+          <p class="text-white/50 text-xs mt-0.5">${escapeHtml(b.barbers?.name || '')} · ${formatFechaCorta(b.booking_date)} · ${b.start_time.slice(0, 5)}</p>
+        </div>
+        ${b.notes ? `<p class="text-white/50 text-xs border-t border-white/10 pt-3">${escapeHtml(b.notes)}</p>` : ''}
+        <div class="flex flex-wrap items-center gap-2 border-t border-white/10 pt-3">${waBtn}${acciones}</div>
+      `;
+    }
+
+    function formatCountdown(mins) {
+      if (mins <= 0) return 'Ahora';
+      if (mins < 60) return `En ${mins} min`;
+      const h = Math.floor(mins / 60), m = mins % 60;
+      return m ? `En ${h} h ${m} min` : `En ${h} h`;
     }
 
     async function loadResumen() {
@@ -1081,18 +1386,60 @@
       document.getElementById('stat-ocupacion').textContent = totalWorkMinutes > 0 ? Math.round((bookedMinutes / totalWorkMinutes) * 100) + '%' : '—';
 
       const nowSantiago = new Intl.DateTimeFormat('en-GB', { timeZone: 'America/Santiago', hour: '2-digit', minute: '2-digit', hour12: false }).format(new Date());
+      const nowMin = timeToMinutes(nowSantiago);
       const proxima = rows.find(b => b.start_time.slice(0, 5) >= nowSantiago);
-      document.getElementById('stat-proxima').textContent = proxima ? proxima.start_time.slice(0, 5) : '—';
+
+      const proximaCard = document.getElementById('proxima-cita-card');
+      const proximaVacio = document.getElementById('proxima-cita-vacio');
+      if (proxima) {
+        const mins = timeToMinutes(proxima.start_time.slice(0, 5)) - nowMin;
+        document.getElementById('proxima-cita-countdown').textContent = formatCountdown(mins);
+        document.getElementById('proxima-cita-detalle').textContent =
+          `${proxima.start_time.slice(0, 5)} · ${proxima.customer_name} — ${proxima.services?.name || ''} · ${proxima.barbers?.name || ''}`;
+        const waLink = document.getElementById('proxima-cita-whatsapp');
+        if (proxima.customer_phone) {
+          waLink.href = `https://wa.me/${proxima.customer_phone.replace(/\D/g, '')}`;
+          waLink.classList.remove('hidden');
+        } else {
+          waLink.classList.add('hidden');
+        }
+        proximaCard.classList.remove('hidden');
+        proximaVacio.classList.add('hidden');
+      } else {
+        proximaCard.classList.add('hidden');
+        proximaVacio.classList.remove('hidden');
+      }
 
       const agendaEl = document.getElementById('agenda-hoy');
-      agendaEl.innerHTML = rows.length ? rows.map(b => `
-        <div class="flex flex-wrap items-center gap-x-4 gap-y-1 px-4 py-3">
-          <span class="font-mono text-sm text-gold w-14">${b.start_time.slice(0, 5)}</span>
-          <span class="flex-1 min-w-[140px] text-sm">${escapeHtml(b.customer_name)} — ${escapeHtml(b.services?.name)}</span>
-          <span class="text-xs text-white/50">${escapeHtml(b.barbers?.name)}</span>
-          ${renderSelectorEstado(b.id, b.status)}
-        </div>
-      `).join('') : '<p class="px-4 py-6 text-sm text-white/40 text-center">Sin citas para hoy.</p>';
+      if (!rows.length) {
+        agendaEl.innerHTML = '<p class="px-4 py-6 text-sm text-white/40 text-center">Sin citas para hoy.</p>';
+        return;
+      }
+      let lineaInsertada = false;
+      const piezas = [];
+      const lineaHora = `
+        <div class="px-4 py-1 flex items-center gap-2">
+          <span class="flex-1 h-px bg-gold/40"></span>
+          <span class="font-mono text-xs text-gold">${nowSantiago}</span>
+          <span class="flex-1 h-px bg-gold/40"></span>
+        </div>`;
+      rows.forEach(b => {
+        const inicioMin = timeToMinutes(b.start_time.slice(0, 5));
+        if (!lineaInsertada && inicioMin >= nowMin) {
+          piezas.push(lineaHora);
+          lineaInsertada = true;
+        }
+        const pasada = inicioMin < nowMin;
+        piezas.push(`
+          <div onclick="abrirDetalleCita('${b.id}')" class="flex flex-wrap items-center gap-x-4 gap-y-1 px-4 py-3 cursor-pointer hover:bg-white/5 transition ${pasada ? 'opacity-40' : ''}">
+            <span class="font-mono text-sm text-gold w-14">${b.start_time.slice(0, 5)}</span>
+            <span class="flex-1 min-w-[140px] text-sm">${escapeHtml(b.customer_name)} — ${escapeHtml(b.services?.name)}</span>
+            <span class="text-xs text-white/50">${escapeHtml(b.barbers?.name)}</span>
+            ${renderAccionesCita(b, 'normal')}
+          </div>`);
+      });
+      if (!lineaInsertada) piezas.push(lineaHora);
+      agendaEl.innerHTML = piezas.join('');
     }
 
     // ---------- Calendario ----------
@@ -1226,10 +1573,10 @@
         const row = Math.round((startMin - timeToMinutes(minStart)) / ROW_MINUTES) + 2;
         const rowSpan = Math.max(1, Math.ceil((bk.services?.duration_minutes || ROW_MINUTES) / ROW_MINUTES));
         cells += `
-          <div class="m-0.5 p-1.5 border rounded-sm overflow-hidden ${estadoDe(bk.status).bloque}" style="grid-column:${col}; grid-row:${row} / span ${rowSpan};">
+          <div onclick="abrirDetalleCita('${bk.id}')" class="m-0.5 p-1.5 border rounded-sm overflow-hidden cursor-pointer hover:brightness-110 transition ${estadoDe(bk.status).bloque}" style="grid-column:${col}; grid-row:${row} / span ${rowSpan};">
             <p class="text-xs font-medium truncate">${escapeHtml(bk.customer_name)}</p>
             <p class="text-[11px] text-white/50 truncate">${escapeHtml(bk.services?.name)}</p>
-            ${renderSelectorEstado(bk.id, bk.status, 'mini')}
+            ${renderAccionesCita(bk, 'mini')}
           </div>`;
       });
 
@@ -1343,21 +1690,21 @@
     async function loadBarberos() {
       const { data } = await supabaseClient.from('barbers').select('*').eq('barbershop_id', state.barbershopId).order('created_at');
       document.getElementById('barberos-lista').innerHTML = (data && data.length) ? data.map(b => `
-        <div class="border border-white/10 rounded-sm p-4">
+        <div onclick="abrirDetalleBarbero('${b.id}')" class="border border-white/10 rounded-sm p-4 cursor-pointer hover:border-gold/40 transition">
           <img src="${b.photo_url || 'https://placehold.co/48x48/1D1D20/D9A441?text=' + encodeURIComponent(b.name.charAt(0))}" class="w-12 h-12 rounded-sm mb-3">
           <p class="text-sm font-medium mb-2">${escapeHtml(b.name)}</p>
           <div class="flex items-center justify-between gap-2 mb-2">
             <span class="text-xs ${b.active ? 'bg-green-500/15 text-green-400' : 'bg-white/10 text-white/40'} px-2 py-0.5 rounded-sm">${b.active ? 'Disponible' : 'Inactivo'}</span>
-            <button onclick="abrirModalAsignarServiciosABarbero('${b.id}', '${escapeHtml(b.name)}', false)" class="text-xs text-white/40 hover:text-gold transition">Servicios</button>
-            <button onclick="toggleBarberoActivo('${b.id}', ${b.active})" class="text-xs text-white/40 hover:${b.active ? 'text-red-400' : 'text-green-400'} transition">${b.active ? 'Eliminar' : 'Reactivar'}</button>
+            <button onclick="event.stopPropagation(); abrirModalAsignarServiciosABarbero('${b.id}', '${escapeHtml(b.name)}', false)" class="text-xs text-white/40 hover:text-gold transition">Servicios</button>
+            <button onclick="event.stopPropagation(); toggleBarberoActivo('${b.id}', ${b.active})" class="text-xs text-white/40 hover:${b.active ? 'text-red-400' : 'text-green-400'} transition">${b.active ? 'Eliminar' : 'Reactivar'}</button>
           </div>
           ${b.user_id
             ? `<div class="flex items-center justify-between gap-2">
                 <span class="text-xs bg-gold/10 text-gold px-2 py-0.5 rounded-sm">🔑 Acceso activo</span>
-                <button onclick="quitarAccesoBarbero('${b.id}', '${escapeHtml(b.name)}')" class="text-xs text-white/40 hover:text-red-400 transition">Quitar acceso</button>
+                <button onclick="event.stopPropagation(); quitarAccesoBarbero('${b.id}', '${escapeHtml(b.name)}')" class="text-xs text-white/40 hover:text-red-400 transition">Quitar acceso</button>
               </div>`
             : PLANES_CON_LOGIN_BARBERO.includes(state.barbershopPlan)
-              ? `<button onclick="crearAccesoBarbero('${b.id}', '${escapeHtml(b.name)}')" class="w-full text-xs border border-white/15 rounded-sm px-2 py-1.5 text-white/60 hover:border-gold hover:text-gold transition">+ Crear acceso</button>`
+              ? `<button onclick="event.stopPropagation(); crearAccesoBarbero('${b.id}', '${escapeHtml(b.name)}')" class="w-full text-xs border border-white/15 rounded-sm px-2 py-1.5 text-white/60 hover:border-gold hover:text-gold transition">+ Crear acceso</button>`
               : `<p class="text-[11px] text-white/30 text-center">Los accesos de barbero no están incluidos en tu plan actual.</p>`
           }
           ${PLANES_CON_LOGIN_BARBERO.includes(state.barbershopPlan)
@@ -1425,22 +1772,31 @@
     }
 
     // ---------- Modal: agregar cita manual ----------
+    let citaModalState = { barberId: null, serviceId: null, serviceDuration: null, hora: null };
+
     async function abrirModalCita() {
       const [{ data: barbers }, { data: services }] = await Promise.all([
         supabaseClient.from('barbers').select('id,name').eq('barbershop_id', state.barbershopId).eq('active', true).order('name'),
-        supabaseClient.from('services').select('id,name,duration_minutes').eq('barbershop_id', state.barbershopId).eq('active', true).order('name'),
+        supabaseClient.from('services').select('id,name,duration_minutes,price_clp').eq('barbershop_id', state.barbershopId).eq('active', true).order('name'),
       ]);
-      document.getElementById('cita-barbero').innerHTML = (barbers || []).map(b => `<option value="${b.id}">${escapeHtml(b.name)}</option>`).join('')
-        || '<option value="">Sin barberos activos</option>';
-      document.getElementById('cita-servicio').innerHTML = (services || []).map(s => `<option value="${s.id}" data-duration="${s.duration_minutes}">${escapeHtml(s.name)} (${s.duration_minutes} min)</option>`).join('')
-        || '<option value="">Sin servicios activos</option>';
+
+      citaModalState = { barberId: null, serviceId: null, serviceDuration: null, hora: null };
+
+      document.getElementById('cita-barberos-chips').innerHTML = (barbers && barbers.length)
+        ? barbers.map(b => `<button type="button" data-id="${b.id}" onclick="seleccionarCitaBarbero('${b.id}')" class="cita-chip-barbero text-xs border border-white/15 text-white/70 rounded-sm px-3 py-1.5 transition">${escapeHtml(b.name)}</button>`).join('')
+        : '<p class="text-xs text-white/40">Sin barberos activos.</p>';
+
+      document.getElementById('cita-servicios-chips').innerHTML = (services && services.length)
+        ? services.map(s => `<button type="button" data-id="${s.id}" onclick="seleccionarCitaServicio('${s.id}', ${s.duration_minutes})" class="cita-chip-servicio text-xs border border-white/15 text-white/70 rounded-sm px-3 py-1.5 transition">${escapeHtml(s.name)} · ${clp(s.price_clp)}</button>`).join('')
+        : '<p class="text-xs text-white/40">Sin servicios activos.</p>';
 
       const fechaVista = document.getElementById('calendario-fecha-input').value || santiagoDateParts(0).iso;
       const fechaInput = document.getElementById('cita-fecha');
       fechaInput.min = santiagoDateParts(0).iso;
       fechaInput.max = santiagoDateParts(29).iso;
       fechaInput.value = fechaVista;
-      document.getElementById('cita-hora').value = '';
+
+      document.getElementById('cita-horas-chips').innerHTML = '<p class="col-span-4 text-white/40 text-xs text-center py-4">Elige barbero y servicio</p>';
       document.getElementById('cita-nombre').value = '';
       document.getElementById('cita-telefono').value = '';
       document.getElementById('cita-notas').value = '';
@@ -1452,35 +1808,91 @@
       document.getElementById('modal-cita').classList.add('hidden');
     }
 
+    function marcarChipActivo(selector, id) {
+      document.querySelectorAll(selector).forEach(el => {
+        const activo = el.dataset.id === id;
+        el.classList.toggle('border-gold', activo);
+        el.classList.toggle('bg-gold/10', activo);
+        el.classList.toggle('text-gold', activo);
+        el.classList.toggle('border-white/15', !activo);
+        el.classList.toggle('text-white/70', !activo);
+      });
+    }
+
+    function seleccionarCitaBarbero(id) {
+      citaModalState.barberId = id;
+      marcarChipActivo('.cita-chip-barbero', id);
+      loadCitaHoras();
+    }
+
+    function seleccionarCitaServicio(id, duration) {
+      citaModalState.serviceId = id;
+      citaModalState.serviceDuration = duration;
+      marcarChipActivo('.cita-chip-servicio', id);
+      loadCitaHoras();
+    }
+
+    let citaHorasRequestId = 0;
+    async function loadCitaHoras() {
+      const cont = document.getElementById('cita-horas-chips');
+      citaModalState.hora = null;
+      const fecha = document.getElementById('cita-fecha').value;
+      if (!citaModalState.barberId || !citaModalState.serviceId || !fecha) {
+        cont.innerHTML = '<p class="col-span-4 text-white/40 text-xs text-center py-4">Elige barbero y servicio</p>';
+        return;
+      }
+      const requestId = ++citaHorasRequestId;
+      cont.innerHTML = '<p class="col-span-4 text-white/40 text-xs text-center py-4">Buscando horarios…</p>';
+      const { data, error } = await supabaseClient.rpc('get_available_slots', {
+        p_barber_id: citaModalState.barberId,
+        p_date: fecha,
+        p_service_duration_minutes: citaModalState.serviceDuration,
+      });
+      if (requestId !== citaHorasRequestId) return; // llegó una llamada más nueva mientras esperábamos
+      if (error) {
+        console.error(error);
+        cont.innerHTML = '<p class="col-span-4 text-red-400 text-xs text-center py-4">No se pudo cargar la disponibilidad.</p>';
+        return;
+      }
+      const slots = (data || []).map(r => r.slot_start).sort();
+      cont.innerHTML = slots.length
+        ? slots.map(s => `<button type="button" data-id="${s}" onclick="seleccionarCitaHora('${s}')" class="cita-chip-hora text-xs text-center border border-white/15 text-white/70 py-2 rounded-sm transition">${s.slice(0, 5)}</button>`).join('')
+        : '<p class="col-span-4 text-white/40 text-xs text-center py-4">Sin horarios disponibles ese día.</p>';
+    }
+
+    function seleccionarCitaHora(hora) {
+      citaModalState.hora = hora;
+      marcarChipActivo('.cita-chip-hora', hora);
+    }
+
     document.getElementById('form-cita').addEventListener('submit', async (e) => {
       e.preventDefault();
       const errorEl = document.getElementById('cita-error');
       errorEl.classList.add('hidden');
 
-      const barberId = document.getElementById('cita-barbero').value;
-      const servicioSel = document.getElementById('cita-servicio');
-      const serviceId = servicioSel.value;
-      const duration = parseInt(servicioSel.selectedOptions[0]?.dataset.duration || '30', 10);
+      const barberId = citaModalState.barberId;
+      const serviceId = citaModalState.serviceId;
+      const duration = citaModalState.serviceDuration;
       const fecha = document.getElementById('cita-fecha').value;
-      const hora = document.getElementById('cita-hora').value;
+      const hora = citaModalState.hora;
       const nombre = document.getElementById('cita-nombre').value.trim();
       const telefono = document.getElementById('cita-telefono').value.trim();
       const notas = document.getElementById('cita-notas').value.trim() || null;
 
-      if (!barberId || !serviceId || !fecha || !hora || !nombre || !telefono) {
-        errorEl.textContent = 'Completa todos los campos obligatorios.';
+      if (!barberId || !serviceId || !fecha || !hora || !nombre) {
+        errorEl.textContent = 'Elige barbero, servicio, hora, y escribe el nombre del cliente.';
         errorEl.classList.remove('hidden');
         return;
       }
-      if (!/^\d{8}$/.test(telefono)) {
-        errorEl.textContent = 'Ingresa un número válido (8 dígitos).';
+      if (telefono && !/^\d{8}$/.test(telefono)) {
+        errorEl.textContent = 'Ingresa un número válido (8 dígitos) o deja el teléfono en blanco.';
         errorEl.classList.remove('hidden');
         return;
       }
-      const telefonoCompleto = `+56 9 ${telefono.slice(0, 4)} ${telefono.slice(4)}`;
+      const telefonoCompleto = telefono ? `+56 9 ${telefono.slice(0, 4)} ${telefono.slice(4)}` : null;
 
-      const startTime = hora + ':00';
-      const endTime = minutesToTime(timeToMinutes(hora) + duration) + ':00';
+      const startTime = hora; // ya viene como 'HH:MM:SS' desde get_available_slots
+      const endTime = minutesToTime(timeToMinutes(hora.slice(0, 5)) + duration) + ':00';
 
       const { error } = await supabaseClient.from('bookings').insert({
         barbershop_id: state.barbershopId,
@@ -1506,8 +1918,7 @@
       }
 
       cerrarModalCita();
-      if (document.getElementById('view-calendario').classList.contains('active')) loadCalendario();
-      if (fecha === santiagoDateParts(0).iso) loadResumen();
+      refrescarVistaActual();
     });
 
     window.addEventListener('beforeunload', (e) => {
