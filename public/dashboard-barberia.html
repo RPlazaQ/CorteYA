@@ -226,6 +226,7 @@
               <div>
                 <p class="text-sm font-medium">Sonido al llegar una reserva</p>
                 <p class="text-xs text-white/50 mt-0.5">Un aviso corto además del mensaje en pantalla. Desactivado por defecto.</p>
+                <button type="button" onclick="reproducirSonidoAviso()" class="text-xs text-gold mt-2 underline underline-offset-2">Probar sonido</button>
               </div>
               <input id="toggle-sonido-aviso" type="checkbox" class="accent-gold w-5 h-5 shrink-0" onchange="guardarPreferenciaSonido(this.checked)">
             </div>
@@ -1408,6 +1409,7 @@
 
     function reproducirSonidoAviso() {
       try {
+        activarAudioCtxAviso();
         if (!audioCtxAviso) return;
         if (audioCtxAviso.state === 'suspended') audioCtxAviso.resume();
         const ctx = audioCtxAviso;
