@@ -1392,9 +1392,25 @@
     function guardarPreferenciaSonido(activo) {
       try { localStorage.setItem(claveSonidoAviso(), activo ? '1' : '0'); } catch (e) { /* no pasa nada si no se puede guardar */ }
     }
+    // el aviso se dispara desde un setInterval (sin gesto del usuario en ese
+    // momento), y los navegadores dejan "suspendido" (mudo) cualquier
+    // AudioContext creado fuera de una interacción directa. Por eso se crea
+    // uno solo, la primera vez que el usuario toca la pantalla, y se
+    // reutiliza/retoma (resume) cada vez que hay que sonar — así el
+    // navegador lo cuenta como "activado por el usuario" desde el inicio.
+    let audioCtxAviso = null;
+    function activarAudioCtxAviso() {
+      if (audioCtxAviso) return;
+      try { audioCtxAviso = new (window.AudioContext || window.webkitAudioContext)(); }
+      catch (e) { /* audio no disponible, no es crítico */ }
+    }
+    document.addEventListener('pointerdown', activarAudioCtxAviso, { once: true });
+
     function reproducirSonidoAviso() {
       try {
-        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        if (!audioCtxAviso) return;
+        if (audioCtxAviso.state === 'suspended') audioCtxAviso.resume();
+        const ctx = audioCtxAviso;
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
         osc.type = 'sine';
