@@ -1493,14 +1493,17 @@
     // (confirmada), verde tenue para cualquier variante de "llegó" (pagada,
     // sin importar el método), rojo #E5484D para lo que no llegó a pasar
     // (no asistió o se canceló)
+    // labelCorto: versión de una sola palabra para tarjetas angostas (celda
+    // mini del Calendario) — la mayoría coincide con label, solo los 3
+    // "Pagada X" cambian de verdad (son los que se partían en dos líneas).
     const ESTADOS = {
-      confirmed:     { label: 'Por pagar',            pill: 'bg-gold/15 text-gold',           bloque: 'bg-gold/10 border-gold/40' },
-      rescheduled:   { label: 'Reagendada',           pill: 'bg-white/10 text-white/70',       bloque: 'bg-white/5 border-white/30' },
-      paid_cash:     { label: 'Pagada efectivo',      pill: 'bg-green-500/15 text-green-400',  bloque: 'bg-green-500/10 border-green-500/40' },
-      paid_transfer: { label: 'Pagada transferencia', pill: 'bg-green-500/15 text-green-400',  bloque: 'bg-green-500/10 border-green-500/40' },
-      paid_card:     { label: 'Pagada tarjeta',       pill: 'bg-green-500/15 text-green-400',  bloque: 'bg-green-500/10 border-green-500/40' },
-      cancelled:     { label: 'Cancelada',            pill: 'bg-[#E5484D]/15 text-[#E5484D]',  bloque: 'bg-[#E5484D]/10 border-[#E5484D]/40' },
-      no_show:       { label: 'No asistió',           pill: 'bg-[#E5484D]/15 text-[#E5484D]',  bloque: 'bg-[#E5484D]/10 border-[#E5484D]/40' },
+      confirmed:     { label: 'Por pagar',            labelCorto: 'Por pagar', pill: 'bg-gold/15 text-gold',           bloque: 'bg-gold/10 border-gold/40' },
+      rescheduled:   { label: 'Reagendada',           labelCorto: 'Reagendada', pill: 'bg-white/10 text-white/70',       bloque: 'bg-white/5 border-white/30' },
+      paid_cash:     { label: 'Pagada efectivo',      labelCorto: 'Efectivo', pill: 'bg-green-500/15 text-green-400',  bloque: 'bg-green-500/10 border-green-500/40' },
+      paid_transfer: { label: 'Pagada transferencia', labelCorto: 'Transf.', pill: 'bg-green-500/15 text-green-400',  bloque: 'bg-green-500/10 border-green-500/40' },
+      paid_card:     { label: 'Pagada tarjeta',       labelCorto: 'Tarjeta', pill: 'bg-green-500/15 text-green-400',  bloque: 'bg-green-500/10 border-green-500/40' },
+      cancelled:     { label: 'Cancelada',            labelCorto: 'Cancelada', pill: 'bg-[#E5484D]/15 text-[#E5484D]',  bloque: 'bg-[#E5484D]/10 border-[#E5484D]/40' },
+      no_show:       { label: 'No asistió',           labelCorto: 'No llegó', pill: 'bg-[#E5484D]/15 text-[#E5484D]',  bloque: 'bg-[#E5484D]/10 border-[#E5484D]/40' },
     };
     function estadoDe(status) { return ESTADOS[status] || ESTADOS.confirmed; }
 
@@ -1543,7 +1546,8 @@
       const info = estadoDe(b.status);
       const sePuedeCorregir = PAGOS_RESERVA.includes(b.status);
       const accion = sePuedeCorregir ? `${nombreAttr} onclick="event.stopPropagation(); abrirModalLlegada('${b.id}', this)"` : '';
-      return `<span ${accion} class="text-xs px-2 py-0.5 rounded-sm ${info.pill} ${sePuedeCorregir ? 'cursor-pointer' : ''}">${info.label}</span>`;
+      const texto = variant === 'mini' ? info.labelCorto : info.label;
+      return `<span ${accion} class="text-xs px-2 py-0.5 rounded-sm whitespace-nowrap ${info.pill} ${sePuedeCorregir ? 'cursor-pointer' : ''}">${texto}</span>`;
     }
 
     // ---------- Llegó: abre el bottom sheet de método de pago (o marca
@@ -1883,18 +1887,23 @@
       const slots = [];
       for (let m = timeToMinutes(minStart); m < timeToMinutes(maxEnd); m += ROW_MINUTES) slots.push(minutesToTime(m));
 
-      const cols = `90px repeat(${barbers.length}, minmax(110px, 1fr))`;
-      const minWidth = 90 + barbers.length * 110;
+      // la columna de hora necesita un ancho fijo que SÍ alcance para
+      // "10:00" sin cortarse (64px, con padding angosto) — antes se
+      // repartía el espacio con las columnas de barbero y en pantallas
+      // angostas terminaba más chica de lo que el texto necesitaba.
+      const HORA_COL = 64;
+      const cols = `${HORA_COL}px repeat(${barbers.length}, minmax(92px, 1fr))`;
+      const minWidth = HORA_COL + barbers.length * 92;
       const barberCol = {};
       barbers.forEach((b, i) => { barberCol[b.id] = i + 2; });
 
-      let cells = `<div class="p-3 font-mono text-xs text-white/50 border-b border-white/10" style="grid-column:1; grid-row:1;">HORA</div>`;
+      let cells = `<div class="px-2 py-3 font-mono text-xs text-white/50 border-b border-white/10 whitespace-nowrap" style="grid-column:1; grid-row:1;">HORA</div>`;
       barbers.forEach((b, i) => {
-        cells += `<div class="p-3 text-sm font-medium border-b border-l border-white/10" style="grid-column:${i + 2}; grid-row:1;">${escapeHtml(b.name)}</div>`;
+        cells += `<div class="p-3 text-sm font-medium border-b border-l border-white/10 truncate" style="grid-column:${i + 2}; grid-row:1;">${escapeHtml(b.name)}</div>`;
       });
       slots.forEach((slot, r) => {
         const row = r + 2;
-        cells += `<div class="p-3 font-mono text-xs text-white/50 border-b border-white/5" style="grid-column:1; grid-row:${row};">${slot}</div>`;
+        cells += `<div class="px-2 py-3 font-mono text-xs text-white/50 border-b border-white/5 whitespace-nowrap" style="grid-column:1; grid-row:${row};">${slot}</div>`;
         barbers.forEach((b, i) => {
           cells += `<div class="border-b border-l border-white/5" style="grid-column:${i + 2}; grid-row:${row};"></div>`;
         });
