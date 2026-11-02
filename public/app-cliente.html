@@ -76,7 +76,7 @@
 
   <div class="sticky top-0 z-20 bg-neutral-950/90 backdrop-blur border-b border-white/5 px-5 py-3.5 md:px-0">
     <div class="md:max-w-2xl md:mx-auto">
-      <a href="index.html" class="font-mono text-xs text-white/40 hover:text-gold transition">← CorteYa</a>
+      <a href="index.html" class="font-mono text-xs text-white/50 hover:text-gold transition">← CorteYa</a>
     </div>
   </div>
 
@@ -88,13 +88,13 @@
     <!-- SCREEN 1: BUSCAR -->
     <div id="screen-buscar" class="screen">
       <div class="px-5 pt-4 pb-3">
-        <p class="font-mono text-[11px] tracking-widest uppercase text-gold mb-1">Providencia, Santiago</p>
+        <p class="font-mono text-xs tracking-widest uppercase text-gold mb-1">Providencia, Santiago</p>
         <h2 class="font-display text-xl">Encuentra tu barbería</h2>
       </div>
       <div class="px-5 mb-4">
         <div class="flex items-center gap-2 border border-white/15 rounded-sm px-3 py-2.5">
-          <span class="text-white/40 text-sm">🔍</span>
-          <span class="text-white/40 text-sm">Buscar barbería o servicio</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-white/50 shrink-0"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+          <span class="text-white/50 text-sm">Buscar barbería o servicio</span>
         </div>
       </div>
       <div class="px-5 mb-4 flex gap-2 overflow-x-auto">
@@ -109,7 +109,7 @@
       </div>
 
       <div id="buscar-lista" class="flex-1 overflow-y-auto px-5 space-y-3 pb-4">
-        <p class="text-white/40 text-sm text-center py-8">Cargando barberías…</p>
+        <p class="text-white/50 text-sm text-center py-8">Cargando barberías…</p>
       </div>
 
       <div id="buscar-mapa" class="hidden flex-1 px-5 pb-4">
@@ -128,9 +128,9 @@
       </div>
 
       <div class="h-16 border-t border-white/10 flex items-center justify-around shrink-0">
-        <span class="flex flex-col items-center gap-0.5 text-gold text-[10px] font-medium"><span class="text-base">🔍</span>Buscar</span>
-        <span class="flex flex-col items-center gap-0.5 text-white/40 text-[10px] font-medium"><span class="text-base">📅</span>Reservas</span>
-        <span class="flex flex-col items-center gap-0.5 text-white/40 text-[10px] font-medium"><span class="text-base">👤</span>Perfil</span>
+        <span class="flex flex-col items-center gap-0.5 text-gold text-xs font-medium"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="w-[18px] h-[18px]"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>Buscar</span>
+        <span class="flex flex-col items-center gap-0.5 text-white/50 text-xs font-medium"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="w-[18px] h-[18px]"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>Reservas</span>
+        <span class="flex flex-col items-center gap-0.5 text-white/50 text-xs font-medium"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="w-[18px] h-[18px]"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg>Perfil</span>
       </div>
     </div>
 
@@ -186,13 +186,13 @@
             <div class="d-section-body">
               <div class="d-section-body-inner space-y-5">
                 <div>
-                  <p class="font-mono text-[11px] tracking-widest uppercase text-gold mb-3">Barbero</p>
+                  <p class="font-mono text-xs tracking-widest uppercase text-gold mb-3">Barbero</p>
                   <div id="agendar-barberos" class="space-y-2"></div>
                 </div>
                 <div class="barbero-horas-global-wrap">
-                  <p class="font-mono text-[11px] tracking-widest uppercase text-gold mb-3">Hora</p>
+                  <p class="font-mono text-xs tracking-widest uppercase text-gold mb-3">Hora</p>
                   <div id="agendar-horas" class="grid grid-cols-4 gap-2">
-                    <p class="col-span-4 text-white/40 text-xs text-center py-4">Elige barbero</p>
+                    <p class="col-span-4 text-white/50 text-xs text-center py-4">Elige barbero</p>
                   </div>
                 </div>
               </div>
@@ -243,7 +243,7 @@
                   </div>
                 </div>
                 <div>
-                  <p class="font-mono text-[11px] tracking-widest uppercase text-gold mb-3">Resumen</p>
+                  <p class="font-mono text-xs tracking-widest uppercase text-gold mb-3">Resumen</p>
                   <div id="pago-resumen" class="border border-white/10 rounded-sm p-3 space-y-2 text-sm"></div>
                 </div>
                 <p id="pago-error" class="hidden text-sm text-red-400"></p>
@@ -292,7 +292,7 @@
             <a id="btn-cal-google" href="#" target="_blank" rel="noopener" class="flex-1 border border-white/15 hover:border-gold/50 rounded-sm py-2.5 text-xs font-medium text-center transition">Google Calendar</a>
             <a id="btn-cal-ics" href="#" class="flex-1 border border-white/15 hover:border-gold/50 rounded-sm py-2.5 text-xs font-medium text-center transition">Apple Calendar</a>
           </div>
-          <p id="aviso-navegador-app" class="hidden text-white/40 text-[11px] -mt-4 mb-6 leading-snug">
+          <p id="aviso-navegador-app" class="hidden text-white/50 text-xs -mt-4 mb-6 leading-snug">
             Si "Apple Calendar" no abrió nada: estás en el navegador de Instagram/Facebook,
             que bloquea esa función. Toca los <strong>•••</strong> arriba y elige
             <strong>"Abrir en el navegador"</strong> (Safari o Chrome) para que funcione.
@@ -301,7 +301,7 @@
         </div>
 
         <div class="flex items-center justify-between mt-8 mb-3">
-          <p class="font-mono text-[11px] tracking-widest uppercase text-gold">Reseñas</p>
+          <p class="font-mono text-xs tracking-widest uppercase text-gold">Reseñas</p>
           <button onclick="abrirModalResena()" class="text-xs text-gold hover:text-goldlight transition">+ Dejar reseña</button>
         </div>
         <div id="detalle-resenas" class="space-y-2"></div>
@@ -317,10 +317,10 @@
 
     <!-- selector de barbería (se oculta si se llegó por un link compartido) -->
     <div id="d-picker">
-      <p class="font-mono text-[11px] tracking-widest uppercase text-gold mb-1">Providencia, Santiago</p>
+      <p class="font-mono text-xs tracking-widest uppercase text-gold mb-1">Providencia, Santiago</p>
       <h1 class="font-display text-2xl mb-6">Encuentra tu barbería</h1>
       <div id="d-shop-grid" class="grid grid-cols-2 gap-3">
-        <p class="col-span-2 text-white/40 text-sm text-center py-8">Cargando barberías…</p>
+        <p class="col-span-2 text-white/50 text-sm text-center py-8">Cargando barberías…</p>
       </div>
     </div>
 
@@ -332,7 +332,7 @@
         <p id="d-shop-rating" class="text-xs text-gold mt-0.5"></p>
         <p id="d-shop-addr" class="text-xs text-white/50 mt-1"></p>
       </div>
-      <button id="d-shop-back" onclick="dBackToPicker()" class="ml-auto shrink-0 text-xs text-white/40 hover:text-gold transition">Cambiar</button>
+      <button id="d-shop-back" onclick="dBackToPicker()" class="ml-auto shrink-0 text-xs text-white/50 hover:text-gold transition">Cambiar</button>
     </div>
 
     <div id="d-reviews-toggle" class="hidden mb-7">
@@ -379,13 +379,13 @@
         <div class="d-section-body">
           <div class="d-section-body-inner space-y-5">
             <div>
-              <p class="font-mono text-[11px] tracking-widest uppercase text-gold mb-3">Barbero</p>
+              <p class="font-mono text-xs tracking-widest uppercase text-gold mb-3">Barbero</p>
               <div id="d-barberos" class="space-y-2"></div>
             </div>
             <div class="barbero-horas-global-wrap">
-              <p class="font-mono text-[11px] tracking-widest uppercase text-gold mb-3">Hora</p>
+              <p class="font-mono text-xs tracking-widest uppercase text-gold mb-3">Hora</p>
               <div id="d-horas" class="grid grid-cols-6 gap-2">
-                <p class="col-span-6 text-white/40 text-xs text-center py-4">Elige barbero</p>
+                <p class="col-span-6 text-white/50 text-xs text-center py-4">Elige barbero</p>
               </div>
             </div>
           </div>
@@ -436,7 +436,7 @@
               </div>
             </div>
             <div>
-              <p class="font-mono text-[11px] tracking-widest uppercase text-gold mb-3">Resumen</p>
+              <p class="font-mono text-xs tracking-widest uppercase text-gold mb-3">Resumen</p>
               <div id="d-pago-resumen" class="border border-white/10 rounded-sm p-3 space-y-2 text-sm"></div>
             </div>
             <p id="d-pago-error" class="hidden text-sm text-red-400"></p>
@@ -491,7 +491,7 @@
     <!-- reseñas, debajo del flujo, visibles una vez elegida la barbería -->
     <div id="d-resenas-wrap" class="hidden mt-10">
       <div class="flex items-center justify-between mb-3">
-        <p class="font-mono text-[11px] tracking-widest uppercase text-gold">Reseñas</p>
+        <p class="font-mono text-xs tracking-widest uppercase text-gold">Reseñas</p>
         <button onclick="abrirModalResena()" class="text-xs text-gold hover:text-goldlight transition">+ Dejar reseña</button>
       </div>
       <div id="d-resenas-list" class="space-y-2"></div>
@@ -695,8 +695,8 @@
         .select('id, name, address, rating, review_count, image_url, slug');
 
       if (error || !data || data.length === 0) {
-        listEl.innerHTML = '<p class="text-white/40 text-sm text-center py-8">No hay barberías disponibles todavía.</p>';
-        gridEl.innerHTML = '<p class="col-span-2 text-white/40 text-sm text-center py-8">No hay barberías disponibles todavía.</p>';
+        listEl.innerHTML = '<p class="text-white/50 text-sm text-center py-8">No hay barberías disponibles todavía.</p>';
+        gridEl.innerHTML = '<p class="col-span-2 text-white/50 text-sm text-center py-8">No hay barberías disponibles todavía.</p>';
         document.getElementById('mapa-pines').innerHTML = '';
         return;
       }
@@ -733,8 +733,8 @@
           <div id="${pinId}" class="hidden absolute w-40 bg-ink border border-gold/40 rounded-sm p-2.5 shadow-xl z-10" style="${slot.popup}">
             <button onclick="selectBarbershop('${b.id}')" class="text-left w-full">
               <p class="font-display text-xs">${escapeHtml(b.name)}</p>
-              <p class="text-[11px] text-white/50 mt-0.5">⭐ ${b.rating ?? '—'}</p>
-              <p class="text-[11px] text-gold mt-1">${escapeHtml(b.address)}</p>
+              <p class="text-xs text-white/50 mt-0.5">⭐ ${b.rating ?? '—'}</p>
+              <p class="text-xs text-gold mt-1">${escapeHtml(b.address)}</p>
             </button>
           </div>
         `;
@@ -825,7 +825,7 @@
         <button onclick="selectService('${s.id}')" data-service-id="${s.id}" class="servicio-item w-full flex items-center justify-between border border-white/10 rounded-sm px-3 py-2.5 text-left transition">
           <div>
             <p class="text-sm font-medium">${escapeHtml(s.name)}</p>
-            <p class="text-xs text-white/40">${s.duration_minutes} min</p>
+            <p class="text-xs text-white/50">${s.duration_minutes} min</p>
           </div>
           <span class="font-mono text-sm text-gold">${clp(s.price_clp)}</span>
         </button>
@@ -835,7 +835,7 @@
         <button onclick="selectService('${s.id}')" data-service-id="${s.id}" class="d-servicio-item servicio-item w-full flex items-center justify-between border border-white/10 rounded-sm px-3 py-2.5 text-left transition">
           <div>
             <p class="text-sm font-medium">${escapeHtml(s.name)}</p>
-            <p class="text-xs text-white/40">${s.duration_minutes} min</p>
+            <p class="text-xs text-white/50">${s.duration_minutes} min</p>
           </div>
           <span class="font-mono text-sm text-gold">${clp(s.price_clp)}</span>
         </button>
@@ -855,7 +855,7 @@
         .limit(20);
 
       const html = (error || !data || data.length === 0)
-        ? '<p class="text-white/40 text-xs">Todavía no hay reseñas. ¡Sé el primero!</p>'
+        ? '<p class="text-white/50 text-xs">Todavía no hay reseñas. ¡Sé el primero!</p>'
         : data.map(r => `
             <div class="border border-white/10 rounded-sm p-3">
               <div class="flex items-center justify-between">
@@ -1041,7 +1041,9 @@
     function renderBarberoList() {
       const anyCard = `
         <button data-barber-id="any" onclick="selectBarber('any')" class="barbero-item w-full text-left flex items-center gap-3 border border-white/15 rounded-sm p-3 transition">
-          <div class="w-14 h-14 rounded-sm bg-white/5 flex items-center justify-center text-xl shrink-0">🤝</div>
+          <div class="w-14 h-14 rounded-sm bg-white/5 flex items-center justify-center shrink-0">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6 text-white/60"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-5.5 6-5.5s6 2.2 6 5.5"/><circle cx="17" cy="8" r="2.4"/><path d="M15.5 14.7c2.5.4 4.5 2.3 4.5 5.3"/></svg>
+          </div>
           <div class="min-w-0">
             <p class="text-sm font-medium">Cualquiera</p>
             <p class="text-xs text-white/50 mt-0.5">Te asignamos el primero disponible</p>
@@ -1058,7 +1060,7 @@
           </button>
           <div class="barbero-horas hidden border border-t-0 border-gold rounded-b-sm -mt-px p-3">
             <div class="barbero-horas-grid grid grid-cols-4 gap-2">
-              <p class="col-span-4 text-white/40 text-xs text-center py-4">Buscando horarios…</p>
+              <p class="col-span-4 text-white/50 text-xs text-center py-4">Buscando horarios…</p>
             </div>
           </div>
         </div>`;
@@ -1128,7 +1130,7 @@
       const targets = getHoraTargets();
       const colsOf = (el) => el.classList.contains('grid-cols-6') ? 6 : 4;
       targets.forEach(el => {
-        el.innerHTML = `<p class="col-span-${colsOf(el)} text-white/40 text-xs text-center py-4">Buscando horarios…</p>`;
+        el.innerHTML = `<p class="col-span-${colsOf(el)} text-white/50 text-xs text-center py-4">Buscando horarios…</p>`;
       });
 
       const duration = state.selectedService.duration_minutes;
@@ -1150,7 +1152,7 @@
       `).join('');
 
       targets.forEach(el => {
-        el.innerHTML = sorted.length ? slotsHtml : `<p class="col-span-${colsOf(el)} text-white/40 text-xs text-center py-4">Sin horarios disponibles ese día.</p>`;
+        el.innerHTML = sorted.length ? slotsHtml : `<p class="col-span-${colsOf(el)} text-white/50 text-xs text-center py-4">Sin horarios disponibles ese día.</p>`;
       });
     }
 

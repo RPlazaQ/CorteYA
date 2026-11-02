@@ -71,35 +71,36 @@
         <a href="index.html" class="font-display text-lg">CORTE<span class="text-gold">YA</span></a>
       </div>
       <nav class="h-full flex items-stretch md:h-auto md:flex-1 md:flex-col md:px-3 md:py-4 md:space-y-1">
-        <button onclick="showView('resumen', this)" class="nav-item active flex-1 flex flex-col items-center justify-center gap-0.5 text-[10px] md:flex-none md:flex-row md:items-center md:justify-start md:gap-3 md:px-3 md:py-2.5 md:text-sm rounded-sm font-medium transition md:w-full md:text-left">
-          <span>🏠</span> Hoy
+        <button onclick="showView('resumen', this)" class="nav-item active flex-1 flex flex-col items-center justify-center gap-0.5 text-xs md:flex-none md:flex-row md:items-center md:justify-start md:gap-3 md:px-3 md:py-2.5 md:text-sm rounded-sm font-medium transition md:w-full md:text-left">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="w-[18px] h-[18px] shrink-0"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg> Hoy
         </button>
-        <button onclick="showView('calendario', this)" class="nav-item text-white/60 flex-1 flex flex-col items-center justify-center gap-0.5 text-[10px] md:flex-none md:flex-row md:items-center md:justify-start md:gap-3 md:px-3 md:py-2.5 md:text-sm rounded-sm font-medium transition md:w-full md:text-left">
-          <span>📅</span> Calendario
+        <button onclick="showView('calendario', this)" class="nav-item text-white/60 flex-1 flex flex-col items-center justify-center gap-0.5 text-xs md:flex-none md:flex-row md:items-center md:justify-start md:gap-3 md:px-3 md:py-2.5 md:text-sm rounded-sm font-medium transition md:w-full md:text-left">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="w-[18px] h-[18px] shrink-0"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg> Calendario
         </button>
-        <button data-owner-only onclick="showView('reportes', this)" class="nav-item text-white/60 flex-1 flex flex-col items-center justify-center gap-0.5 text-[10px] md:flex-none md:flex-row md:items-center md:justify-start md:gap-3 md:px-3 md:py-2.5 md:text-sm rounded-sm font-medium transition md:w-full md:text-left">
-          <span>📊</span> Reportes
+        <button data-owner-only onclick="showView('reportes', this)" class="nav-item text-white/60 flex-1 flex flex-col items-center justify-center gap-0.5 text-xs md:flex-none md:flex-row md:items-center md:justify-start md:gap-3 md:px-3 md:py-2.5 md:text-sm rounded-sm font-medium transition md:w-full md:text-left">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="w-[18px] h-[18px] shrink-0"><path d="M4 20V10M12 20V4M20 20v-7"/><path d="M2 20h20"/></svg> Reportes
         </button>
-        <button id="nav-btn-mibarberia" onclick="showView('mibarberia', this)" class="nav-item text-white/60 flex-1 flex flex-col items-center justify-center gap-0.5 text-[10px] md:flex-none md:flex-row md:items-center md:justify-start md:gap-3 md:px-3 md:py-2.5 md:text-sm rounded-sm font-medium transition md:w-full md:text-left">
-          <span>🏪</span> Mi barbería
+        <button id="nav-btn-mibarberia" onclick="showView('mibarberia', this)" class="nav-item text-white/60 flex-1 flex flex-col items-center justify-center gap-0.5 text-xs md:flex-none md:flex-row md:items-center md:justify-start md:gap-3 md:px-3 md:py-2.5 md:text-sm rounded-sm font-medium transition md:w-full md:text-left">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="w-[18px] h-[18px] shrink-0"><path d="M3 9.5 4.5 4h15L21 9.5"/><path d="M3 9.5h18v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-10Z"/><path d="M9 20v-6h6v6"/></svg> Mi barbería
         </button>
       </nav>
       <div class="hidden md:block p-3 border-t border-white/10">
         <div class="flex items-center gap-2 px-3 py-2 text-sm text-white/60">
           <label for="logo-upload" class="relative shrink-0 cursor-pointer group" title="Cambiar logo">
             <img id="sidebar-logo" src="https://placehold.co/28x28/1D1D20/D9A441?text=..." class="w-7 h-7 rounded-sm object-cover">
-            <span class="absolute inset-0 rounded-sm bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center text-[9px] transition">✎</span>
+            <span class="absolute inset-0 rounded-sm bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center text-xs transition"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5Z"/></svg></span>
           </label>
           <input id="logo-upload" type="file" accept="image/png,image/jpeg,image/webp" class="hidden">
           <span id="sidebar-nombre">Cargando…</span>
         </div>
-        <p id="logo-status" class="hidden text-[10px] text-white/40 mt-1 px-3"></p>
+        <p id="logo-status" class="hidden text-xs text-white/50 mt-1 px-3"></p>
       </div>
     </aside>
 
     <div id="toast-cita" class="hidden fixed top-4 left-1/2 -translate-x-1/2 z-40 bg-panel border border-gold rounded-sm px-4 py-2.5 shadow-lg flex items-center gap-3">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-gold shrink-0"><path d="M6 8a6 6 0 0 1 12 0c0 5 2 6 2 6H4s2-1 2-6"/><path d="M10 20a2 2 0 0 0 4 0"/></svg>
       <p id="toast-cita-texto" class="text-sm"></p>
-      <button onclick="document.getElementById('toast-cita').classList.add('hidden')" class="text-white/50 hover:text-white text-sm leading-none">✕</button>
+      <button onclick="document.getElementById('toast-cita').classList.add('hidden')" class="text-white/50 hover:text-white text-sm leading-none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="w-4 h-4 inline"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
     </div>
 
     <div id="toast-deshacer" class="hidden fixed top-4 left-1/2 -translate-x-1/2 z-40 bg-panel border border-gold rounded-sm px-4 py-2.5 shadow-lg flex items-center gap-3">
@@ -114,13 +115,15 @@
     <!-- MAIN -->
     <main class="flex-1 overflow-y-auto">
       <header class="h-16 border-b border-white/10 flex items-center justify-between px-4 md:px-8 sticky top-0 bg-ink z-10">
-        <p id="header-fecha" class="font-mono text-xs text-white/40"></p>
+        <p id="header-fecha" class="font-mono text-xs text-white/50"></p>
         <div class="flex items-center gap-2">
           <button id="btn-compartir" onclick="compartirAgenda()" class="flex items-center gap-1.5 h-9 px-3 border border-gold text-gold rounded-sm hover:bg-gold/10 transition text-xs font-medium">
-            <span aria-hidden="true">🔗</span> <span id="btn-compartir-label">Copiar link</span>
+            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 shrink-0"><path d="M10 14a4.5 4.5 0 0 0 6.4.4l2.3-2.3a4.5 4.5 0 0 0-6.4-6.4L11 7"/><path d="M14 10a4.5 4.5 0 0 0-6.4-.4L5.3 11.9a4.5 4.5 0 0 0 6.4 6.4L13 17"/></svg>
+            <span id="btn-compartir-label">Copiar link</span>
           </button>
           <button onclick="abrirModalQR()" class="flex items-center gap-1.5 h-9 px-3 border border-gold text-gold rounded-sm hover:bg-gold/10 transition text-xs font-medium">
-            <span aria-hidden="true">🔳</span> QR reseñas
+            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 shrink-0"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3.5v3.5M20.5 14v2M14 20.5h2.5M20.5 20.5h.01"/></svg>
+            QR reseñas
           </button>
         </div>
       </header>
@@ -134,7 +137,7 @@
           <div id="resumen-filtro-barberos" class="flex flex-wrap gap-2 mb-5"></div>
 
           <div id="proxima-cita-card" class="hidden border border-gold/40 bg-gold/5 rounded-sm p-4 mb-6">
-            <p class="font-mono text-[11px] tracking-widest uppercase text-gold mb-2">Próxima cita</p>
+            <p class="font-mono text-xs tracking-widest uppercase text-gold mb-2">Próxima cita</p>
             <div class="flex items-center justify-between gap-3">
               <div class="min-w-0">
                 <p id="proxima-cita-countdown" class="font-display text-xl text-gold"></p>
@@ -143,26 +146,29 @@
               <a id="proxima-cita-whatsapp" href="#" target="_blank" rel="noopener" class="hidden shrink-0 text-xs border border-gold text-gold rounded-sm px-3 py-2 hover:bg-gold/10 transition">WhatsApp</a>
             </div>
           </div>
-          <p id="proxima-cita-vacio" class="hidden border border-white/10 rounded-sm p-4 mb-6 text-sm text-white/40 text-center">Sin más citas por hoy.</p>
+          <p id="proxima-cita-vacio" class="hidden border border-white/10 rounded-sm p-4 mb-6 text-sm text-white/50 text-center">Sin más citas por hoy.</p>
 
           <div class="grid grid-cols-3 gap-3 md:gap-4 mb-8">
             <div class="border border-white/10 rounded-sm p-4">
-              <p class="font-mono text-[11px] tracking-widest uppercase text-white/40 mb-2">Citas hoy</p>
+              <p class="font-mono text-xs tracking-widest uppercase text-white/50 mb-2">Citas hoy</p>
               <p id="stat-citas" class="font-display text-2xl md:text-3xl text-gold">—</p>
             </div>
             <div class="border border-white/10 rounded-sm p-4">
-              <p class="font-mono text-[11px] tracking-widest uppercase text-white/40 mb-2">Ingresos hoy</p>
+              <p class="font-mono text-xs tracking-widest uppercase text-white/50 mb-2">Ingresos hoy</p>
               <p id="stat-ingresos" class="font-display text-2xl md:text-3xl text-gold">—</p>
             </div>
-            <div class="border border-white/10 rounded-sm p-4">
-              <p class="font-mono text-[11px] tracking-widest uppercase text-white/40 mb-2">Ocupación</p>
-              <p id="stat-ocupacion" class="font-display text-2xl md:text-3xl text-gold">—</p>
+            <div class="border border-white/10 rounded-sm p-4 flex flex-col justify-between">
+              <div>
+                <p class="font-mono text-xs tracking-widest uppercase text-white/50 mb-2">Horas libres hoy</p>
+                <p id="stat-horas-libres" class="font-display text-2xl md:text-3xl text-gold">—</p>
+              </div>
+              <button onclick="compartirAgenda()" class="mt-2 text-xs text-gold hover:text-goldlight transition text-left">Compartir link →</button>
             </div>
           </div>
 
-          <p class="font-mono text-[11px] tracking-widest uppercase text-white/40 mb-3">Agenda de hoy</p>
+          <p class="font-mono text-xs tracking-widest uppercase text-white/50 mb-3">Agenda de hoy</p>
           <div id="agenda-hoy" class="border border-white/10 rounded-sm divide-y divide-white/10">
-            <p class="px-4 py-6 text-sm text-white/40 text-center">Cargando…</p>
+            <p class="px-4 py-6 text-sm text-white/50 text-center">Cargando…</p>
           </div>
         </section>
 
@@ -179,7 +185,7 @@
           </div>
           <div id="calendario-filtro-barberos" class="flex flex-wrap gap-2 mb-4"></div>
           <div id="calendario-tabla" class="border border-white/10 rounded-sm overflow-x-auto">
-            <p class="text-white/40 text-sm text-center py-8">Cargando…</p>
+            <p class="text-white/50 text-sm text-center py-8">Cargando…</p>
           </div>
         </section>
 
@@ -199,7 +205,7 @@
               <button onclick="addServicio()" class="text-xs border border-white/15 rounded-sm px-3 py-1.5 text-white/60 hover:border-white/30 transition">+ Agregar servicio</button>
             </div>
             <div id="servicios-lista" class="border border-white/10 rounded-sm divide-y divide-white/10">
-              <p class="px-4 py-6 text-sm text-white/40 text-center">Cargando…</p>
+              <p class="px-4 py-6 text-sm text-white/50 text-center">Cargando…</p>
             </div>
           </div>
 
@@ -210,28 +216,36 @@
               <button onclick="addBarbero()" class="text-xs border border-white/15 rounded-sm px-3 py-1.5 text-white/60 hover:border-white/30 transition">+ Agregar barbero</button>
             </div>
             <div id="barberos-lista" class="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-4">
-              <p class="col-span-2 md:col-span-3 text-white/40 text-sm text-center py-6">Cargando…</p>
+              <p class="col-span-2 md:col-span-3 text-white/50 text-sm text-center py-6">Cargando…</p>
             </div>
           </div>
 
           <!-- INFO -->
           <div id="subview-info" class="subview">
+            <div class="border border-white/10 rounded-sm p-4 mb-8 max-w-md flex items-center justify-between gap-3">
+              <div>
+                <p class="text-sm font-medium">Sonido al llegar una reserva</p>
+                <p class="text-xs text-white/50 mt-0.5">Un aviso corto además del mensaje en pantalla. Desactivado por defecto.</p>
+              </div>
+              <input id="toggle-sonido-aviso" type="checkbox" class="accent-gold w-5 h-5 shrink-0" onchange="guardarPreferenciaSonido(this.checked)">
+            </div>
+
             <div data-barbero-only class="border border-white/10 rounded-sm p-4 mb-8 max-w-md">
               <div class="flex items-center gap-4 mb-4">
                 <label for="barbero-foto-upload" class="relative shrink-0 cursor-pointer group" title="Cambiar foto">
                   <img id="barbero-foto-preview" src="https://placehold.co/56x56/1D1D20/D9A441?text=..." class="w-14 h-14 rounded-sm object-cover">
-                  <span class="absolute inset-0 rounded-sm bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center text-[10px] transition">✎ Cambiar</span>
+                  <span class="absolute inset-0 rounded-sm bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center gap-1 text-xs transition"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5Z"/></svg> Cambiar</span>
                 </label>
                 <input id="barbero-foto-upload" type="file" accept="image/png,image/jpeg,image/webp" class="hidden">
                 <div>
-                  <p class="font-mono text-[11px] tracking-widest uppercase text-white/40 mb-1">Mi perfil</p>
-                  <p class="text-xs text-white/40">Foto y descripción que ven tus clientes al elegirte (PNG/JPG/WEBP, menos de 2MB)</p>
+                  <p class="font-mono text-xs tracking-widest uppercase text-white/50 mb-1">Mi perfil</p>
+                  <p class="text-xs text-white/50">Foto y descripción que ven tus clientes al elegirte (PNG/JPG/WEBP, menos de 2MB)</p>
                   <p id="barbero-foto-status" class="hidden text-xs text-white/50 mt-1"></p>
                 </div>
               </div>
               <label class="block text-xs text-white/60 mb-1">Descripción corta</label>
               <textarea id="barbero-bio" maxlength="60" rows="2" placeholder="Ej: Especialista en fade" oninput="actualizarContadorBioPerfil(this)" class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2 text-sm focus:outline-none focus:border-gold"></textarea>
-              <p id="barbero-bio-contador" class="text-xs text-white/40 text-right mb-2">0/60</p>
+              <p id="barbero-bio-contador" class="text-xs text-white/50 text-right mb-2">0/60</p>
               <p id="barbero-bio-status" class="hidden text-xs mb-2"></p>
               <button onclick="guardarPerfilBarbero()" class="text-xs border border-gold text-gold rounded-sm px-3 py-1.5 hover:bg-gold/10 transition">Guardar</button>
             </div>
@@ -239,18 +253,18 @@
             <div data-owner-only class="border border-white/10 rounded-sm p-4 mb-8 max-w-md flex items-center gap-4">
               <label for="logo-upload-info" class="relative shrink-0 cursor-pointer group" title="Cambiar logo">
                 <img id="info-logo" src="https://placehold.co/56x56/1D1D20/D9A441?text=..." class="w-14 h-14 rounded-sm object-cover">
-                <span class="absolute inset-0 rounded-sm bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center text-[10px] transition">✎ Cambiar</span>
+                <span class="absolute inset-0 rounded-sm bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center gap-1 text-xs transition"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5Z"/></svg> Cambiar</span>
               </label>
               <input id="logo-upload-info" type="file" accept="image/png,image/jpeg,image/webp" class="hidden">
               <div>
-                <p class="font-mono text-[11px] tracking-widest uppercase text-white/40 mb-1">Logo</p>
-                <p class="text-xs text-white/40">Toca la imagen para subir tu logo (PNG/JPG/WEBP, menos de 2MB)</p>
+                <p class="font-mono text-xs tracking-widest uppercase text-white/50 mb-1">Logo</p>
+                <p class="text-xs text-white/50">Toca la imagen para subir tu logo (PNG/JPG/WEBP, menos de 2MB)</p>
                 <p id="logo-status-info" class="hidden text-xs text-white/50 mt-1"></p>
               </div>
             </div>
 
             <div data-owner-only class="border border-white/10 rounded-sm p-4 mb-8 max-w-md">
-              <p class="font-mono text-[11px] tracking-widest uppercase text-white/40 mb-3">Datos de contacto</p>
+              <p class="font-mono text-xs tracking-widest uppercase text-white/50 mb-3">Datos de contacto</p>
               <label class="block text-xs text-white/60 mb-1">Dirección</label>
               <input id="info-direccion" type="text" maxlength="200" class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2 text-sm mb-3 focus:outline-none focus:border-gold">
               <label class="block text-xs text-white/60 mb-1">Teléfono</label>
@@ -260,7 +274,7 @@
             </div>
 
             <div class="border border-white/10 rounded-sm p-4 mb-8 max-w-md">
-              <p class="font-mono text-[11px] tracking-widest uppercase text-white/40 mb-3">Seguridad</p>
+              <p class="font-mono text-xs tracking-widest uppercase text-white/50 mb-3">Seguridad</p>
               <label class="block text-xs text-white/60 mb-1">Nueva contraseña</label>
               <input id="info-password-nueva" type="password" minlength="6" autocomplete="new-password" class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2 text-sm mb-3 focus:outline-none focus:border-gold">
               <label class="block text-xs text-white/60 mb-1">Repetir contraseña</label>
@@ -270,9 +284,9 @@
             </div>
 
             <div data-owner-only class="mb-8">
-              <p class="font-mono text-[11px] tracking-widest uppercase text-white/40 mb-3">Horario de cada barbero</p>
+              <p class="font-mono text-xs tracking-widest uppercase text-white/50 mb-3">Horario de cada barbero</p>
               <div id="info-horarios" class="space-y-2 max-w-md">
-                <p class="text-white/40 text-sm text-center py-6">Cargando…</p>
+                <p class="text-white/50 text-sm text-center py-6">Cargando…</p>
               </div>
             </div>
 
@@ -325,18 +339,18 @@
 
           <div class="grid grid-cols-2 gap-3 md:grid-cols-2 md:gap-4 mb-8 max-w-lg">
             <div class="border border-white/10 rounded-sm p-4">
-              <p class="font-mono text-[11px] tracking-widest uppercase text-white/40 mb-2">Cortes realizados</p>
+              <p class="font-mono text-xs tracking-widest uppercase text-white/50 mb-2">Cortes realizados</p>
               <p id="reporte-cortes" class="font-display text-2xl md:text-3xl text-gold">—</p>
             </div>
             <div class="border border-white/10 rounded-sm p-4">
-              <p class="font-mono text-[11px] tracking-widest uppercase text-white/40 mb-2">$ recibido</p>
+              <p class="font-mono text-xs tracking-widest uppercase text-white/50 mb-2">$ recibido</p>
               <p id="reporte-ingresos" class="font-display text-2xl md:text-3xl text-gold">—</p>
             </div>
           </div>
 
-          <p class="font-mono text-[11px] tracking-widest uppercase text-white/40 mb-3">Reservas en el período</p>
+          <p class="font-mono text-xs tracking-widest uppercase text-white/50 mb-3">Reservas en el período</p>
           <div id="reporte-lista" class="border border-white/10 rounded-sm divide-y divide-white/10">
-            <p class="px-4 py-6 text-sm text-white/40 text-center">Cargando…</p>
+            <p class="px-4 py-6 text-sm text-white/50 text-center">Cargando…</p>
           </div>
         </section>
 
@@ -349,7 +363,7 @@
     <form id="form-cita" class="w-full max-w-sm bg-panel border border-white/10 rounded-sm p-5 max-h-[90vh] overflow-y-auto">
       <div class="flex items-center justify-between mb-4">
         <h2 class="font-display text-lg">+ Nueva cita</h2>
-        <button type="button" onclick="cerrarModalCita()" class="text-white/50 hover:text-white text-lg leading-none">✕</button>
+        <button type="button" onclick="cerrarModalCita()" class="text-white/50 hover:text-white text-lg leading-none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="w-4 h-4 inline"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
       </div>
       <p class="text-white/50 text-xs mb-4">Para citas coordinadas por fuera de la app (WhatsApp, Instagram, teléfono, etc).</p>
 
@@ -364,7 +378,7 @@
 
       <label class="block text-xs text-white/60 mb-1.5">Hora</label>
       <div id="cita-horas-chips" class="grid grid-cols-4 gap-2 mb-3">
-        <p class="col-span-4 text-white/40 text-xs text-center py-4">Elige barbero y servicio</p>
+        <p class="col-span-4 text-white/50 text-xs text-center py-4">Elige barbero y servicio</p>
       </div>
 
       <label class="block text-xs text-white/60 mb-1">Nombre del cliente</label>
@@ -377,7 +391,7 @@
           oninput="this.value = this.value.replace(/\D/g, '').slice(0, 8)"
           class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2 text-sm focus:outline-none focus:border-gold">
       </div>
-      <p class="text-xs text-white/40 mb-3">Opcional — sin teléfono no se envía confirmación ni recordatorio.</p>
+      <p class="text-xs text-white/50 mb-3">Opcional — sin teléfono no se envía confirmación ni recordatorio.</p>
 
       <label class="block text-xs text-white/60 mb-1">Notas (opcional)</label>
       <textarea id="cita-notas" maxlength="300" rows="2" class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2 text-sm mb-3 focus:outline-none focus:border-gold"></textarea>
@@ -392,7 +406,7 @@
     <div class="w-full max-w-sm bg-panel border border-white/10 rounded-sm p-5">
       <div class="flex items-center justify-between mb-1">
         <h2 class="font-display text-lg">¿Cómo pagó?</h2>
-        <button type="button" onclick="cerrarModalLlegada()" class="text-white/50 hover:text-white text-lg leading-none">✕</button>
+        <button type="button" onclick="cerrarModalLlegada()" class="text-white/50 hover:text-white text-lg leading-none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="w-4 h-4 inline"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
       </div>
       <p id="llegada-cliente" class="text-white/50 text-xs mb-4"></p>
       <div class="space-y-2">
@@ -417,7 +431,7 @@
     <div class="w-full max-w-sm bg-panel border border-white/10 rounded-sm p-5">
       <div class="flex items-center justify-between mb-4">
         <h2 class="font-display text-lg">Más opciones</h2>
-        <button type="button" onclick="cerrarMenuCita()" class="text-white/50 hover:text-white text-lg leading-none">✕</button>
+        <button type="button" onclick="cerrarMenuCita()" class="text-white/50 hover:text-white text-lg leading-none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="w-4 h-4 inline"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
       </div>
       <div id="menu-cita-opciones" class="space-y-2"></div>
     </div>
@@ -428,7 +442,7 @@
     <div class="w-full max-w-sm bg-panel border border-white/10 rounded-sm p-5 max-h-[90vh] overflow-y-auto">
       <div class="flex items-center justify-between mb-4">
         <h2 class="font-display text-lg">Detalle de la cita</h2>
-        <button type="button" onclick="document.getElementById('modal-detalle-cita').classList.add('hidden')" class="text-white/50 hover:text-white text-lg leading-none">✕</button>
+        <button type="button" onclick="document.getElementById('modal-detalle-cita').classList.add('hidden')" class="text-white/50 hover:text-white text-lg leading-none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="w-4 h-4 inline"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
       </div>
       <div id="detalle-cita-cuerpo" class="space-y-3 text-sm"></div>
     </div>
@@ -439,7 +453,7 @@
     <div class="w-full max-w-sm bg-panel border border-white/10 rounded-sm p-5 max-h-[90vh] overflow-y-auto">
       <div class="flex items-center justify-between mb-4">
         <h2 class="font-display text-lg">Editar barbero</h2>
-        <button type="button" onclick="cerrarModalDetalleBarbero()" class="text-white/50 hover:text-white text-lg leading-none">✕</button>
+        <button type="button" onclick="cerrarModalDetalleBarbero()" class="text-white/50 hover:text-white text-lg leading-none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="w-4 h-4 inline"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
       </div>
       <div class="flex items-center gap-3 mb-4">
         <img id="detalle-barbero-foto" class="w-16 h-16 rounded-sm object-cover shrink-0">
@@ -451,7 +465,7 @@
 
       <label class="block text-xs text-white/60 mb-1">Descripción corta (opcional)</label>
       <textarea id="detalle-barbero-bio-input" maxlength="60" rows="2" placeholder="Ej: Especialista en fade" oninput="actualizarContadorBio(this)" class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2 text-sm focus:outline-none focus:border-gold"></textarea>
-      <p id="detalle-barbero-bio-contador" class="text-xs text-white/40 text-right mb-2">0/60</p>
+      <p id="detalle-barbero-bio-contador" class="text-xs text-white/50 text-right mb-2">0/60</p>
 
       <p id="detalle-barbero-datos-status" class="hidden text-xs mb-3"></p>
       <button onclick="guardarDatosBarbero()" class="text-xs border border-gold text-gold rounded-sm px-3 py-1.5 hover:bg-gold/10 transition mb-5">Guardar</button>
@@ -469,7 +483,7 @@
     <div class="w-full max-w-sm bg-panel border border-white/10 rounded-sm p-5 max-h-[90vh] overflow-y-auto">
       <div class="flex items-center justify-between mb-2">
         <h2 id="asignar-titulo" class="font-display text-lg">Asignar</h2>
-        <button type="button" onclick="cerrarModalAsignar()" class="text-white/50 hover:text-white text-lg leading-none">✕</button>
+        <button type="button" onclick="cerrarModalAsignar()" class="text-white/50 hover:text-white text-lg leading-none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="w-4 h-4 inline"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
       </div>
       <p id="asignar-subtitulo" class="text-white/50 text-xs mb-4"></p>
       <div id="asignar-lista" class="space-y-1 mb-4"></div>
@@ -482,7 +496,7 @@
     <div class="w-full max-w-sm bg-panel border border-white/10 rounded-sm p-5 max-h-[90vh] overflow-y-auto">
       <div class="flex items-center justify-between mb-4">
         <h2 class="font-display text-lg">Editar servicio</h2>
-        <button type="button" onclick="cerrarModalDetalleServicio()" class="text-white/50 hover:text-white text-lg leading-none">✕</button>
+        <button type="button" onclick="cerrarModalDetalleServicio()" class="text-white/50 hover:text-white text-lg leading-none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="w-4 h-4 inline"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
       </div>
       <label class="block text-xs text-white/60 mb-1">Nombre</label>
       <input id="servicio-edit-nombre" type="text" maxlength="60" class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2 text-sm mb-3 focus:outline-none focus:border-gold">
@@ -510,7 +524,7 @@
     <div class="w-full max-w-sm bg-panel border border-white/10 rounded-sm p-5 text-center">
       <div class="flex items-center justify-between mb-4">
         <h2 class="font-display text-lg">QR de reseñas</h2>
-        <button type="button" onclick="cerrarModalQR()" class="text-white/50 hover:text-white text-lg leading-none">✕</button>
+        <button type="button" onclick="cerrarModalQR()" class="text-white/50 hover:text-white text-lg leading-none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="w-4 h-4 inline"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
       </div>
       <p class="text-white/50 text-xs mb-4">Muéstralo al cliente apenas termina su corte, para que deje su reseña al toque.</p>
       <div class="bg-white rounded-sm p-3 inline-block">
@@ -576,14 +590,15 @@
     ];
 
     async function loadInfo() {
-      if (state.role === 'barbero') return; // solo ve "Seguridad" (cambiar contraseña), el resto está oculto
+      document.getElementById('toggle-sonido-aviso').checked = cargarPreferenciaSonido();
+      if (state.role === 'barbero') return; // solo ve "Seguridad" (cambiar contraseña) y el sonido, el resto está oculto
       document.getElementById('info-direccion').value = state.barbershopAddress || '';
       document.getElementById('info-telefono').value = state.barbershopPhone || '';
 
       const contenedor = document.getElementById('info-horarios');
       const { data: barbers } = await supabaseClient.from('barbers').select('id,name').eq('barbershop_id', state.barbershopId).eq('active', true).order('name');
       if (!barbers || !barbers.length) {
-        contenedor.innerHTML = '<p class="text-white/40 text-sm text-center py-6">Agrega barberos para configurar horarios.</p>';
+        contenedor.innerHTML = '<p class="text-white/50 text-sm text-center py-6">Agrega barberos para configurar horarios.</p>';
         return;
       }
       // el detalle completo (horario semanal + bloqueos) ahora vive en la
@@ -592,7 +607,7 @@
       contenedor.innerHTML = barbers.map(b => `
         <button onclick="irADetalleBarberoDesdeInfo('${b.id}')" class="w-full flex items-center justify-between border border-white/10 rounded-sm px-4 py-3 text-sm hover:border-gold/40 transition">
           <span>${escapeHtml(b.name)}</span>
-          <span class="text-white/40 text-xs">Ver horario →</span>
+          <span class="text-white/50 text-xs">Ver horario →</span>
         </button>
       `).join('');
     }
@@ -620,7 +635,7 @@
               ${label}
             </label>
             <input type="time" class="dia-desde border border-white/15 bg-transparent rounded-sm px-2 py-1 text-xs [color-scheme:dark]" data-weekday="${weekday}" value="${desde}" ${!activo ? 'disabled' : ''} oninput="marcarHorarioSucio('${barber.id}')">
-            <span class="text-white/40">a</span>
+            <span class="text-white/50">a</span>
             <input type="time" class="dia-hasta border border-white/15 bg-transparent rounded-sm px-2 py-1 text-xs [color-scheme:dark]" data-weekday="${weekday}" value="${hasta}" ${!activo ? 'disabled' : ''} oninput="marcarHorarioSucio('${barber.id}')">
           </div>
         `;
@@ -632,20 +647,20 @@
         return `
         <div class="flex items-center justify-between text-xs bg-white/5 rounded-sm px-2.5 py-1.5">
           <span>${fechaTxt}${tramoTxt}</span>
-          <button onclick="eliminarDiaLibre('${d.id}')" class="text-white/40 hover:text-red-400 transition">✕</button>
+          <button onclick="eliminarDiaLibre('${d.id}')" class="text-white/50 hover:text-red-400 transition"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="w-4 h-4 inline"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
         </div>
       `;
-      }).join('') : '<p class="text-xs text-white/40">Sin bloqueos agendados.</p>';
+      }).join('') : '<p class="text-xs text-white/50">Sin bloqueos agendados.</p>';
 
       return `
         <div class="border border-white/10 rounded-sm p-4" data-barber-id="${barber.id}">
-          <p class="font-mono text-[10px] tracking-widest uppercase text-white/40 mb-2">Horario semanal</p>
+          <p class="font-mono text-xs tracking-widest uppercase text-white/50 mb-2">Horario semanal</p>
           <div class="space-y-2">${filas}</div>
           <p class="horario-status hidden text-xs mt-2"></p>
           <button onclick="guardarHorarioBarbero('${barber.id}')" class="mt-3 text-xs border border-gold text-gold rounded-sm px-3 py-1.5 hover:bg-gold/10 transition">Guardar horario</button>
 
           <div class="border-t border-white/10 mt-4 pt-4">
-            <p class="font-mono text-[10px] tracking-widest uppercase text-white/40 mb-2">Bloquear hora (trámite, día libre)</p>
+            <p class="font-mono text-xs tracking-widest uppercase text-white/50 mb-2">Bloquear hora (trámite, día libre)</p>
             <div class="libres-lista space-y-1.5 mb-3">${listaLibres}</div>
             <div class="flex gap-4 mb-2 text-xs">
               <label class="flex items-center gap-1.5 cursor-pointer">
@@ -657,20 +672,20 @@
             </div>
             <div class="flex flex-wrap items-end gap-2">
               <div>
-                <label class="block text-[10px] text-white/50 mb-1">Desde</label>
+                <label class="block text-xs text-white/50 mb-1">Desde</label>
                 <input type="date" class="libre-desde border border-white/15 bg-transparent rounded-sm px-2 py-1 text-xs [color-scheme:dark]">
               </div>
               <div>
-                <label class="block text-[10px] text-white/50 mb-1">Hasta</label>
+                <label class="block text-xs text-white/50 mb-1">Hasta</label>
                 <input type="date" class="libre-hasta border border-white/15 bg-transparent rounded-sm px-2 py-1 text-xs [color-scheme:dark]">
               </div>
               <div class="libre-tramo-horas hidden gap-2">
                 <div>
-                  <label class="block text-[10px] text-white/50 mb-1">De</label>
+                  <label class="block text-xs text-white/50 mb-1">De</label>
                   <input type="time" class="libre-hora-desde border border-white/15 bg-transparent rounded-sm px-2 py-1 text-xs [color-scheme:dark]">
                 </div>
                 <div>
-                  <label class="block text-[10px] text-white/50 mb-1">A</label>
+                  <label class="block text-xs text-white/50 mb-1">A</label>
                   <input type="time" class="libre-hora-hasta border border-white/15 bg-transparent rounded-sm px-2 py-1 text-xs [color-scheme:dark]">
                 </div>
               </div>
@@ -713,12 +728,12 @@
 
       document.getElementById('detalle-barbero-acceso').innerHTML = barber.user_id
         ? `<div class="flex items-center justify-between gap-2 border border-white/15 rounded-sm px-3 py-2">
-            <span class="text-xs bg-gold/10 text-gold px-2 py-0.5 rounded-sm">🔑 Acceso activo</span>
-            <button onclick="quitarAccesoBarbero('${barber.id}', '${escapeHtml(barber.name)}')" class="text-xs text-white/40 hover:text-red-400 transition">Quitar acceso</button>
+            <span class="text-xs bg-gold/10 text-gold px-2 py-0.5 rounded-sm inline-flex items-center gap-1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5"><circle cx="8" cy="15" r="3.5"/><path d="M10.5 12.5 19 4"/><path d="M15.5 8 18 10.5"/><path d="M17.5 6 19.5 8"/></svg> Acceso activo</span>
+            <button onclick="quitarAccesoBarbero('${barber.id}', '${escapeHtml(barber.name)}')" class="text-xs text-white/50 hover:text-red-400 transition">Quitar acceso</button>
           </div>`
         : PLANES_CON_LOGIN_BARBERO.includes(state.barbershopPlan)
           ? `<button onclick="crearAccesoBarbero('${barber.id}', '${escapeHtml(barber.name)}')" class="w-full text-left text-xs border border-white/15 rounded-sm px-3 py-2 text-white/60 hover:border-gold hover:text-gold transition">+ Crear acceso de login</button>`
-          : `<p class="text-xs text-white/30 text-center">Los accesos de barbero no están incluidos en tu plan actual.</p>`;
+          : `<p class="text-xs text-white/50 text-center">Los accesos de barbero no están incluidos en tu plan actual.</p>`;
 
       const btnEliminar = document.getElementById('detalle-barbero-btn-eliminar');
       btnEliminar.textContent = barber.active ? 'Eliminar barbero' : 'Reactivar barbero';
@@ -934,7 +949,7 @@
       const { data: barbers } = await supabaseClient.from('barbers').select('id').eq('barbershop_id', state.barbershopId);
       const barberIds = (barbers || []).map(b => b.id);
 
-      const vacioLista = (contenedor, texto) => { document.getElementById(contenedor).innerHTML = `<p class="px-4 py-6 text-sm text-white/40 text-center">${texto}</p>`; };
+      const vacioLista = (contenedor, texto) => { document.getElementById(contenedor).innerHTML = `<p class="px-4 py-6 text-sm text-white/50 text-center">${texto}</p>`; };
 
       if (!barberIds.length) {
         document.getElementById('reporte-cortes').textContent = '0';
@@ -980,11 +995,11 @@
         <div class="px-4 py-3 flex items-center justify-between gap-3 text-sm">
           <div class="min-w-0">
             <p class="font-medium truncate">${escapeHtml(b.customer_name)}</p>
-            <p class="text-xs text-white/40 truncate">${escapeHtml(b.customer_phone)} · ${escapeHtml(b.barbers?.name || '')} · ${escapeHtml(b.services?.name || '')}</p>
+            <p class="text-xs text-white/50 truncate">${escapeHtml(b.customer_phone)} · ${escapeHtml(b.barbers?.name || '')} · ${escapeHtml(b.services?.name || '')}</p>
           </div>
           <div class="text-right shrink-0">
             <p class="text-xs text-white/60">${formatFechaCorta(b.booking_date)} · ${b.start_time.slice(0, 5)}</p>
-            <span class="text-[11px] px-1.5 py-0.5 rounded-sm ${estadoDe(b.status).pill}">${estadoDe(b.status).label}</span>
+            <span class="text-xs px-1.5 py-0.5 rounded-sm ${estadoDe(b.status).pill}">${estadoDe(b.status).label}</span>
           </div>
         </div>
       `).join('');
@@ -1190,7 +1205,7 @@
       const contador = document.getElementById(contadorId);
       contador.textContent = `${len}/60`;
       contador.classList.toggle('text-red-400', len > 60);
-      contador.classList.toggle('text-white/40', len <= 60);
+      contador.classList.toggle('text-white/50', len <= 60);
     }
     function actualizarContadorBioPerfil(el) { actualizarContadorBioGenerico(el, 'barbero-bio-contador'); }
     function actualizarContadorBio(el) { actualizarContadorBioGenerico(el, 'detalle-barbero-bio-contador'); }
@@ -1342,24 +1357,71 @@
 
       state.ultimoCheckCitas = new Date().toISOString();
       const texto = data.length === 1
-        ? `🔔 Nueva cita: ${data[0].customer_name}`
-        : `🔔 ${data.length} citas nuevas`;
+        ? `Nueva cita: ${data[0].customer_name}`
+        : `${data.length} citas nuevas`;
       mostrarAvisoCita(texto);
+      if (cargarPreferenciaSonido()) reproducirSonidoAviso();
 
-      if (state.vistaActual === 'resumen') loadResumen();
-      if (state.vistaActual === 'calendario') loadCalendario();
+      const idsNuevas = data.map(d => d.id);
+      if (state.vistaActual === 'resumen') { await loadResumen(); resaltarCitasNuevas(idsNuevas); }
+      if (state.vistaActual === 'calendario') { await loadCalendario(); resaltarCitasNuevas(idsNuevas); }
+    }
+
+    // resalta en dorado la(s) fila(s) de una cita recién llegada durante
+    // unos segundos y después se desvanece solo — sin tocar la clase
+    // "transition" de Tailwind de la fila (esa es para el hover, mucho más
+    // rápida; mezclarlas haría que el hover se sintiera lento)
+    function resaltarCitasNuevas(ids) {
+      ids.forEach(id => {
+        const el = document.querySelector(`[data-booking-id="${id}"]`);
+        if (!el) return;
+        el.style.backgroundColor = 'rgba(217,164,65,0.35)';
+        setTimeout(() => {
+          el.style.transition = 'background-color 1.8s ease-out';
+          el.style.backgroundColor = '';
+          setTimeout(() => { el.style.transition = ''; }, 1900);
+        }, 2500);
+      });
+    }
+
+    // ---------- sonido opcional al llegar una reserva (desactivado por defecto) ----------
+    function claveSonidoAviso() { return `corteya_sonido_aviso_${state.barbershopId}`; }
+    function cargarPreferenciaSonido() {
+      try { return localStorage.getItem(claveSonidoAviso()) === '1'; } catch (e) { return false; }
+    }
+    function guardarPreferenciaSonido(activo) {
+      try { localStorage.setItem(claveSonidoAviso(), activo ? '1' : '0'); } catch (e) { /* no pasa nada si no se puede guardar */ }
+    }
+    function reproducirSonidoAviso() {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.value = 880;
+        gain.gain.setValueAtTime(0.0001, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.2, ctx.currentTime + 0.01);
+        gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.4);
+        osc.connect(gain).connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.4);
+      } catch (e) { /* audio no disponible, no es crítico */ }
     }
 
     // ---------- Resumen ----------
     // ---------- estado de una reserva ----------
+    // colores de marca, sin azul/cian/morado: dorado para "por pagar"
+    // (confirmada), verde tenue para cualquier variante de "llegó" (pagada,
+    // sin importar el método), rojo #E5484D para lo que no llegó a pasar
+    // (no asistió o se canceló)
     const ESTADOS = {
-      confirmed:     { label: 'Por pagar',            pill: 'bg-blue-500/15 text-blue-400',     bloque: 'bg-blue-500/10 border-blue-500/40' },
-      rescheduled:   { label: 'Reagendada',           pill: 'bg-orange-500/15 text-orange-400', bloque: 'bg-orange-500/10 border-orange-500/40' },
-      paid_cash:     { label: 'Pagada efectivo',      pill: 'bg-green-500/15 text-green-400',   bloque: 'bg-green-500/10 border-green-500/40' },
-      paid_transfer: { label: 'Pagada transferencia', pill: 'bg-cyan-500/15 text-cyan-400',     bloque: 'bg-cyan-500/10 border-cyan-500/40' },
-      paid_card:     { label: 'Pagada tarjeta',       pill: 'bg-purple-500/15 text-purple-400', bloque: 'bg-purple-500/10 border-purple-500/40' },
-      cancelled:     { label: 'Cancelada',            pill: 'bg-red-500/15 text-red-400',       bloque: 'bg-red-500/10 border-red-500/40' },
-      no_show:       { label: 'No asistió',           pill: 'bg-white/10 text-white/50',        bloque: 'bg-white/5 border-white/20' },
+      confirmed:     { label: 'Por pagar',            pill: 'bg-gold/15 text-gold',           bloque: 'bg-gold/10 border-gold/40' },
+      rescheduled:   { label: 'Reagendada',           pill: 'bg-white/10 text-white/70',       bloque: 'bg-white/5 border-white/30' },
+      paid_cash:     { label: 'Pagada efectivo',      pill: 'bg-green-500/15 text-green-400',  bloque: 'bg-green-500/10 border-green-500/40' },
+      paid_transfer: { label: 'Pagada transferencia', pill: 'bg-green-500/15 text-green-400',  bloque: 'bg-green-500/10 border-green-500/40' },
+      paid_card:     { label: 'Pagada tarjeta',       pill: 'bg-green-500/15 text-green-400',  bloque: 'bg-green-500/10 border-green-500/40' },
+      cancelled:     { label: 'Cancelada',            pill: 'bg-[#E5484D]/15 text-[#E5484D]',  bloque: 'bg-[#E5484D]/10 border-[#E5484D]/40' },
+      no_show:       { label: 'No asistió',           pill: 'bg-[#E5484D]/15 text-[#E5484D]',  bloque: 'bg-[#E5484D]/10 border-[#E5484D]/40' },
     };
     function estadoDe(status) { return ESTADOS[status] || ESTADOS.confirmed; }
 
@@ -1382,14 +1444,14 @@
           return `
             <div class="flex items-center gap-1 mt-1">
               <button type="button" onclick="event.stopPropagation(); marcarLlegada('${b.id}', '${b.status}', '${nombreEscape}')" class="flex-1 text-xs bg-gold/15 text-gold rounded-sm py-0.5 hover:bg-gold/25 transition">Llegó</button>
-              <button type="button" onclick="event.stopPropagation(); marcarNoLlego('${b.id}', '${b.status}')" class="flex-1 text-xs bg-white/5 text-white/50 rounded-sm py-0.5 hover:bg-red-500/15 hover:text-red-400 transition">No llegó</button>
+              <button type="button" onclick="event.stopPropagation(); marcarNoLlego('${b.id}', '${b.status}')" class="flex-1 text-xs bg-white/5 text-white/50 rounded-sm py-0.5 hover:bg-[#E5484D]/15 hover:text-[#E5484D] transition">No llegó</button>
             </div>`;
         }
         return `
           <div class="flex items-center gap-1.5 shrink-0">
             <button type="button" onclick="event.stopPropagation(); marcarLlegada('${b.id}', '${b.status}', '${nombreEscape}')" class="text-xs font-medium bg-gold/15 text-gold rounded-sm px-3 py-1.5 hover:bg-gold/25 transition">Llegó</button>
-            <button type="button" onclick="event.stopPropagation(); marcarNoLlego('${b.id}', '${b.status}')" class="text-xs font-medium border border-white/15 text-white/50 rounded-sm px-3 py-1.5 hover:border-red-400/50 hover:text-red-400 transition">No llegó</button>
-            <button type="button" onclick="event.stopPropagation(); toggleMenuCita('${b.id}', '${b.status}')" class="text-white/40 hover:text-white text-base px-1.5 py-1 leading-none">⋯</button>
+            <button type="button" onclick="event.stopPropagation(); marcarNoLlego('${b.id}', '${b.status}')" class="text-xs font-medium border border-white/15 text-white/50 rounded-sm px-3 py-1.5 hover:border-[#E5484D]/50 hover:text-[#E5484D] transition">No llegó</button>
+            <button type="button" onclick="event.stopPropagation(); toggleMenuCita('${b.id}', '${b.status}')" class="text-white/50 hover:text-white px-1.5 py-1 leading-none flex items-center"><svg viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg></button>
           </div>`;
       }
       const info = estadoDe(b.status);
@@ -1464,7 +1526,7 @@
       document.getElementById('modal-detalle-cita').classList.add('hidden');
       const opciones = [];
       if (status !== 'rescheduled') opciones.push({ label: 'Marcar como reagendada', status: 'rescheduled' });
-      opciones.push({ label: 'Cancelar cita', status: 'cancelled', clase: 'text-red-400' });
+      opciones.push({ label: 'Cancelar cita', status: 'cancelled', clase: 'text-[#E5484D]' });
       document.getElementById('menu-cita-opciones').innerHTML = opciones.map(o => `
         <button type="button" onclick="cambiarEstadoCita('${bookingId}', '${o.status}')" class="w-full text-left border border-white/15 rounded-sm px-3 py-2.5 text-sm hover:border-white/30 transition ${o.clase || ''}">${o.label}</button>
       `).join('');
@@ -1522,6 +1584,12 @@
       return m ? `En ${h} h ${m} min` : `En ${h} h`;
     }
 
+    function formatHorasLibres(mins) {
+      if (mins <= 0) return 'Sin horas libres';
+      const h = Math.floor(mins / 60), m = mins % 60;
+      return m ? `${h} h ${m} min` : `${h} h`;
+    }
+
     async function loadResumen() {
       const { todosBarberos, idsDisponibles } = await obtenerBarberosYFiltro();
       if (state.role === 'barbero') {
@@ -1550,7 +1618,7 @@
         : { data: [] };
       const totalWorkMinutes = (horas || []).reduce((sum, h) => sum + diffMinutes(h.start_time, h.end_time), 0);
       const bookedMinutes = rows.reduce((sum, b) => sum + (b.services?.duration_minutes || 0), 0);
-      document.getElementById('stat-ocupacion').textContent = totalWorkMinutes > 0 ? Math.round((bookedMinutes / totalWorkMinutes) * 100) + '%' : '—';
+      document.getElementById('stat-horas-libres').textContent = totalWorkMinutes > 0 ? formatHorasLibres(totalWorkMinutes - bookedMinutes) : '—';
 
       const nowSantiago = new Intl.DateTimeFormat('en-GB', { timeZone: 'America/Santiago', hour: '2-digit', minute: '2-digit', hour12: false }).format(new Date());
       const nowMin = timeToMinutes(nowSantiago);
@@ -1579,7 +1647,7 @@
 
       const agendaEl = document.getElementById('agenda-hoy');
       if (!rows.length) {
-        agendaEl.innerHTML = '<p class="px-4 py-6 text-sm text-white/40 text-center">Sin citas para hoy.</p>';
+        agendaEl.innerHTML = '<p class="px-4 py-6 text-sm text-white/50 text-center">Sin citas para hoy.</p>';
         return;
       }
       let lineaInsertada = false;
@@ -1598,7 +1666,7 @@
         }
         const pasada = inicioMin < nowMin;
         piezas.push(`
-          <div onclick="abrirDetalleCita('${b.id}')" class="flex flex-wrap items-center gap-x-4 gap-y-1 px-4 py-3 cursor-pointer hover:bg-white/5 transition ${pasada ? 'opacity-40' : ''}">
+          <div onclick="abrirDetalleCita('${b.id}')" data-booking-id="${b.id}" class="flex flex-wrap items-center gap-x-4 gap-y-1 px-4 py-3 cursor-pointer hover:bg-white/5 transition ${pasada ? 'opacity-40' : ''}">
             <span class="font-mono text-sm text-gold w-14">${b.start_time.slice(0, 5)}</span>
             <span class="flex-1 min-w-[140px] text-sm">${escapeHtml(b.customer_name)} — ${escapeHtml(b.services?.name)}</span>
             <span class="text-xs text-white/50">${escapeHtml(b.barbers?.name)}</span>
@@ -1703,7 +1771,7 @@
       const { todosBarberos, idsDisponibles } = await obtenerBarberosYFiltro();
       if (!todosBarberos.length) {
         document.getElementById('calendario-filtro-barberos').innerHTML = '';
-        container.innerHTML = '<p class="text-white/40 text-sm text-center py-8">Agrega barberos para ver el calendario.</p>';
+        container.innerHTML = '<p class="text-white/50 text-sm text-center py-8">Agrega barberos para ver el calendario.</p>';
         return;
       }
       if (state.role === 'barbero') {
@@ -1719,7 +1787,7 @@
         .eq('barbershop_id', state.barbershopId).eq('booking_date', todayIso).not('status', 'in', '(cancelled,no_show)').in('barber_id', barberIds);
 
       if (!horas || !horas.length) {
-        container.innerHTML = '<p class="text-white/40 text-sm text-center py-8">Nadie trabaja ese día.</p>';
+        container.innerHTML = '<p class="text-white/50 text-sm text-center py-8">Nadie trabaja ese día.</p>';
         return;
       }
       const minStart = horas.reduce((min, h) => h.start_time < min ? h.start_time : min, horas[0].start_time);
@@ -1734,13 +1802,13 @@
       const barberCol = {};
       barbers.forEach((b, i) => { barberCol[b.id] = i + 2; });
 
-      let cells = `<div class="p-3 font-mono text-[11px] text-white/40 border-b border-white/10" style="grid-column:1; grid-row:1;">HORA</div>`;
+      let cells = `<div class="p-3 font-mono text-xs text-white/50 border-b border-white/10" style="grid-column:1; grid-row:1;">HORA</div>`;
       barbers.forEach((b, i) => {
         cells += `<div class="p-3 text-sm font-medium border-b border-l border-white/10" style="grid-column:${i + 2}; grid-row:1;">${escapeHtml(b.name)}</div>`;
       });
       slots.forEach((slot, r) => {
         const row = r + 2;
-        cells += `<div class="p-3 font-mono text-xs text-white/40 border-b border-white/5" style="grid-column:1; grid-row:${row};">${slot}</div>`;
+        cells += `<div class="p-3 font-mono text-xs text-white/50 border-b border-white/5" style="grid-column:1; grid-row:${row};">${slot}</div>`;
         barbers.forEach((b, i) => {
           cells += `<div class="border-b border-l border-white/5" style="grid-column:${i + 2}; grid-row:${row};"></div>`;
         });
@@ -1753,9 +1821,9 @@
         const row = Math.round((startMin - timeToMinutes(minStart)) / ROW_MINUTES) + 2;
         const rowSpan = Math.max(1, Math.ceil((bk.services?.duration_minutes || ROW_MINUTES) / ROW_MINUTES));
         cells += `
-          <div onclick="abrirDetalleCita('${bk.id}')" class="m-0.5 p-1.5 border rounded-sm overflow-hidden cursor-pointer hover:brightness-110 transition ${estadoDe(bk.status).bloque}" style="grid-column:${col}; grid-row:${row} / span ${rowSpan};">
+          <div onclick="abrirDetalleCita('${bk.id}')" data-booking-id="${bk.id}" class="m-0.5 p-1.5 border rounded-sm overflow-hidden cursor-pointer hover:brightness-110 transition ${estadoDe(bk.status).bloque}" style="grid-column:${col}; grid-row:${row} / span ${rowSpan};">
             <p class="text-xs font-medium truncate">${escapeHtml(bk.customer_name)}</p>
-            <p class="text-[11px] text-white/50 truncate">${escapeHtml(bk.services?.name)}</p>
+            <p class="text-xs text-white/50 truncate">${escapeHtml(bk.services?.name)}</p>
             ${renderAccionesCita(bk, 'mini')}
           </div>`;
       });
@@ -1772,7 +1840,7 @@
           <span class="text-xs text-white/50 w-20">${s.duration_minutes} min</span>
           <span class="font-mono text-sm text-gold w-24 text-right">${clp(s.price_clp)}</span>
         </div>
-      `).join('') : '<p class="px-4 py-6 text-sm text-white/40 text-center">Sin servicios todavía.</p>';
+      `).join('') : '<p class="px-4 py-6 text-sm text-white/50 text-center">Sin servicios todavía.</p>';
     }
 
     // ---------- detalle/edición de un servicio ----------
@@ -1921,13 +1989,13 @@
         <div onclick="abrirDetalleBarbero('${b.id}')" class="border border-white/10 rounded-sm p-4 cursor-pointer hover:border-gold/40 transition">
           <img src="${b.photo_url || 'https://placehold.co/48x48/1D1D20/D9A441?text=' + encodeURIComponent(b.name.charAt(0))}" class="w-12 h-12 rounded-sm mb-2">
           <p class="text-sm font-medium">${escapeHtml(b.name)}</p>
-          ${b.bio ? `<p class="text-xs text-white/40 mt-0.5">${escapeHtml(truncar(b.bio, 60))}</p>` : ''}
+          ${b.bio ? `<p class="text-xs text-white/50 mt-0.5">${escapeHtml(truncar(b.bio, 60))}</p>` : ''}
           <div class="flex items-center justify-between gap-2 mt-2">
-            <span class="text-xs ${b.active ? 'bg-green-500/15 text-green-400' : 'bg-white/10 text-white/40'} px-2 py-0.5 rounded-sm">${b.active ? 'Disponible' : 'Inactivo'}</span>
-            <button onclick="event.stopPropagation(); abrirModalAsignarServiciosABarbero('${b.id}', '${escapeHtml(b.name)}', false)" class="text-xs text-white/40 hover:text-gold transition">Servicios</button>
+            <span class="text-xs ${b.active ? 'bg-green-500/15 text-green-400' : 'bg-white/10 text-white/50'} px-2 py-0.5 rounded-sm">${b.active ? 'Disponible' : 'Inactivo'}</span>
+            <button onclick="event.stopPropagation(); abrirModalAsignarServiciosABarbero('${b.id}', '${escapeHtml(b.name)}', false)" class="text-xs text-white/50 hover:text-gold transition">Servicios</button>
           </div>
         </div>
-      `).join('') : '<p class="col-span-2 md:col-span-3 text-white/40 text-sm text-center py-6">Sin barberos todavía.</p>';
+      `).join('') : '<p class="col-span-2 md:col-span-3 text-white/50 text-sm text-center py-6">Sin barberos todavía.</p>';
     }
 
     // Crea una cuenta de login para que el barbero entre a su propio panel
@@ -2000,11 +2068,11 @@
 
       document.getElementById('cita-barberos-chips').innerHTML = (barbers && barbers.length)
         ? barbers.map(b => `<button type="button" data-id="${b.id}" onclick="seleccionarCitaBarbero('${b.id}')" class="cita-chip-barbero text-xs border border-white/15 text-white/70 rounded-sm px-3 py-1.5 transition">${escapeHtml(b.name)}</button>`).join('')
-        : '<p class="text-xs text-white/40">Sin barberos activos.</p>';
+        : '<p class="text-xs text-white/50">Sin barberos activos.</p>';
 
       document.getElementById('cita-servicios-chips').innerHTML = (services && services.length)
         ? services.map(s => `<button type="button" data-id="${s.id}" onclick="seleccionarCitaServicio('${s.id}', ${s.duration_minutes})" class="cita-chip-servicio text-xs border border-white/15 text-white/70 rounded-sm px-3 py-1.5 transition">${escapeHtml(s.name)} · ${clp(s.price_clp)}</button>`).join('')
-        : '<p class="text-xs text-white/40">Sin servicios activos.</p>';
+        : '<p class="text-xs text-white/50">Sin servicios activos.</p>';
 
       const fechaVista = document.getElementById('calendario-fecha-input').value || santiagoDateParts(0).iso;
       const fechaInput = document.getElementById('cita-fecha');
@@ -2012,7 +2080,7 @@
       fechaInput.max = santiagoDateParts(29).iso;
       fechaInput.value = fechaVista;
 
-      document.getElementById('cita-horas-chips').innerHTML = '<p class="col-span-4 text-white/40 text-xs text-center py-4">Elige barbero y servicio</p>';
+      document.getElementById('cita-horas-chips').innerHTML = '<p class="col-span-4 text-white/50 text-xs text-center py-4">Elige barbero y servicio</p>';
       document.getElementById('cita-nombre').value = '';
       document.getElementById('cita-telefono').value = '';
       document.getElementById('cita-notas').value = '';
@@ -2054,11 +2122,11 @@
       citaModalState.hora = null;
       const fecha = document.getElementById('cita-fecha').value;
       if (!citaModalState.barberId || !citaModalState.serviceId || !fecha) {
-        cont.innerHTML = '<p class="col-span-4 text-white/40 text-xs text-center py-4">Elige barbero y servicio</p>';
+        cont.innerHTML = '<p class="col-span-4 text-white/50 text-xs text-center py-4">Elige barbero y servicio</p>';
         return;
       }
       const requestId = ++citaHorasRequestId;
-      cont.innerHTML = '<p class="col-span-4 text-white/40 text-xs text-center py-4">Buscando horarios…</p>';
+      cont.innerHTML = '<p class="col-span-4 text-white/50 text-xs text-center py-4">Buscando horarios…</p>';
       const { data, error } = await supabaseClient.rpc('get_available_slots', {
         p_barber_id: citaModalState.barberId,
         p_date: fecha,
@@ -2073,7 +2141,7 @@
       const slots = (data || []).map(r => r.slot_start).sort();
       cont.innerHTML = slots.length
         ? slots.map(s => `<button type="button" data-id="${s}" onclick="seleccionarCitaHora('${s}')" class="cita-chip-hora text-xs text-center border border-white/15 text-white/70 py-2 rounded-sm transition">${s.slice(0, 5)}</button>`).join('')
-        : '<p class="col-span-4 text-white/40 text-xs text-center py-4">Sin horarios disponibles ese día.</p>';
+        : '<p class="col-span-4 text-white/50 text-xs text-center py-4">Sin horarios disponibles ese día.</p>';
     }
 
     function seleccionarCitaHora(hora) {
