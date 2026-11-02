@@ -62,6 +62,20 @@
     </form>
   </div>
 
+  <!-- cambio de contraseña obligatorio (cuenta de barbero recién creada,
+       todavía con la contraseña temporal) — no se puede saltar -->
+  <div id="forzar-password-screen" class="hidden min-h-screen flex items-center justify-center px-5">
+    <div class="w-full max-w-xs border border-white/10 rounded-sm p-6">
+      <h1 class="font-display text-xl mb-1">Cambia tu contraseña</h1>
+      <p class="text-white/50 text-sm mb-6">Es tu primer ingreso — reemplaza la contraseña temporal por una tuya antes de seguir.</p>
+      <input id="forzar-password-nueva" type="password" placeholder="Nueva contraseña" minlength="6" autocomplete="new-password" class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2.5 text-base placeholder-white/40 focus:outline-none focus:border-gold mb-3">
+      <input id="forzar-password-repetir" type="password" placeholder="Repite la contraseña" minlength="6" autocomplete="new-password" class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2.5 text-base placeholder-white/40 focus:outline-none focus:border-gold mb-4">
+      <p id="forzar-password-error" class="hidden text-sm text-red-400 mb-3"></p>
+      <button type="button" onclick="guardarPasswordForzada()" class="w-full bg-gold hover:bg-goldlight text-ink font-semibold py-3 rounded-sm transition mb-3">Guardar y entrar</button>
+      <button type="button" onclick="supabaseClient.auth.signOut().then(() => location.reload())" class="w-full text-xs text-white/50 hover:text-white transition">Cerrar sesión</button>
+    </div>
+  </div>
+
   <div id="dashboard-app" class="hidden flex flex-col md:flex-row h-[100dvh] overflow-hidden">
 
     <!-- SIDEBAR (barra inferior en móvil, columna lateral en escritorio) -->
@@ -1103,8 +1117,46 @@
         errorEl.classList.remove('hidden');
         return;
       }
+      if (data.user.user_metadata?.must_change_password) {
+        document.getElementById('login-screen').classList.add('hidden');
+        document.getElementById('forzar-password-screen').classList.remove('hidden');
+        return;
+      }
       await routeAfterLogin(data.user.id);
     });
+
+    // contraseña temporal de "Crear acceso de login" — se cambia una sola
+    // vez, en el primer ingreso, antes de poder usar el panel
+    async function guardarPasswordForzada() {
+      const nueva = document.getElementById('forzar-password-nueva').value;
+      const repetir = document.getElementById('forzar-password-repetir').value;
+      const errorEl = document.getElementById('forzar-password-error');
+      errorEl.classList.add('hidden');
+
+      if (nueva.length < 6) {
+        errorEl.textContent = 'La contraseña debe tener al menos 6 caracteres.';
+        errorEl.classList.remove('hidden');
+        return;
+      }
+      if (nueva !== repetir) {
+        errorEl.textContent = 'Las contraseñas no coinciden.';
+        errorEl.classList.remove('hidden');
+        return;
+      }
+
+      const { data, error } = await supabaseClient.auth.updateUser({
+        password: nueva,
+        data: { must_change_password: false },
+      });
+      if (error) {
+        errorEl.textContent = 'Error: ' + error.message;
+        errorEl.classList.remove('hidden');
+        return;
+      }
+
+      document.getElementById('forzar-password-screen').classList.add('hidden');
+      await routeAfterLogin(data.user.id);
+    }
 
     // ---------- ruteo por rol: dueño (barbershops.owner_id) o barbero (barbers.user_id) ----------
     async function routeAfterLogin(userId) {
@@ -2041,18 +2093,32 @@
       const correo = email.trim().toLowerCase();
       if (!/^\S+@\S+\.\S+$/.test(correo)) { alert('Correo inválido.'); return; }
 
-      const password = Math.random().toString(36).slice(-4) + Math.random().toString(36).slice(-4).toUpperCase();
+      const password = generarPasswordTemporal();
 
       const clienteTemporal = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { auth: { persistSession: false, autoRefreshToken: false } });
-      const { data, error } = await clienteTemporal.auth.signUp({ email: correo, password });
+      const { data, error } = await clienteTemporal.auth.signUp({
+        email: correo,
+        password,
+        options: { data: { must_change_password: true } },
+      });
       if (error) { alert('No se pudo crear el acceso: ' + error.message); return; }
       if (!data.user) { alert('No se pudo crear el acceso (respuesta inesperada).'); return; }
 
       const { error: linkError } = await supabaseClient.from('barbers').update({ user_id: data.user.id }).eq('id', barberId);
       if (linkError) { alert('El usuario se creó pero no se pudo vincular al barbero: ' + linkError.message); return; }
 
-      alert(`Acceso creado para ${barberName}.\n\nCorreo: ${correo}\nContraseña temporal: ${password}\n\nCompártesela por WhatsApp — puede cambiarla después en Info → Seguridad.\n\nEntra en el mismo link: ${location.origin}${location.pathname}`);
+      alert(`Acceso creado para ${barberName}.\n\nCorreo: ${correo}\nContraseña temporal: ${password}\n\nCompártesela por WhatsApp — va a tener que cambiarla apenas entre, no es opcional.\n\nEntra en el mismo link: ${location.origin}${location.pathname}`);
       abrirDetalleBarbero(barberId);
+    }
+
+    // genera una contraseña temporal con crypto.getRandomValues (a diferencia
+    // de Math.random, que no es apto para generar secretos) — sin 0/O/1/l/I
+    // para que no se confundan al transcribirla a mano desde el WhatsApp
+    function generarPasswordTemporal() {
+      const alfabeto = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789';
+      const bytes = new Uint8Array(10);
+      crypto.getRandomValues(bytes);
+      return Array.from(bytes, b => alfabeto[b % alfabeto.length]).join('');
     }
 
     async function quitarAccesoBarbero(barberId, btn) {
