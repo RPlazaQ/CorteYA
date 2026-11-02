@@ -730,10 +730,10 @@
       document.getElementById('detalle-barbero-acceso').innerHTML = barber.user_id
         ? `<div class="flex items-center justify-between gap-2 border border-white/15 rounded-sm px-3 py-2">
             <span class="text-xs bg-gold/10 text-gold px-2 py-0.5 rounded-sm inline-flex items-center gap-1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5"><circle cx="8" cy="15" r="3.5"/><path d="M10.5 12.5 19 4"/><path d="M15.5 8 18 10.5"/><path d="M17.5 6 19.5 8"/></svg> Acceso activo</span>
-            <button onclick="quitarAccesoBarbero('${barber.id}', '${escapeHtml(barber.name)}')" class="text-xs text-white/50 hover:text-red-400 transition">Quitar acceso</button>
+            <button data-nombre="${escapeHtml(barber.name)}" onclick="quitarAccesoBarbero('${barber.id}', this)" class="text-xs text-white/50 hover:text-red-400 transition">Quitar acceso</button>
           </div>`
         : PLANES_CON_LOGIN_BARBERO.includes(state.barbershopPlan)
-          ? `<button onclick="crearAccesoBarbero('${barber.id}', '${escapeHtml(barber.name)}')" class="w-full text-left text-xs border border-white/15 rounded-sm px-3 py-2 text-white/60 hover:border-gold hover:text-gold transition">+ Crear acceso de login</button>`
+          ? `<button data-nombre="${escapeHtml(barber.name)}" onclick="crearAccesoBarbero('${barber.id}', this)" class="w-full text-left text-xs border border-white/15 rounded-sm px-3 py-2 text-white/60 hover:border-gold hover:text-gold transition">+ Crear acceso de login</button>`
           : `<p class="text-xs text-white/50 text-center">Los accesos de barbero no están incluidos en tu plan actual.</p>`;
 
       const btnEliminar = document.getElementById('detalle-barbero-btn-eliminar');
@@ -1455,42 +1455,49 @@
       if (state.vistaActual === 'calendario') loadCalendario();
     }
 
+    // El nombre del cliente nunca se pasa como texto dentro de un onclick="...":
+    // escapeHtml() solo protege el contexto HTML, y el string embebido en el
+    // atributo onclick es un contexto JS aparte — el navegador decodifica la
+    // entidad HTML antes de que el JS inline la lea, así que una comilla en
+    // el nombre rompía el string y permitía inyectar JS. En vez de eso se
+    // guarda en data-nombre (un solo nivel de escape, seguro) y se pasa el
+    // propio elemento (this) para leerlo del lado seguro.
     function renderAccionesCita(b, variant) {
-      const nombreEscape = escapeHtml(b.customer_name).replace(/'/g, "\\'");
+      const nombreAttr = `data-nombre="${escapeHtml(b.customer_name)}"`;
       if (esPendiente(b.status)) {
         if (variant === 'mini') {
           return `
             <div class="flex items-center gap-1 mt-1">
-              <button type="button" onclick="event.stopPropagation(); marcarLlegada('${b.id}', '${b.status}', '${nombreEscape}')" class="flex-1 text-xs bg-gold/15 text-gold rounded-sm py-0.5 hover:bg-gold/25 transition">Llegó</button>
+              <button type="button" ${nombreAttr} onclick="event.stopPropagation(); marcarLlegada('${b.id}', '${b.status}', this)" class="flex-1 text-xs bg-gold/15 text-gold rounded-sm py-0.5 hover:bg-gold/25 transition">Llegó</button>
               <button type="button" onclick="event.stopPropagation(); marcarNoLlego('${b.id}', '${b.status}')" class="flex-1 text-xs bg-white/5 text-white/50 rounded-sm py-0.5 hover:bg-[#E5484D]/15 hover:text-[#E5484D] transition">No llegó</button>
             </div>`;
         }
         return `
           <div class="flex items-center gap-1.5 shrink-0">
-            <button type="button" onclick="event.stopPropagation(); marcarLlegada('${b.id}', '${b.status}', '${nombreEscape}')" class="text-xs font-medium bg-gold/15 text-gold rounded-sm px-3 py-1.5 hover:bg-gold/25 transition">Llegó</button>
+            <button type="button" ${nombreAttr} onclick="event.stopPropagation(); marcarLlegada('${b.id}', '${b.status}', this)" class="text-xs font-medium bg-gold/15 text-gold rounded-sm px-3 py-1.5 hover:bg-gold/25 transition">Llegó</button>
             <button type="button" onclick="event.stopPropagation(); marcarNoLlego('${b.id}', '${b.status}')" class="text-xs font-medium border border-white/15 text-white/50 rounded-sm px-3 py-1.5 hover:border-[#E5484D]/50 hover:text-[#E5484D] transition">No llegó</button>
             <button type="button" onclick="event.stopPropagation(); toggleMenuCita('${b.id}', '${b.status}')" class="text-white/50 hover:text-white px-1.5 py-1 leading-none flex items-center"><svg viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg></button>
           </div>`;
       }
       const info = estadoDe(b.status);
       const sePuedeCorregir = PAGOS_RESERVA.includes(b.status);
-      const accion = sePuedeCorregir ? `onclick="event.stopPropagation(); abrirModalLlegada('${b.id}', '${nombreEscape}')"` : '';
+      const accion = sePuedeCorregir ? `${nombreAttr} onclick="event.stopPropagation(); abrirModalLlegada('${b.id}', this)"` : '';
       return `<span ${accion} class="text-xs px-2 py-0.5 rounded-sm ${info.pill} ${sePuedeCorregir ? 'cursor-pointer' : ''}">${info.label}</span>`;
     }
 
     // ---------- Llegó: abre el bottom sheet de método de pago (o marca
     // directo si ya viniera pagada online — hoy no ocurre en la práctica,
     // Transbank todavía no está integrado, pero se deja la guarda lista) ----------
-    function marcarLlegada(bookingId, status, clienteNombre) {
+    function marcarLlegada(bookingId, status, btn) {
       if (PAGOS_RESERVA.includes(status)) return;
-      abrirModalLlegada(bookingId, clienteNombre);
+      abrirModalLlegada(bookingId, btn);
     }
 
     let llegadaContext = null;
-    function abrirModalLlegada(bookingId, clienteNombre) {
+    function abrirModalLlegada(bookingId, btn) {
       document.getElementById('modal-detalle-cita').classList.add('hidden');
       llegadaContext = { bookingId };
-      document.getElementById('llegada-cliente').textContent = clienteNombre || '';
+      document.getElementById('llegada-cliente').textContent = btn?.dataset.nombre || '';
       let ultimo = null;
       try { ultimo = localStorage.getItem(`corteya_ultimo_metodo_${state.barbershopId}`); } catch (e) { /* localStorage no disponible */ }
       document.querySelectorAll('.metodo-llegada-item').forEach(btn => {
@@ -1578,7 +1585,7 @@
       const acciones = esPendiente(b.status)
         ? renderAccionesCita(b, 'detalle')
         : PAGOS_RESERVA.includes(b.status)
-          ? `<button type="button" onclick="abrirModalLlegada('${b.id}', '${escapeHtml(b.customer_name).replace(/'/g, "\\'")}')" class="text-xs border border-white/15 rounded-sm px-3 py-1.5 text-white/60 hover:border-gold hover:text-gold transition">Cambiar método de pago</button>`
+          ? `<button type="button" data-nombre="${escapeHtml(b.customer_name)}" onclick="abrirModalLlegada('${b.id}', this)" class="text-xs border border-white/15 rounded-sm px-3 py-1.5 text-white/60 hover:border-gold hover:text-gold transition">Cambiar método de pago</button>`
           : `<span class="text-xs px-2 py-0.5 rounded-sm ${estadoDe(b.status).pill}">${estadoDe(b.status).label}</span>`;
 
       document.getElementById('detalle-cita-cuerpo').innerHTML = `
@@ -1948,7 +1955,10 @@
       document.getElementById('modal-asignar').classList.remove('hidden');
     }
 
-    async function abrirModalAsignarServiciosABarbero(barberoId, barberoName, esNuevo) {
+    async function abrirModalAsignarServiciosABarbero(barberoId, nombreOBoton, esNuevo) {
+      // se llama tanto desde un onclick (pasa el botón, el nombre va en
+      // data-nombre) como directo desde addBarbero() (pasa el string ya listo)
+      const barberoName = (nombreOBoton instanceof HTMLElement) ? (nombreOBoton.dataset.nombre || '') : nombreOBoton;
       document.getElementById('modal-detalle-barbero').classList.add('hidden');
       const { data: servicios } = await supabaseClient.from('services').select('id,name').eq('barbershop_id', state.barbershopId).eq('active', true).order('created_at');
       if (!servicios || !servicios.length) {
@@ -2010,7 +2020,7 @@
           ${b.bio ? `<p class="text-xs text-white/50 mt-0.5">${escapeHtml(truncar(b.bio, 60))}</p>` : ''}
           <div class="flex items-center justify-between gap-2 mt-2">
             <span class="text-xs ${b.active ? 'bg-green-500/15 text-green-400' : 'bg-white/10 text-white/50'} px-2 py-0.5 rounded-sm">${b.active ? 'Disponible' : 'Inactivo'}</span>
-            <button onclick="event.stopPropagation(); abrirModalAsignarServiciosABarbero('${b.id}', '${escapeHtml(b.name)}', false)" class="text-xs text-white/50 hover:text-gold transition">Servicios</button>
+            <button data-nombre="${escapeHtml(b.name)}" onclick="event.stopPropagation(); abrirModalAsignarServiciosABarbero('${b.id}', this, false)" class="text-xs text-white/50 hover:text-gold transition">Servicios</button>
           </div>
         </div>
       `).join('') : '<p class="col-span-2 md:col-span-3 text-white/50 text-sm text-center py-6">Sin barberos todavía.</p>';
@@ -2020,7 +2030,8 @@
     // restringido. Usa un cliente de Supabase aparte (persistSession:false)
     // para que el auth.signUp() del barbero no reemplace la sesión del
     // dueño que está logueado ahora mismo.
-    async function crearAccesoBarbero(barberId, barberName) {
+    async function crearAccesoBarbero(barberId, btn) {
+      const barberName = btn?.dataset.nombre || '';
       if (!PLANES_CON_LOGIN_BARBERO.includes(state.barbershopPlan)) {
         alert('Los accesos de barbero no están incluidos en tu plan actual.');
         return;
@@ -2044,7 +2055,8 @@
       abrirDetalleBarbero(barberId);
     }
 
-    async function quitarAccesoBarbero(barberId, barberName) {
+    async function quitarAccesoBarbero(barberId, btn) {
+      const barberName = btn?.dataset.nombre || '';
       if (!confirm(`¿Quitarle el acceso a ${barberName}? Ya no va a poder entrar a su panel (el dueño sigue administrando todo por él).`)) return;
       const { error } = await supabaseClient.from('barbers').update({ user_id: null }).eq('id', barberId);
       if (error) { alert('Error: ' + error.message); return; }
