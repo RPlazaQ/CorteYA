@@ -482,7 +482,11 @@ select
   '44444444-4444-4444-8444-444444444444'::uuid,
   barber_id, service_id, nombre, telefono,
   (now() at time zone 'America/Santiago')::date + dia_offset, hora, hora + (duracion || ' minutes')::interval,
-  'confirmed', now()
+  -- created_at de hace 2 días (agendada con anticipación, no "ahora
+  -- mismo") — si quedara en now() junto con las 8 de hoy + las 3
+  -- relativas, las 21 filas superarían el límite de 20 reservas nuevas
+  -- por barbería cada 10 minutos (hallazgo #2 de la auditoría)
+  'confirmed', (now() at time zone 'America/Santiago') - interval '2 days'
 from proximos;
 
 -- =========================================================
