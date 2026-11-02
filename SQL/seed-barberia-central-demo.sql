@@ -273,11 +273,11 @@ delete from barber_working_hours where barber_id in (
   '44444444-4444-4444-8444-444444444441', '44444444-4444-4444-8444-444444444442', '44444444-4444-4444-8444-444444444443'
 );
 insert into barber_working_hours (barber_id, weekday, start_time, end_time)
-select '44444444-4444-4444-8444-444444444441', wd, '10:00', '20:00' from generate_series(1, 6) wd
+select '44444444-4444-4444-8444-444444444441'::uuid, wd, '10:00'::time, '20:00'::time from generate_series(1, 6) wd
 union all
-select '44444444-4444-4444-8444-444444444442', wd, '11:00', '20:00' from generate_series(1, 5) wd
+select '44444444-4444-4444-8444-444444444442'::uuid, wd, '11:00'::time, '20:00'::time from generate_series(1, 5) wd
 union all
-select '44444444-4444-4444-8444-444444444443', wd, '10:00', '19:00' from generate_series(2, 6) wd;
+select '44444444-4444-4444-8444-444444444443'::uuid, wd, '10:00'::time, '19:00'::time from generate_series(2, 6) wd;
 
 insert into services (id, barbershop_id, name, duration_minutes, price_clp, active) values
   ('44444444-4444-4444-8444-444444444451', '44444444-4444-4444-8444-444444444444', 'Corte clásico',        30,  8000,  true),
@@ -343,7 +343,7 @@ historicos as (
 )
 insert into bookings (barbershop_id, barber_id, service_id, customer_name, customer_phone, booking_date, start_time, end_time, status, created_at)
 select
-  '44444444-4444-4444-8444-444444444444',
+  '44444444-4444-4444-8444-444444444444'::uuid,
   h.barber_id, h.service_id, c.nombre, c.telefono,
   h.fecha, h.hora_inicio, h.hora_inicio + (h.duracion || ' minutes')::interval,
   case
@@ -373,7 +373,7 @@ with hoy_citas as (
 )
 insert into bookings (barbershop_id, barber_id, service_id, customer_name, customer_phone, booking_date, start_time, end_time, status, created_at)
 select
-  '44444444-4444-4444-8444-444444444444',
+  '44444444-4444-4444-8444-444444444444'::uuid,
   barber_id, service_id, nombre, telefono,
   current_date, hora, hora + (duracion || ' minutes')::interval,
   case
@@ -401,7 +401,7 @@ with proximos as (
 )
 insert into bookings (barbershop_id, barber_id, service_id, customer_name, customer_phone, booking_date, start_time, end_time, status, created_at)
 select
-  '44444444-4444-4444-8444-444444444444',
+  '44444444-4444-4444-8444-444444444444'::uuid,
   barber_id, service_id, nombre, telefono,
   current_date + dia_offset, hora, hora + (duracion || ' minutes')::interval,
   'confirmed', now()
