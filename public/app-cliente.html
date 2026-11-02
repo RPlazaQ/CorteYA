@@ -57,19 +57,11 @@
      menor a 16px, y a veces ese zoom queda pegado al cerrar el teclado.
      Forzamos 16px solo en los campos de formulario (el texto se ve igual
      de chico gracias al line-height reducido) para evitar el zoom. */
-  /* el input de fecha abre el selector nativo (no teclado), así que no
-     sufre el zoom de iOS — y a 16px su texto nativo no entra en el ancho
-     del recuadro y se sale de la pantalla. Se deja en su tamaño normal. */
-  input:not([type="date"]), select, textarea { font-size: 16px !important; }
+  input, select, textarea { font-size: 16px !important; }
 
-  /* iOS ignora el font-size del VALOR que muestra el selector de fecha
-     nativo (bug conocido de WebKit) — por más chico que se ponga en CSS,
-     el texto renderizado sigue siendo grande y se sale del recuadro.
-     Como font-size no funciona ahí, achicamos visualmente todo el control
-     con transform (eso sí respeta lo que WebKit pinta, incluido lo que se
-     sale de la caja). transform-origin:left evita que se corra hacia la
-     derecha al achicarse. */
-  input[type="date"] { transform: scale(0.85); transform-origin: left center; }
+  /* fila de días (fecha): scrollable horizontal sin mostrar la barra */
+  #agendar-fecha-chips, #d-fecha-chips { scrollbar-width: none; }
+  #agendar-fecha-chips::-webkit-scrollbar, #d-fecha-chips::-webkit-scrollbar { display: none; }
 </style>
 </head>
 <body class="bg-neutral-950 text-white font-body min-h-screen">
@@ -170,9 +162,8 @@
             </button>
             <div class="d-section-body">
               <div class="d-section-body-inner">
-                <input id="agendar-fecha-input" type="date" onchange="selectDate(this.value)"
-                  class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2.5 text-sm text-white focus:outline-none focus:border-gold [color-scheme:dark] mb-3">
-                <button type="button" onclick="confirmarFecha()" class="w-full bg-gold hover:bg-goldlight text-ink font-semibold py-3 rounded-sm transition">Continuar</button>
+                <div id="agendar-fecha-chips" class="flex gap-2 overflow-x-auto pb-1 mb-2"></div>
+                <button type="button" id="btn-proximo-dia-m" onclick="buscarProximoDiaDisponible('m')" class="text-xs text-gold hover:text-goldlight transition">Ver próximo día disponible →</button>
               </div>
             </div>
           </div>
@@ -306,6 +297,14 @@
         </div>
         <div id="detalle-resenas" class="space-y-2"></div>
       </div>
+
+      <div id="resumen-sticky" class="hidden shrink-0 border-t border-white/10 bg-neutral-950 px-5 py-3 flex items-center justify-between gap-3">
+        <div class="min-w-0">
+          <p id="resumen-sticky-servicio" class="text-sm font-medium truncate"></p>
+          <p id="resumen-sticky-precio" class="text-xs text-gold font-mono"></p>
+        </div>
+        <button type="button" onclick="scrollToPasoActual()" class="shrink-0 bg-gold hover:bg-goldlight text-ink text-xs font-semibold px-4 py-2.5 rounded-sm transition">Continuar</button>
+      </div>
     </div>
 
   </div>
@@ -363,9 +362,8 @@
         </button>
         <div class="d-section-body">
           <div class="d-section-body-inner">
-            <input id="d-fecha-input" type="date" onchange="selectDate(this.value)"
-              class="w-full max-w-xs bg-transparent border border-white/15 rounded-sm px-3 py-2.5 text-sm text-white focus:outline-none focus:border-gold [color-scheme:dark] mb-3">
-            <button type="button" onclick="confirmarFecha()" class="w-full max-w-xs bg-gold hover:bg-goldlight text-ink font-semibold py-3 rounded-sm transition">Continuar</button>
+            <div id="d-fecha-chips" class="flex gap-2 overflow-x-auto pb-1 mb-2 max-w-xs"></div>
+            <button type="button" id="btn-proximo-dia-d" onclick="buscarProximoDiaDisponible('d')" class="text-xs text-gold hover:text-goldlight transition">Ver próximo día disponible →</button>
           </div>
         </div>
       </div>
@@ -546,6 +544,7 @@
       candidateBarberIds: [],
       datosOk: false,
       metodoPago: null,
+      fechaSugerida: null,
     };
 
     // ---------- navegación móvil (pantallas completas) ----------
@@ -627,6 +626,21 @@
 
         setSectionState(scope, 'pago', { locked: !hasDatosOk, open: hasDatosOk, done: false });
       });
+
+      actualizarResumenSticky();
+    }
+
+    // ---------- barra fija inferior (solo móvil, dentro de screen-detalle) ----------
+    function actualizarResumenSticky() {
+      const bar = document.getElementById('resumen-sticky');
+      if (!state.selectedService) { bar.classList.add('hidden'); return; }
+      bar.classList.remove('hidden');
+      document.getElementById('resumen-sticky-servicio').textContent = state.selectedService.name;
+      document.getElementById('resumen-sticky-precio').textContent = clp(state.selectedService.price_clp);
+    }
+
+    function scrollToPasoActual() {
+      document.querySelector('#screen-detalle .d-section.d-open')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
     function dBackToPicker() {
@@ -648,10 +662,22 @@
       return { iso, dateObj: base };
     }
 
+    const DIAS_CORTOS = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+    const MESES_CORTOS = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+    // extrae el día de semana/mes de un "YYYY-MM-DD" sin pasar por Date()
+    // con hora local (evitaría el típico corrimiento de +-1 día según huso
+    // horario del navegador) — Date.UTC con esos mismos y/m/d es neutro.
+    function partsFromIso(iso) {
+      const [y, mo, d] = iso.split('-').map(Number);
+      const weekday = new Date(Date.UTC(y, mo - 1, d)).getUTCDay();
+      return { dow: DIAS_CORTOS[weekday], dayNum: d, mes: MESES_CORTOS[mo - 1] };
+    }
+
     function formatFechaLabel(iso) {
       if (iso === santiagoDateParts(0).iso) return 'Hoy';
       if (iso === santiagoDateParts(1).iso) return 'Mañana';
-      return iso;
+      const { dow, dayNum, mes } = partsFromIso(iso);
+      return `${dow} ${dayNum} ${mes}`;
     }
 
     function clp(n) {
@@ -786,17 +812,17 @@
     async function loadBarbershopDetail() {
       document.getElementById('detalle-back-btn').classList.toggle('hidden', state.viaSharedLink);
       document.getElementById('detalle-nombre').textContent = state.barbershopName;
-      document.getElementById('detalle-rating').textContent = state.barbershopReviewCount
+      document.getElementById('detalle-rating').textContent = state.barbershopReviewCount >= 3
         ? `⭐ ${state.barbershopRating} (${state.barbershopReviewCount} reseña${state.barbershopReviewCount === 1 ? '' : 's'})`
-        : 'Sin reseñas todavía';
+        : '';
       document.getElementById('detalle-info').textContent = state.barbershopAddress || '';
       document.getElementById('detalle-imagen').src = state.barbershopImageUrl
         || 'https://placehold.co/600x200/1D1D20/D9A441?text=' + encodeURIComponent(state.barbershopName);
 
       document.getElementById('d-shop-name').textContent = state.barbershopName;
-      document.getElementById('d-shop-rating').textContent = state.barbershopReviewCount
+      document.getElementById('d-shop-rating').textContent = state.barbershopReviewCount >= 3
         ? `⭐ ${state.barbershopRating} (${state.barbershopReviewCount} reseña${state.barbershopReviewCount === 1 ? '' : 's'})`
-        : 'Sin reseñas todavía';
+        : '';
       document.getElementById('d-shop-addr').textContent = state.barbershopAddress || '';
       document.getElementById('d-shop-img').src = state.barbershopImageUrl
         || 'https://placehold.co/160x160/1D1D20/D9A441?text=' + encodeURIComponent(state.barbershopName.slice(0, 2).toUpperCase());
@@ -946,7 +972,9 @@
       if (shop) {
         state.barbershopRating = shop.rating || 0;
         state.barbershopReviewCount = shop.review_count || 0;
-        const txt = `⭐ ${state.barbershopRating} (${state.barbershopReviewCount} reseña${state.barbershopReviewCount === 1 ? '' : 's'})`;
+        const txt = state.barbershopReviewCount >= 3
+          ? `⭐ ${state.barbershopRating} (${state.barbershopReviewCount} reseña${state.barbershopReviewCount === 1 ? '' : 's'})`
+          : '';
         document.getElementById('detalle-rating').textContent = txt;
         document.getElementById('d-shop-rating').textContent = txt;
       }
@@ -967,13 +995,8 @@
       // el cliente tiene que tocar "Continuar" (o cambiarla) para avanzar.
       renderBarberoList();
 
-      const hoy = santiagoDateParts(0);
-      const maxFecha = santiagoDateParts(29);
-      [document.getElementById('agendar-fecha-input'), document.getElementById('d-fecha-input')].forEach(input => {
-        input.min = hoy.iso;
-        input.max = maxFecha.iso;
-        input.value = hoy.iso;
-      });
+      state.fechaSugerida = santiagoDateParts(0).iso;
+      renderFechaChips();
 
       state.selectedDate = null;
       state.selectedBarberId = null;
@@ -1000,9 +1023,8 @@
       // o ya confirmó una fecha, no pisar nada
       if (hayHorasHoy || state.selectedService !== svc || state.selectedDate) return;
 
-      const manana = santiagoDateParts(1).iso;
-      document.getElementById('agendar-fecha-input').value = manana;
-      document.getElementById('d-fecha-input').value = manana;
+      state.fechaSugerida = santiagoDateParts(1).iso;
+      renderFechaChips();
     }
 
     // devuelve los barberos de state.barbers que saben hacer el servicio
@@ -1013,24 +1035,71 @@
       return (asignados && asignados.size) ? state.barbers.filter(b => asignados.has(b.id)) : state.barbers;
     }
 
-    // ---------- paso Fecha ----------
-    // Botón "Continuar": confirma lo que ya esté en el input (venga
-    // precargado en "hoy" o cambiado a mano) sin necesitar un segundo toque.
-    function confirmarFecha() {
-      const isDesktop = window.matchMedia('(min-width: 768px)').matches;
-      const iso = document.getElementById(isDesktop ? 'd-fecha-input' : 'agendar-fecha-input').value;
-      selectDate(iso);
+    // ---------- paso Fecha: fila de 14 chips (hoy + 13 días) ----------
+    // Reemplaza el selector nativo <input type="date"> — cada chip
+    // selecciona directo (igual que barbero/hora, sin botón "Continuar"
+    // aparte). El día "sugerido" (hoy, o mañana si hoy ya no tiene horas)
+    // se marca con un borde tenue, pero no se confirma solo: el cliente
+    // igual tiene que tocarlo para avanzar.
+    function renderFechaChips() {
+      const html = Array.from({ length: 14 }, (_, i) => {
+        const iso = santiagoDateParts(i).iso;
+        const { dow, dayNum } = partsFromIso(iso);
+        const label = i === 0 ? 'Hoy' : i === 1 ? 'Mañana' : `${dow} ${dayNum}`;
+        return `<button type="button" data-fecha="${iso}" onclick="selectDate('${iso}')" class="chip-fecha shrink-0 min-w-[3.5rem] px-2 py-2 rounded-sm border border-white/15 text-xs text-center transition">${label}</button>`;
+      }).join('');
+      document.getElementById('agendar-fecha-chips').innerHTML = html;
+      document.getElementById('d-fecha-chips').innerHTML = html;
+      marcarChipFechaActivo();
+    }
+
+    function marcarChipFechaActivo() {
+      document.querySelectorAll('.chip-fecha').forEach(el => {
+        const active = el.dataset.fecha === state.selectedDate;
+        const sugerido = !active && el.dataset.fecha === state.fechaSugerida;
+        el.classList.toggle('border-gold', active);
+        el.classList.toggle('bg-gold/10', active);
+        el.classList.toggle('text-gold', active);
+        el.classList.toggle('border-gold/50', sugerido);
+        el.classList.toggle('border-white/15', !active && !sugerido);
+      });
     }
 
     function selectDate(iso) {
       if (!iso) return;
       state.selectedDate = iso;
-      document.getElementById('agendar-fecha-input').value = iso;
-      document.getElementById('d-fecha-input').value = iso;
+      marcarChipFechaActivo();
       // "Cualquiera" es la opción predeterminada al entrar a este paso —
       // selectBarber('any') ya resetea barbero/hora/datos/pago, carga los
       // horarios y sincroniza el acordeón.
       selectBarber('any');
+    }
+
+    // "Ver próximo día disponible": busca día por día (desde mañana, hasta
+    // 29 días adelante — mismo horizonte que tenía el selector nativo) el
+    // primer día con al menos un horario libre para algún barbero elegible,
+    // y lo selecciona directo. Es la única forma de llegar a una fecha
+    // fuera de la fila de 14 chips visibles.
+    async function buscarProximoDiaDisponible(scope) {
+      const btn = document.getElementById('btn-proximo-dia-' + scope);
+      const textoOriginal = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = 'Buscando…';
+
+      const svc = state.selectedService;
+      const barberIds = getEligibleBarbers().map(b => b.id);
+      for (let i = 1; i <= 29; i++) {
+        const iso = santiagoDateParts(i).iso;
+        const results = await Promise.all(barberIds.map(id => fetchSlotsForBarber(id, iso, svc.duration_minutes)));
+        if (results.some(slots => slots.length > 0)) {
+          selectDate(iso);
+          btn.disabled = false;
+          btn.textContent = textoOriginal;
+          return;
+        }
+      }
+      btn.textContent = 'Sin horarios en 29 días';
+      setTimeout(() => { btn.disabled = false; btn.textContent = textoOriginal; }, 2500);
     }
 
     // ---------- paso Barbero y hora ----------
@@ -1412,6 +1481,7 @@
     }
 
     async function mostrarExitoConEspera(svc) {
+      document.getElementById('resumen-sticky').classList.add('hidden');
       document.getElementById('pago-form').classList.add('hidden');
       document.getElementById('pago-loading').classList.remove('hidden');
       document.getElementById('d-flow').classList.add('hidden');
