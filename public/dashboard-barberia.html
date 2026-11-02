@@ -5,6 +5,13 @@
 <title>CorteYa — Panel de barbería</title>
 <meta name="robots" content="noindex, nofollow">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0A0A0A">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="CorteYa">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
@@ -36,6 +43,8 @@
   .font-display { font-family: 'Space Grotesk', sans-serif; letter-spacing: -0.01em; }
   .view { display: none; }
   .view.active { display: block; }
+  .subview { display: none; }
+  .subview.active { display: block; }
   .nav-item.active { color: #D9A441; background: rgba(217,164,65,0.1); }
 </style>
 </head>
@@ -63,22 +72,16 @@
       </div>
       <nav class="h-full flex items-stretch md:h-auto md:flex-1 md:flex-col md:px-3 md:py-4 md:space-y-1">
         <button onclick="showView('resumen', this)" class="nav-item active flex-1 flex flex-col items-center justify-center gap-0.5 text-[10px] md:flex-none md:flex-row md:items-center md:justify-start md:gap-3 md:px-3 md:py-2.5 md:text-sm rounded-sm font-medium transition md:w-full md:text-left">
-          <span>🏠</span> Resumen
+          <span>🏠</span> Hoy
         </button>
         <button onclick="showView('calendario', this)" class="nav-item text-white/60 flex-1 flex flex-col items-center justify-center gap-0.5 text-[10px] md:flex-none md:flex-row md:items-center md:justify-start md:gap-3 md:px-3 md:py-2.5 md:text-sm rounded-sm font-medium transition md:w-full md:text-left">
           <span>📅</span> Calendario
         </button>
-        <button data-owner-only onclick="showView('servicios', this)" class="nav-item text-white/60 flex-1 flex flex-col items-center justify-center gap-0.5 text-[10px] md:flex-none md:flex-row md:items-center md:justify-start md:gap-3 md:px-3 md:py-2.5 md:text-sm rounded-sm font-medium transition md:w-full md:text-left">
-          <span>✂️</span> Servicios
-        </button>
-        <button id="nav-btn-barberos" data-owner-only onclick="showView('barberos', this)" class="nav-item text-white/60 flex-1 flex flex-col items-center justify-center gap-0.5 text-[10px] md:flex-none md:flex-row md:items-center md:justify-start md:gap-3 md:px-3 md:py-2.5 md:text-sm rounded-sm font-medium transition md:w-full md:text-left">
-          <span>👤</span> Barberos
-        </button>
-        <button onclick="showView('info', this)" class="nav-item text-white/60 flex-1 flex flex-col items-center justify-center gap-0.5 text-[10px] md:flex-none md:flex-row md:items-center md:justify-start md:gap-3 md:px-3 md:py-2.5 md:text-sm rounded-sm font-medium transition md:w-full md:text-left">
-          <span>ℹ️</span> Info
-        </button>
         <button data-owner-only onclick="showView('reportes', this)" class="nav-item text-white/60 flex-1 flex flex-col items-center justify-center gap-0.5 text-[10px] md:flex-none md:flex-row md:items-center md:justify-start md:gap-3 md:px-3 md:py-2.5 md:text-sm rounded-sm font-medium transition md:w-full md:text-left">
           <span>📊</span> Reportes
+        </button>
+        <button id="nav-btn-mibarberia" onclick="showView('mibarberia', this)" class="nav-item text-white/60 flex-1 flex flex-col items-center justify-center gap-0.5 text-[10px] md:flex-none md:flex-row md:items-center md:justify-start md:gap-3 md:px-3 md:py-2.5 md:text-sm rounded-sm font-medium transition md:w-full md:text-left">
+          <span>🏪</span> Mi barbería
         </button>
       </nav>
       <div class="hidden md:block p-3 border-t border-white/10">
@@ -113,9 +116,12 @@
       <header class="h-16 border-b border-white/10 flex items-center justify-between px-4 md:px-8 sticky top-0 bg-ink z-10">
         <p id="header-fecha" class="font-mono text-xs text-white/40"></p>
         <div class="flex items-center gap-2">
-          <button id="btn-compartir" onclick="compartirAgenda()" title="Compartir agenda" aria-label="Compartir agenda" class="w-9 h-9 flex items-center justify-center border border-gold text-gold rounded-sm hover:bg-gold/10 transition">🔗</button>
-          <button onclick="abrirModalQR()" title="QR de reseñas" aria-label="QR de reseñas" class="w-9 h-9 flex items-center justify-center border border-gold text-gold rounded-sm hover:bg-gold/10 transition">🔳</button>
-          <button onclick="handleLogout()" class="text-xs border border-white/15 rounded-sm px-3 py-1.5 text-white/60 hover:border-white/30 transition">Cerrar sesión</button>
+          <button id="btn-compartir" onclick="compartirAgenda()" class="flex items-center gap-1.5 h-9 px-3 border border-gold text-gold rounded-sm hover:bg-gold/10 transition text-xs font-medium">
+            <span aria-hidden="true">🔗</span> <span id="btn-compartir-label">Copiar link</span>
+          </button>
+          <button onclick="abrirModalQR()" class="flex items-center gap-1.5 h-9 px-3 border border-gold text-gold rounded-sm hover:bg-gold/10 transition text-xs font-medium">
+            <span aria-hidden="true">🔳</span> QR reseñas
+          </button>
         </div>
       </header>
 
@@ -123,7 +129,9 @@
 
         <!-- RESUMEN -->
         <section id="view-resumen" class="view active">
-          <h1 class="font-display text-2xl mb-6">Resumen del día</h1>
+          <h1 class="font-display text-2xl mb-4">Resumen del día</h1>
+
+          <div id="resumen-filtro-barberos" class="flex flex-wrap gap-2 mb-5"></div>
 
           <div id="proxima-cita-card" class="hidden border border-gold/40 bg-gold/5 rounded-sm p-4 mb-6">
             <p class="font-mono text-[11px] tracking-widest uppercase text-gold mb-2">Próxima cita</p>
@@ -175,89 +183,100 @@
           </div>
         </section>
 
-        <!-- SERVICIOS -->
-        <section id="view-servicios" class="view">
-          <div class="flex items-center justify-between mb-6">
-            <h1 class="font-display text-2xl">Servicios y precios</h1>
-            <button onclick="addServicio()" class="text-xs border border-white/15 rounded-sm px-3 py-1.5 text-white/60 hover:border-white/30 transition">+ Agregar servicio</button>
+        <!-- MI BARBERÍA (Servicios + Barberos + Info, agrupados) -->
+        <section id="view-mibarberia" class="view">
+          <h1 class="font-display text-2xl mb-4">Mi barbería</h1>
+          <div class="flex gap-5 mb-6 border-b border-white/10">
+            <button id="subtab-servicios" data-owner-only onclick="showSubtabMiBarberia('servicios')" class="text-xs font-semibold pb-2 border-b-2 border-transparent text-white/50 transition">Servicios</button>
+            <button id="subtab-barberos" data-owner-only onclick="showSubtabMiBarberia('barberos')" class="text-xs font-semibold pb-2 border-b-2 border-transparent text-white/50 transition">Barberos</button>
+            <button id="subtab-info" onclick="showSubtabMiBarberia('info')" class="text-xs font-semibold pb-2 border-b-2 border-transparent text-white/50 transition">Info</button>
           </div>
-          <div id="servicios-lista" class="border border-white/10 rounded-sm divide-y divide-white/10">
-            <p class="px-4 py-6 text-sm text-white/40 text-center">Cargando…</p>
-          </div>
-        </section>
 
-        <!-- BARBEROS -->
-        <section id="view-barberos" class="view">
-          <div class="flex items-center justify-between mb-6">
-            <h1 class="font-display text-2xl">Barberos</h1>
-            <button onclick="addBarbero()" class="text-xs border border-white/15 rounded-sm px-3 py-1.5 text-white/60 hover:border-white/30 transition">+ Agregar barbero</button>
+          <!-- SERVICIOS -->
+          <div id="subview-servicios" data-owner-only class="subview">
+            <div class="flex items-center justify-between mb-6">
+              <h2 class="font-display text-xl">Servicios y precios</h2>
+              <button onclick="addServicio()" class="text-xs border border-white/15 rounded-sm px-3 py-1.5 text-white/60 hover:border-white/30 transition">+ Agregar servicio</button>
+            </div>
+            <div id="servicios-lista" class="border border-white/10 rounded-sm divide-y divide-white/10">
+              <p class="px-4 py-6 text-sm text-white/40 text-center">Cargando…</p>
+            </div>
           </div>
-          <div id="barberos-lista" class="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-4">
-            <p class="col-span-2 md:col-span-3 text-white/40 text-sm text-center py-6">Cargando…</p>
+
+          <!-- BARBEROS -->
+          <div id="subview-barberos" data-owner-only class="subview">
+            <div class="flex items-center justify-between mb-6">
+              <h2 class="font-display text-xl">Barberos</h2>
+              <button onclick="addBarbero()" class="text-xs border border-white/15 rounded-sm px-3 py-1.5 text-white/60 hover:border-white/30 transition">+ Agregar barbero</button>
+            </div>
+            <div id="barberos-lista" class="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-4">
+              <p class="col-span-2 md:col-span-3 text-white/40 text-sm text-center py-6">Cargando…</p>
+            </div>
           </div>
-        </section>
 
-        <!-- INFO -->
-        <section id="view-info" class="view">
-          <h1 class="font-display text-2xl mb-6">Nuestra información</h1>
+          <!-- INFO -->
+          <div id="subview-info" class="subview">
+            <div data-barbero-only class="border border-white/10 rounded-sm p-4 mb-8 max-w-md">
+              <div class="flex items-center gap-4 mb-4">
+                <label for="barbero-foto-upload" class="relative shrink-0 cursor-pointer group" title="Cambiar foto">
+                  <img id="barbero-foto-preview" src="https://placehold.co/56x56/1D1D20/D9A441?text=..." class="w-14 h-14 rounded-sm object-cover">
+                  <span class="absolute inset-0 rounded-sm bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center text-[10px] transition">✎ Cambiar</span>
+                </label>
+                <input id="barbero-foto-upload" type="file" accept="image/png,image/jpeg,image/webp" class="hidden">
+                <div>
+                  <p class="font-mono text-[11px] tracking-widest uppercase text-white/40 mb-1">Mi perfil</p>
+                  <p class="text-xs text-white/40">Foto y descripción que ven tus clientes al elegirte (PNG/JPG/WEBP, menos de 2MB)</p>
+                  <p id="barbero-foto-status" class="hidden text-xs text-white/50 mt-1"></p>
+                </div>
+              </div>
+              <label class="block text-xs text-white/60 mb-1">Descripción corta</label>
+              <textarea id="barbero-bio" maxlength="60" rows="2" placeholder="Ej: Especialista en fade" oninput="actualizarContadorBioPerfil(this)" class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2 text-sm focus:outline-none focus:border-gold"></textarea>
+              <p id="barbero-bio-contador" class="text-xs text-white/40 text-right mb-2">0/60</p>
+              <p id="barbero-bio-status" class="hidden text-xs mb-2"></p>
+              <button onclick="guardarPerfilBarbero()" class="text-xs border border-gold text-gold rounded-sm px-3 py-1.5 hover:bg-gold/10 transition">Guardar</button>
+            </div>
 
-          <div data-barbero-only class="border border-white/10 rounded-sm p-4 mb-8 max-w-md">
-            <div class="flex items-center gap-4 mb-4">
-              <label for="barbero-foto-upload" class="relative shrink-0 cursor-pointer group" title="Cambiar foto">
-                <img id="barbero-foto-preview" src="https://placehold.co/56x56/1D1D20/D9A441?text=..." class="w-14 h-14 rounded-sm object-cover">
+            <div data-owner-only class="border border-white/10 rounded-sm p-4 mb-8 max-w-md flex items-center gap-4">
+              <label for="logo-upload-info" class="relative shrink-0 cursor-pointer group" title="Cambiar logo">
+                <img id="info-logo" src="https://placehold.co/56x56/1D1D20/D9A441?text=..." class="w-14 h-14 rounded-sm object-cover">
                 <span class="absolute inset-0 rounded-sm bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center text-[10px] transition">✎ Cambiar</span>
               </label>
-              <input id="barbero-foto-upload" type="file" accept="image/png,image/jpeg,image/webp" class="hidden">
+              <input id="logo-upload-info" type="file" accept="image/png,image/jpeg,image/webp" class="hidden">
               <div>
-                <p class="font-mono text-[11px] tracking-widest uppercase text-white/40 mb-1">Mi perfil</p>
-                <p class="text-xs text-white/40">Foto y descripción que ven tus clientes al elegirte (PNG/JPG/WEBP, menos de 2MB)</p>
-                <p id="barbero-foto-status" class="hidden text-xs text-white/50 mt-1"></p>
+                <p class="font-mono text-[11px] tracking-widest uppercase text-white/40 mb-1">Logo</p>
+                <p class="text-xs text-white/40">Toca la imagen para subir tu logo (PNG/JPG/WEBP, menos de 2MB)</p>
+                <p id="logo-status-info" class="hidden text-xs text-white/50 mt-1"></p>
               </div>
             </div>
-            <label class="block text-xs text-white/60 mb-1">Descripción</label>
-            <textarea id="barbero-bio" maxlength="300" rows="3" placeholder="Cuéntales a tus clientes tu estilo, especialidad, años de experiencia…" class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2 text-sm mb-3 focus:outline-none focus:border-gold"></textarea>
-            <p id="barbero-bio-status" class="hidden text-xs mb-2"></p>
-            <button onclick="guardarPerfilBarbero()" class="text-xs border border-gold text-gold rounded-sm px-3 py-1.5 hover:bg-gold/10 transition">Guardar</button>
-          </div>
 
-          <div data-owner-only class="border border-white/10 rounded-sm p-4 mb-8 max-w-md flex items-center gap-4">
-            <label for="logo-upload-info" class="relative shrink-0 cursor-pointer group" title="Cambiar logo">
-              <img id="info-logo" src="https://placehold.co/56x56/1D1D20/D9A441?text=..." class="w-14 h-14 rounded-sm object-cover">
-              <span class="absolute inset-0 rounded-sm bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center text-[10px] transition">✎ Cambiar</span>
-            </label>
-            <input id="logo-upload-info" type="file" accept="image/png,image/jpeg,image/webp" class="hidden">
-            <div>
-              <p class="font-mono text-[11px] tracking-widest uppercase text-white/40 mb-1">Logo</p>
-              <p class="text-xs text-white/40">Toca la imagen para subir tu logo (PNG/JPG/WEBP, menos de 2MB)</p>
-              <p id="logo-status-info" class="hidden text-xs text-white/50 mt-1"></p>
+            <div data-owner-only class="border border-white/10 rounded-sm p-4 mb-8 max-w-md">
+              <p class="font-mono text-[11px] tracking-widest uppercase text-white/40 mb-3">Datos de contacto</p>
+              <label class="block text-xs text-white/60 mb-1">Dirección</label>
+              <input id="info-direccion" type="text" maxlength="200" class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2 text-sm mb-3 focus:outline-none focus:border-gold">
+              <label class="block text-xs text-white/60 mb-1">Teléfono</label>
+              <input id="info-telefono" type="tel" maxlength="20" class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2 text-sm mb-3 focus:outline-none focus:border-gold">
+              <p id="info-datos-status" class="hidden text-xs mb-2"></p>
+              <button onclick="guardarDatosContacto()" class="text-xs border border-gold text-gold rounded-sm px-3 py-1.5 hover:bg-gold/10 transition">Guardar</button>
             </div>
-          </div>
 
-          <div data-owner-only class="border border-white/10 rounded-sm p-4 mb-8 max-w-md">
-            <p class="font-mono text-[11px] tracking-widest uppercase text-white/40 mb-3">Datos de contacto</p>
-            <label class="block text-xs text-white/60 mb-1">Dirección</label>
-            <input id="info-direccion" type="text" maxlength="200" class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2 text-sm mb-3 focus:outline-none focus:border-gold">
-            <label class="block text-xs text-white/60 mb-1">Teléfono</label>
-            <input id="info-telefono" type="tel" maxlength="20" class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2 text-sm mb-3 focus:outline-none focus:border-gold">
-            <p id="info-datos-status" class="hidden text-xs mb-2"></p>
-            <button onclick="guardarDatosContacto()" class="text-xs border border-gold text-gold rounded-sm px-3 py-1.5 hover:bg-gold/10 transition">Guardar</button>
-          </div>
-
-          <div class="border border-white/10 rounded-sm p-4 mb-8 max-w-md">
-            <p class="font-mono text-[11px] tracking-widest uppercase text-white/40 mb-3">Seguridad</p>
-            <label class="block text-xs text-white/60 mb-1">Nueva contraseña</label>
-            <input id="info-password-nueva" type="password" minlength="6" autocomplete="new-password" class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2 text-sm mb-3 focus:outline-none focus:border-gold">
-            <label class="block text-xs text-white/60 mb-1">Repetir contraseña</label>
-            <input id="info-password-repetir" type="password" minlength="6" autocomplete="new-password" class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2 text-sm mb-3 focus:outline-none focus:border-gold">
-            <p id="info-password-status" class="hidden text-xs mb-2"></p>
-            <button onclick="cambiarPassword()" class="text-xs border border-gold text-gold rounded-sm px-3 py-1.5 hover:bg-gold/10 transition">Cambiar contraseña</button>
-          </div>
-
-          <div data-owner-only>
-            <p class="font-mono text-[11px] tracking-widest uppercase text-white/40 mb-3">Horario de cada barbero</p>
-            <div id="info-horarios" class="space-y-2 max-w-md">
-              <p class="text-white/40 text-sm text-center py-6">Cargando…</p>
+            <div class="border border-white/10 rounded-sm p-4 mb-8 max-w-md">
+              <p class="font-mono text-[11px] tracking-widest uppercase text-white/40 mb-3">Seguridad</p>
+              <label class="block text-xs text-white/60 mb-1">Nueva contraseña</label>
+              <input id="info-password-nueva" type="password" minlength="6" autocomplete="new-password" class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2 text-sm mb-3 focus:outline-none focus:border-gold">
+              <label class="block text-xs text-white/60 mb-1">Repetir contraseña</label>
+              <input id="info-password-repetir" type="password" minlength="6" autocomplete="new-password" class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2 text-sm mb-3 focus:outline-none focus:border-gold">
+              <p id="info-password-status" class="hidden text-xs mb-2"></p>
+              <button onclick="cambiarPassword()" class="text-xs border border-gold text-gold rounded-sm px-3 py-1.5 hover:bg-gold/10 transition">Cambiar contraseña</button>
             </div>
+
+            <div data-owner-only class="mb-8">
+              <p class="font-mono text-[11px] tracking-widest uppercase text-white/40 mb-3">Horario de cada barbero</p>
+              <div id="info-horarios" class="space-y-2 max-w-md">
+                <p class="text-white/40 text-sm text-center py-6">Cargando…</p>
+              </div>
+            </div>
+
+            <button onclick="handleLogout()" class="text-xs border border-white/15 rounded-sm px-4 py-2 text-white/60 hover:border-red-400/50 hover:text-red-400 transition">Cerrar sesión</button>
           </div>
         </section>
 
@@ -419,17 +438,30 @@
   <div id="modal-detalle-barbero" class="hidden fixed inset-0 z-30 bg-black/70 flex items-center justify-center px-4">
     <div class="w-full max-w-sm bg-panel border border-white/10 rounded-sm p-5 max-h-[90vh] overflow-y-auto">
       <div class="flex items-center justify-between mb-4">
-        <h2 class="font-display text-lg">Detalle del barbero</h2>
+        <h2 class="font-display text-lg">Editar barbero</h2>
         <button type="button" onclick="cerrarModalDetalleBarbero()" class="text-white/50 hover:text-white text-lg leading-none">✕</button>
       </div>
       <div class="flex items-center gap-3 mb-4">
         <img id="detalle-barbero-foto" class="w-16 h-16 rounded-sm object-cover shrink-0">
-        <div class="min-w-0">
-          <p id="detalle-barbero-nombre" class="font-display text-base"></p>
-          <p id="detalle-barbero-bio" class="text-xs text-white/50 mt-0.5"></p>
-        </div>
+        <p id="detalle-barbero-nombre-preview" class="font-display text-base min-w-0"></p>
       </div>
+
+      <label class="block text-xs text-white/60 mb-1">Nombre</label>
+      <input id="detalle-barbero-nombre-input" type="text" maxlength="50" class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2 text-sm mb-3 focus:outline-none focus:border-gold">
+
+      <label class="block text-xs text-white/60 mb-1">Descripción corta (opcional)</label>
+      <textarea id="detalle-barbero-bio-input" maxlength="60" rows="2" placeholder="Ej: Especialista en fade" oninput="actualizarContadorBio(this)" class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2 text-sm focus:outline-none focus:border-gold"></textarea>
+      <p id="detalle-barbero-bio-contador" class="text-xs text-white/40 text-right mb-2">0/60</p>
+
+      <p id="detalle-barbero-datos-status" class="hidden text-xs mb-3"></p>
+      <button onclick="guardarDatosBarbero()" class="text-xs border border-gold text-gold rounded-sm px-3 py-1.5 hover:bg-gold/10 transition mb-5">Guardar</button>
+
       <div id="detalle-barbero-cuerpo"></div>
+
+      <div class="border-t border-white/10 mt-5 pt-4 space-y-2">
+        <div id="detalle-barbero-acceso"></div>
+        <button id="detalle-barbero-btn-eliminar" class="w-full text-left text-xs border border-white/15 rounded-sm px-3 py-2 text-white/60 hover:border-red-400/50 hover:text-red-400 transition"></button>
+      </div>
     </div>
   </div>
 
@@ -442,6 +474,35 @@
       <p id="asignar-subtitulo" class="text-white/50 text-xs mb-4"></p>
       <div id="asignar-lista" class="space-y-1 mb-4"></div>
       <button type="button" onclick="guardarAsignacion()" class="w-full bg-gold hover:bg-goldlight text-ink font-semibold py-2.5 rounded-sm transition">Guardar</button>
+    </div>
+  </div>
+
+  <!-- MODAL: detalle/edición de un servicio -->
+  <div id="modal-detalle-servicio" class="hidden fixed inset-0 z-30 bg-black/70 flex items-center justify-center px-4">
+    <div class="w-full max-w-sm bg-panel border border-white/10 rounded-sm p-5 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="font-display text-lg">Editar servicio</h2>
+        <button type="button" onclick="cerrarModalDetalleServicio()" class="text-white/50 hover:text-white text-lg leading-none">✕</button>
+      </div>
+      <label class="block text-xs text-white/60 mb-1">Nombre</label>
+      <input id="servicio-edit-nombre" type="text" maxlength="60" class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2 text-sm mb-3 focus:outline-none focus:border-gold">
+      <div class="grid grid-cols-2 gap-3 mb-3">
+        <div>
+          <label class="block text-xs text-white/60 mb-1">Duración (min)</label>
+          <input id="servicio-edit-duracion" type="number" min="5" max="480" step="5" class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2 text-sm focus:outline-none focus:border-gold">
+        </div>
+        <div>
+          <label class="block text-xs text-white/60 mb-1">Precio (CLP)</label>
+          <input id="servicio-edit-precio" type="number" min="0" step="500" class="w-full bg-transparent border border-white/15 rounded-sm px-3 py-2 text-sm focus:outline-none focus:border-gold">
+        </div>
+      </div>
+      <p id="servicio-edit-status" class="hidden text-xs mb-3"></p>
+      <button onclick="guardarServicio()" class="w-full bg-gold hover:bg-goldlight text-ink font-semibold py-2.5 rounded-sm transition mb-4">Guardar</button>
+
+      <div class="border-t border-white/10 pt-4 space-y-2">
+        <button onclick="abrirAsignarDesdeDetalleServicio()" class="w-full text-left text-xs border border-white/15 rounded-sm px-3 py-2 text-white/60 hover:border-gold hover:text-gold transition">Quién hace este servicio</button>
+        <button onclick="eliminarServicioDesdeDetalle()" class="w-full text-left text-xs border border-white/15 rounded-sm px-3 py-2 text-white/60 hover:border-red-400/50 hover:text-red-400 transition">Eliminar servicio</button>
+      </div>
     </div>
   </div>
 
@@ -478,6 +539,9 @@
     function clp(n) { return '$' + Number(n).toLocaleString('es-CL'); }
     function escapeHtml(str) {
       return String(str ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    }
+    function truncar(str, n) {
+      return str && str.length > n ? str.slice(0, n) + '…' : (str || '');
     }
     // Pone en mayúscula la primera letra de cada palabra (después de cada espacio),
     // sin tocar el resto — así "tommys barber" queda "Tommys Barber".
@@ -523,14 +587,19 @@
         return;
       }
       // el detalle completo (horario semanal + bloqueos) ahora vive en la
-      // ficha de cada barbero (pestaña Barberos) — acá solo queda el acceso
-      // directo, como pide la mejora #5
+      // ficha de cada barbero (sub-pestaña Barberos, dentro de Mi barbería)
+      // — acá solo queda el acceso directo, como pide la mejora #5
       contenedor.innerHTML = barbers.map(b => `
-        <button onclick="showView('barberos', document.getElementById('nav-btn-barberos')); abrirDetalleBarbero('${b.id}')" class="w-full flex items-center justify-between border border-white/10 rounded-sm px-4 py-3 text-sm hover:border-gold/40 transition">
+        <button onclick="irADetalleBarberoDesdeInfo('${b.id}')" class="w-full flex items-center justify-between border border-white/10 rounded-sm px-4 py-3 text-sm hover:border-gold/40 transition">
           <span>${escapeHtml(b.name)}</span>
           <span class="text-white/40 text-xs">Ver horario →</span>
         </button>
       `).join('');
+    }
+
+    function irADetalleBarberoDesdeInfo(barberId) {
+      showSubtabMiBarberia('barberos');
+      abrirDetalleBarbero(barberId);
     }
 
     function formatFechaCorta(iso) {
@@ -570,7 +639,7 @@
 
       return `
         <div class="border border-white/10 rounded-sm p-4" data-barber-id="${barber.id}">
-          <p class="text-sm font-medium mb-3">${escapeHtml(barber.name)}</p>
+          <p class="font-mono text-[10px] tracking-widest uppercase text-white/40 mb-2">Horario semanal</p>
           <div class="space-y-2">${filas}</div>
           <p class="horario-status hidden text-xs mt-2"></p>
           <button onclick="guardarHorarioBarbero('${barber.id}')" class="mt-3 text-xs border border-gold text-gold rounded-sm px-3 py-1.5 hover:bg-gold/10 transition">Guardar horario</button>
@@ -633,10 +702,68 @@
       ]);
       document.getElementById('detalle-barbero-foto').src = barber.photo_url
         || 'https://placehold.co/64x64/1D1D20/D9A441?text=' + encodeURIComponent(initials(barber.name));
-      document.getElementById('detalle-barbero-nombre').textContent = barber.name;
-      document.getElementById('detalle-barbero-bio').textContent = barber.bio || 'Sin descripción todavía.';
+      document.getElementById('detalle-barbero-nombre-preview').textContent = barber.name;
+      document.getElementById('detalle-barbero-nombre-input').value = barber.name;
+      const bioInput = document.getElementById('detalle-barbero-bio-input');
+      bioInput.value = barber.bio || '';
+      actualizarContadorBio(bioInput);
+      document.getElementById('detalle-barbero-datos-status').classList.add('hidden');
+
       document.getElementById('detalle-barbero-cuerpo').innerHTML = renderTarjetaHorario(barber, horarios || [], diasLibres || []);
+
+      document.getElementById('detalle-barbero-acceso').innerHTML = barber.user_id
+        ? `<div class="flex items-center justify-between gap-2 border border-white/15 rounded-sm px-3 py-2">
+            <span class="text-xs bg-gold/10 text-gold px-2 py-0.5 rounded-sm">🔑 Acceso activo</span>
+            <button onclick="quitarAccesoBarbero('${barber.id}', '${escapeHtml(barber.name)}')" class="text-xs text-white/40 hover:text-red-400 transition">Quitar acceso</button>
+          </div>`
+        : PLANES_CON_LOGIN_BARBERO.includes(state.barbershopPlan)
+          ? `<button onclick="crearAccesoBarbero('${barber.id}', '${escapeHtml(barber.name)}')" class="w-full text-left text-xs border border-white/15 rounded-sm px-3 py-2 text-white/60 hover:border-gold hover:text-gold transition">+ Crear acceso de login</button>`
+          : `<p class="text-xs text-white/30 text-center">Los accesos de barbero no están incluidos en tu plan actual.</p>`;
+
+      const btnEliminar = document.getElementById('detalle-barbero-btn-eliminar');
+      btnEliminar.textContent = barber.active ? 'Eliminar barbero' : 'Reactivar barbero';
+      btnEliminar.onclick = async () => {
+        const cambiado = await toggleBarberoActivo(barber.id, barber.active);
+        if (cambiado) cerrarModalDetalleBarbero();
+      };
+
       document.getElementById('modal-detalle-barbero').classList.remove('hidden');
+    }
+
+    async function guardarDatosBarbero() {
+      const barberId = state.detalleBarberoId;
+      const statusEl = document.getElementById('detalle-barbero-datos-status');
+      let nombre = document.getElementById('detalle-barbero-nombre-input').value.trim();
+      const bio = document.getElementById('detalle-barbero-bio-input').value.trim();
+      statusEl.className = 'text-xs mb-3';
+      if (!nombre) {
+        statusEl.textContent = 'El nombre no puede quedar vacío.';
+        statusEl.classList.add('text-red-400');
+        statusEl.classList.remove('hidden');
+        return;
+      }
+      if (bio.length > 60) {
+        statusEl.textContent = 'La descripción no puede superar los 60 caracteres.';
+        statusEl.classList.add('text-red-400');
+        statusEl.classList.remove('hidden');
+        return;
+      }
+      nombre = capitalizeWords(nombre).slice(0, 50);
+      const { error } = await supabaseClient.from('barbers').update({ name: nombre, bio: bio || null }).eq('id', barberId);
+      if (error) {
+        statusEl.textContent = 'Error: ' + error.message;
+        statusEl.classList.add('text-red-400');
+        statusEl.classList.remove('hidden');
+        return;
+      }
+      document.getElementById('detalle-barbero-nombre-preview').textContent = nombre;
+      document.getElementById('detalle-barbero-nombre-input').value = nombre;
+      statusEl.textContent = '✓ Guardado';
+      statusEl.classList.remove('text-red-400');
+      statusEl.classList.add('text-green-400');
+      statusEl.classList.remove('hidden');
+      setTimeout(() => statusEl.classList.add('hidden'), 2000);
+      loadBarberos();
     }
 
     function cerrarModalDetalleBarbero() {
@@ -866,8 +993,8 @@
     // ---------- compartir link de agendamiento ----------
     async function compartirAgenda() {
       const link = `https://corteya.app/agenda/${encodeURIComponent(state.barbershopSlug)}`;
-      const btn = document.getElementById('btn-compartir');
-      const original = btn.textContent;
+      const labelEl = document.getElementById('btn-compartir-label');
+      const original = labelEl.textContent;
       const esMovil = window.matchMedia('(pointer: coarse)').matches;
 
       if (esMovil && navigator.share) {
@@ -878,11 +1005,11 @@
       }
       try {
         await navigator.clipboard.writeText(link);
-        btn.textContent = '✓ Link copiado';
+        labelEl.textContent = 'Link copiado';
       } catch (e) {
-        btn.textContent = link;
+        labelEl.textContent = link;
       }
-      setTimeout(() => { btn.textContent = original; }, 2500);
+      setTimeout(() => { labelEl.textContent = original; }, 2500);
     }
 
     // ---------- QR para pedir reseñas ----------
@@ -1050,8 +1177,23 @@
       state.barberPhotoUrl = barber.photo_url || null;
       document.getElementById('barbero-foto-preview').src = barber.photo_url
         || 'https://placehold.co/56x56/1D1D20/D9A441?text=' + encodeURIComponent(initials(barber.name));
-      document.getElementById('barbero-bio').value = barber.bio || '';
+      const bioEl = document.getElementById('barbero-bio');
+      bioEl.value = barber.bio || '';
+      actualizarContadorBioPerfil(bioEl);
     }
+
+    // "Descripción corta" ahora se limita a 60 caracteres (antes 300) — si
+    // alguien tiene una bio vieja más larga, se deja intacta hasta que la
+    // edite (no se trunca sola), pero no se puede guardar así de larga.
+    function actualizarContadorBioGenerico(el, contadorId) {
+      const len = el.value.length;
+      const contador = document.getElementById(contadorId);
+      contador.textContent = `${len}/60`;
+      contador.classList.toggle('text-red-400', len > 60);
+      contador.classList.toggle('text-white/40', len <= 60);
+    }
+    function actualizarContadorBioPerfil(el) { actualizarContadorBioGenerico(el, 'barbero-bio-contador'); }
+    function actualizarContadorBio(el) { actualizarContadorBioGenerico(el, 'detalle-barbero-bio-contador'); }
 
     async function subirFotoBarbero(file) {
       const statusEl = document.getElementById('barbero-foto-status');
@@ -1092,13 +1234,20 @@
 
     async function guardarPerfilBarbero() {
       const statusEl = document.getElementById('barbero-bio-status');
+      const bio = document.getElementById('barbero-bio').value.trim();
       statusEl.className = 'text-xs mb-2';
+      if (bio.length > 60) {
+        statusEl.textContent = 'La descripción no puede superar los 60 caracteres.';
+        statusEl.classList.add('text-red-400');
+        statusEl.classList.remove('hidden');
+        return;
+      }
       statusEl.textContent = 'Guardando…';
       statusEl.classList.remove('hidden');
 
       const { error } = await supabaseClient.rpc('update_barber_profile', {
         p_photo_url: state.barberPhotoUrl,
-        p_bio: document.getElementById('barbero-bio').value.trim() || null,
+        p_bio: bio || null,
       });
       if (error) {
         statusEl.textContent = 'Error: ' + error.message;
@@ -1129,10 +1278,6 @@
 
     // ---------- navegación ----------
     function showView(name, btn) {
-      if (state.vistaActual === 'info' && name !== 'info' && state.horariosSinGuardar.size > 0) {
-        if (!confirm('Tienes cambios de horario sin guardar. ¿Salir igual? Se van a perder.')) return;
-        state.horariosSinGuardar.clear();
-      }
       document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
       document.getElementById('view-' + name).classList.add('active');
       document.querySelectorAll('.nav-item').forEach(n => {
@@ -1144,7 +1289,29 @@
 
       state.vistaActual = name;
       actualizarFabNuevaCita();
-      const loaders = { resumen: loadResumen, calendario: loadCalendario, servicios: loadServicios, barberos: loadBarberos, info: loadInfo, reportes: loadReportes };
+      const loaders = {
+        resumen: loadResumen,
+        calendario: loadCalendario,
+        reportes: loadReportes,
+        mibarberia: () => showSubtabMiBarberia(state.subtabMiBarberia || (state.role === 'owner' ? 'servicios' : 'info')),
+      };
+      loaders[name]?.();
+    }
+
+    // sub-pestañas dentro de "Mi barbería" (Servicios/Barberos son
+    // data-owner-only, Info la ve también el barbero)
+    function showSubtabMiBarberia(name) {
+      document.querySelectorAll('#view-mibarberia .subview').forEach(v => v.classList.remove('active'));
+      document.getElementById('subview-' + name).classList.add('active');
+      document.querySelectorAll('#view-mibarberia [id^="subtab-"]').forEach(b => {
+        b.classList.remove('border-gold', 'text-gold');
+        b.classList.add('border-transparent', 'text-white/50');
+      });
+      const btn = document.getElementById('subtab-' + name);
+      btn.classList.add('border-gold', 'text-gold');
+      btn.classList.remove('border-transparent', 'text-white/50');
+      state.subtabMiBarberia = name;
+      const loaders = { servicios: loadServicios, barberos: loadBarberos, info: loadInfo };
       loaders[name]?.();
     }
 
@@ -1356,30 +1523,30 @@
     }
 
     async function loadResumen() {
+      const { todosBarberos, idsDisponibles } = await obtenerBarberosYFiltro();
+      if (state.role === 'barbero') {
+        document.getElementById('resumen-filtro-barberos').innerHTML = '';
+      } else {
+        renderFiltroBarberos('resumen-filtro-barberos', todosBarberos, idsDisponibles);
+      }
+
       const todayIso = santiagoDateParts(0).iso;
-      let query = supabaseClient
+      const { data: bookings } = await supabaseClient
         .from('bookings')
         .select('*, services(name, price_clp, duration_minutes), barbers(name)')
         .eq('barbershop_id', state.barbershopId)
         .eq('booking_date', todayIso)
-        .not('status', 'in', '(cancelled,no_show)');
-      if (state.role === 'barbero') query = query.eq('barber_id', state.barberId);
-      const { data: bookings } = await query.order('start_time');
+        .not('status', 'in', '(cancelled,no_show)')
+        .in('barber_id', state.calendarioBarberosVisibles)
+        .order('start_time');
       const rows = bookings || [];
 
       document.getElementById('stat-citas').textContent = rows.length;
       document.getElementById('stat-ingresos').textContent = clp(rows.reduce((sum, b) => sum + (b.services?.price_clp || 0), 0));
 
       const weekday = santiagoDateParts(0).dateObj.getUTCDay();
-      let barberIds;
-      if (state.role === 'barbero') {
-        barberIds = [state.barberId];
-      } else {
-        const { data: barbers } = await supabaseClient.from('barbers').select('id').eq('barbershop_id', state.barbershopId).eq('active', true);
-        barberIds = (barbers || []).map(b => b.id);
-      }
-      const { data: horas } = barberIds.length
-        ? await supabaseClient.from('barber_working_hours').select('start_time,end_time').eq('weekday', weekday).in('barber_id', barberIds)
+      const { data: horas } = state.calendarioBarberosVisibles.length
+        ? await supabaseClient.from('barber_working_hours').select('start_time,end_time').eq('weekday', weekday).in('barber_id', state.calendarioBarberosVisibles)
         : { data: [] };
       const totalWorkMinutes = (horas || []).reduce((sum, h) => sum + diffMinutes(h.start_time, h.end_time), 0);
       const bookedMinutes = rows.reduce((sum, b) => sum + (b.services?.duration_minutes || 0), 0);
@@ -1475,9 +1642,31 @@
     function guardarFiltroBarberos(ids) {
       try { localStorage.setItem(claveFiltroBarberos(), JSON.stringify(ids)); } catch (e) { /* no pasa nada si no se puede guardar */ }
     }
-    function renderFiltroBarberos(todosBarberos, idsDisponibles) {
+    // devuelve todos los barberos activos + deja state.calendarioBarberosVisibles
+    // listo (localStorage la primera vez, o recortado si algún barbero dejó de
+    // existir) — lo comparten Resumen y Calendario para que el mismo filtro
+    // aplique en los dos
+    async function obtenerBarberosYFiltro() {
+      const todosBarberos = state.role === 'barbero'
+        ? [{ id: state.barberId, name: state.barberName }]
+        : (await supabaseClient.from('barbers').select('id,name').eq('barbershop_id', state.barbershopId).eq('active', true).order('name')).data || [];
+      const idsDisponibles = todosBarberos.map(b => b.id);
+      if (state.role === 'barbero') {
+        state.calendarioBarberosVisibles = idsDisponibles;
+      } else if (!state.calendarioBarberosVisibles) {
+        state.calendarioBarberosVisibles = cargarFiltroBarberosGuardado(idsDisponibles);
+      } else {
+        state.calendarioBarberosVisibles = state.calendarioBarberosVisibles.filter(id => idsDisponibles.includes(id));
+        if (!state.calendarioBarberosVisibles.length) state.calendarioBarberosVisibles = idsDisponibles.slice();
+      }
+      return { todosBarberos, idsDisponibles };
+    }
+
+    function renderFiltroBarberos(containerId, todosBarberos, idsDisponibles) {
+      const cont = document.getElementById(containerId);
+      if (!cont) return;
       const todosSeleccionados = state.calendarioBarberosVisibles.length === idsDisponibles.length;
-      document.getElementById('calendario-filtro-barberos').innerHTML = `
+      cont.innerHTML = `
         <button onclick='mostrarTodosBarberos(${JSON.stringify(idsDisponibles)})' class="text-xs border px-3 py-1.5 rounded-sm transition ${todosSeleccionados ? 'border-gold bg-gold/10 text-gold' : 'border-white/15 text-white/60'}">Todos</button>
         ${todosBarberos.map(b => `
           <button onclick="toggleBarberoFiltro('${b.id}')" class="text-xs border px-3 py-1.5 rounded-sm transition ${state.calendarioBarberosVisibles.includes(b.id) ? 'border-gold bg-gold/10 text-gold' : 'border-white/15 text-white/60'}">${escapeHtml(b.name)}</button>
@@ -1493,12 +1682,12 @@
         state.calendarioBarberosVisibles.push(barberId);
       }
       guardarFiltroBarberos(state.calendarioBarberosVisibles);
-      loadCalendario();
+      refrescarVistaActual();
     }
     function mostrarTodosBarberos(idsDisponibles) {
       state.calendarioBarberosVisibles = idsDisponibles.slice();
       guardarFiltroBarberos(state.calendarioBarberosVisibles);
-      loadCalendario();
+      refrescarVistaActual();
     }
 
     async function loadCalendario() {
@@ -1511,26 +1700,17 @@
       fechaInput.max = santiagoDateParts(29).iso;
       fechaInput.value = todayIso;
 
-      const todosBarberos = state.role === 'barbero'
-        ? [{ id: state.barberId, name: state.barberName }]
-        : (await supabaseClient.from('barbers').select('id,name').eq('barbershop_id', state.barbershopId).eq('active', true).order('name')).data;
-      if (!todosBarberos || !todosBarberos.length) {
+      const { todosBarberos, idsDisponibles } = await obtenerBarberosYFiltro();
+      if (!todosBarberos.length) {
         document.getElementById('calendario-filtro-barberos').innerHTML = '';
         container.innerHTML = '<p class="text-white/40 text-sm text-center py-8">Agrega barberos para ver el calendario.</p>';
         return;
       }
-
-      const idsDisponibles = todosBarberos.map(b => b.id);
       if (state.role === 'barbero') {
         document.getElementById('calendario-filtro-barberos').innerHTML = '';
-        state.calendarioBarberosVisibles = idsDisponibles;
-      } else if (!state.calendarioBarberosVisibles) {
-        state.calendarioBarberosVisibles = cargarFiltroBarberosGuardado(idsDisponibles);
       } else {
-        state.calendarioBarberosVisibles = state.calendarioBarberosVisibles.filter(id => idsDisponibles.includes(id));
-        if (!state.calendarioBarberosVisibles.length) state.calendarioBarberosVisibles = idsDisponibles.slice();
+        renderFiltroBarberos('calendario-filtro-barberos', todosBarberos, idsDisponibles);
       }
-      if (state.role !== 'barbero') renderFiltroBarberos(todosBarberos, idsDisponibles);
 
       const barbers = todosBarberos.filter(b => state.calendarioBarberosVisibles.includes(b.id));
       const barberIds = barbers.map(b => b.id);
@@ -1587,14 +1767,59 @@
     async function loadServicios() {
       const { data } = await supabaseClient.from('services').select('*').eq('barbershop_id', state.barbershopId).eq('active', true).order('created_at');
       document.getElementById('servicios-lista').innerHTML = (data && data.length) ? data.map(s => `
-        <div class="flex flex-wrap items-center gap-2 px-4 py-3">
+        <div onclick="abrirDetalleServicio('${s.id}')" class="flex flex-wrap items-center gap-2 px-4 py-3 cursor-pointer hover:bg-white/5 transition">
           <span class="flex-1 min-w-[120px] text-sm font-medium">${escapeHtml(s.name)}</span>
           <span class="text-xs text-white/50 w-20">${s.duration_minutes} min</span>
           <span class="font-mono text-sm text-gold w-24 text-right">${clp(s.price_clp)}</span>
-          <button onclick="abrirModalAsignarBarberosAServicio('${s.id}', '${escapeHtml(s.name)}', false)" class="text-xs text-white/40 hover:text-gold transition">Barberos</button>
-          <button onclick="deleteServicio('${s.id}')" class="text-xs text-white/40 hover:text-red-400 transition">Eliminar</button>
         </div>
       `).join('') : '<p class="px-4 py-6 text-sm text-white/40 text-center">Sin servicios todavía.</p>';
+    }
+
+    // ---------- detalle/edición de un servicio ----------
+    async function abrirDetalleServicio(servicioId) {
+      const { data: s } = await supabaseClient.from('services').select('*').eq('id', servicioId).single();
+      if (!s) return;
+      state.detalleServicioId = servicioId;
+      document.getElementById('servicio-edit-nombre').value = s.name;
+      document.getElementById('servicio-edit-duracion').value = s.duration_minutes;
+      document.getElementById('servicio-edit-precio').value = s.price_clp;
+      document.getElementById('servicio-edit-status').classList.add('hidden');
+      document.getElementById('modal-detalle-servicio').classList.remove('hidden');
+    }
+    function cerrarModalDetalleServicio() {
+      document.getElementById('modal-detalle-servicio').classList.add('hidden');
+    }
+    async function guardarServicio() {
+      const id = state.detalleServicioId;
+      const statusEl = document.getElementById('servicio-edit-status');
+      statusEl.className = 'text-xs mb-3';
+      let nombre = document.getElementById('servicio-edit-nombre').value.trim();
+      const duracion = parseInt(document.getElementById('servicio-edit-duracion').value, 10);
+      const precio = parseInt(document.getElementById('servicio-edit-precio').value, 10);
+      if (!nombre || !duracion || !precio) {
+        statusEl.textContent = 'Completa nombre, duración y precio.';
+        statusEl.classList.add('text-red-400');
+        statusEl.classList.remove('hidden');
+        return;
+      }
+      nombre = capitalizeWords(nombre).slice(0, 60);
+      const { error } = await supabaseClient.from('services').update({ name: nombre, duration_minutes: duracion, price_clp: precio }).eq('id', id);
+      if (error) {
+        statusEl.textContent = 'Error: ' + error.message;
+        statusEl.classList.add('text-red-400');
+        statusEl.classList.remove('hidden');
+        return;
+      }
+      cerrarModalDetalleServicio();
+      loadServicios();
+    }
+    function abrirAsignarDesdeDetalleServicio() {
+      document.getElementById('modal-detalle-servicio').classList.add('hidden');
+      abrirModalAsignarBarberosAServicio(state.detalleServicioId, document.getElementById('servicio-edit-nombre').value, false);
+    }
+    async function eliminarServicioDesdeDetalle() {
+      const eliminado = await deleteServicio(state.detalleServicioId);
+      if (eliminado) cerrarModalDetalleServicio();
     }
 
     async function addServicio() {
@@ -1614,6 +1839,7 @@
     let asignarContext = null;
 
     async function abrirModalAsignarBarberosAServicio(servicioId, servicioName, esNuevo) {
+      document.getElementById('modal-detalle-servicio').classList.add('hidden');
       const { data: barberos } = await supabaseClient.from('barbers').select('id,name').eq('barbershop_id', state.barbershopId).eq('active', true).order('created_at');
       if (!barberos || !barberos.length) {
         if (!esNuevo) alert('Todavía no tienes barberos agregados.');
@@ -1637,6 +1863,7 @@
     }
 
     async function abrirModalAsignarServiciosABarbero(barberoId, barberoName, esNuevo) {
+      document.getElementById('modal-detalle-barbero').classList.add('hidden');
       const { data: servicios } = await supabaseClient.from('services').select('id,name').eq('barbershop_id', state.barbershopId).eq('active', true).order('created_at');
       if (!servicios || !servicios.length) {
         if (!esNuevo) alert('Todavía no tienes servicios agregados.');
@@ -1681,9 +1908,10 @@
     }
 
     async function deleteServicio(id) {
-      if (!confirm('¿Eliminar este servicio?')) return;
+      if (!confirm('¿Eliminar este servicio?')) return false;
       await supabaseClient.from('services').update({ active: false }).eq('id', id);
       loadServicios();
+      return true;
     }
 
     // ---------- Barberos ----------
@@ -1691,26 +1919,13 @@
       const { data } = await supabaseClient.from('barbers').select('*').eq('barbershop_id', state.barbershopId).order('created_at');
       document.getElementById('barberos-lista').innerHTML = (data && data.length) ? data.map(b => `
         <div onclick="abrirDetalleBarbero('${b.id}')" class="border border-white/10 rounded-sm p-4 cursor-pointer hover:border-gold/40 transition">
-          <img src="${b.photo_url || 'https://placehold.co/48x48/1D1D20/D9A441?text=' + encodeURIComponent(b.name.charAt(0))}" class="w-12 h-12 rounded-sm mb-3">
-          <p class="text-sm font-medium mb-2">${escapeHtml(b.name)}</p>
-          <div class="flex items-center justify-between gap-2 mb-2">
+          <img src="${b.photo_url || 'https://placehold.co/48x48/1D1D20/D9A441?text=' + encodeURIComponent(b.name.charAt(0))}" class="w-12 h-12 rounded-sm mb-2">
+          <p class="text-sm font-medium">${escapeHtml(b.name)}</p>
+          ${b.bio ? `<p class="text-xs text-white/40 mt-0.5">${escapeHtml(truncar(b.bio, 60))}</p>` : ''}
+          <div class="flex items-center justify-between gap-2 mt-2">
             <span class="text-xs ${b.active ? 'bg-green-500/15 text-green-400' : 'bg-white/10 text-white/40'} px-2 py-0.5 rounded-sm">${b.active ? 'Disponible' : 'Inactivo'}</span>
             <button onclick="event.stopPropagation(); abrirModalAsignarServiciosABarbero('${b.id}', '${escapeHtml(b.name)}', false)" class="text-xs text-white/40 hover:text-gold transition">Servicios</button>
-            <button onclick="event.stopPropagation(); toggleBarberoActivo('${b.id}', ${b.active})" class="text-xs text-white/40 hover:${b.active ? 'text-red-400' : 'text-green-400'} transition">${b.active ? 'Eliminar' : 'Reactivar'}</button>
           </div>
-          ${b.user_id
-            ? `<div class="flex items-center justify-between gap-2">
-                <span class="text-xs bg-gold/10 text-gold px-2 py-0.5 rounded-sm">🔑 Acceso activo</span>
-                <button onclick="event.stopPropagation(); quitarAccesoBarbero('${b.id}', '${escapeHtml(b.name)}')" class="text-xs text-white/40 hover:text-red-400 transition">Quitar acceso</button>
-              </div>`
-            : PLANES_CON_LOGIN_BARBERO.includes(state.barbershopPlan)
-              ? `<button onclick="event.stopPropagation(); crearAccesoBarbero('${b.id}', '${escapeHtml(b.name)}')" class="w-full text-xs border border-white/15 rounded-sm px-2 py-1.5 text-white/60 hover:border-gold hover:text-gold transition">+ Crear acceso</button>`
-              : `<p class="text-[11px] text-white/30 text-center">Los accesos de barbero no están incluidos en tu plan actual.</p>`
-          }
-          ${PLANES_CON_LOGIN_BARBERO.includes(state.barbershopPlan)
-            ? `<p class="text-[11px] text-white/30 text-center mt-2">📸 Puede agregar su foto de perfil y descripción desde su acceso (Info → Mi perfil).</p>`
-            : `<p class="text-[11px] text-white/30 text-center mt-2">La foto de perfil y descripción del barbero no están incluidas en tu plan actual.</p>`
-          }
         </div>
       `).join('') : '<p class="col-span-2 md:col-span-3 text-white/40 text-sm text-center py-6">Sin barberos todavía.</p>';
     }
@@ -1740,23 +1955,24 @@
       if (linkError) { alert('El usuario se creó pero no se pudo vincular al barbero: ' + linkError.message); return; }
 
       alert(`Acceso creado para ${barberName}.\n\nCorreo: ${correo}\nContraseña temporal: ${password}\n\nCompártesela por WhatsApp — puede cambiarla después en Info → Seguridad.\n\nEntra en el mismo link: ${location.origin}${location.pathname}`);
-      loadBarberos();
+      abrirDetalleBarbero(barberId);
     }
 
     async function quitarAccesoBarbero(barberId, barberName) {
       if (!confirm(`¿Quitarle el acceso a ${barberName}? Ya no va a poder entrar a su panel (el dueño sigue administrando todo por él).`)) return;
       const { error } = await supabaseClient.from('barbers').update({ user_id: null }).eq('id', barberId);
       if (error) { alert('Error: ' + error.message); return; }
-      loadBarberos();
+      abrirDetalleBarbero(barberId);
     }
 
     async function toggleBarberoActivo(id, activoActual) {
       const mensaje = activoActual
         ? '¿Eliminar a este barbero? Ya no va a aparecer para agendar nuevas horas, pero sus reservas pasadas se mantienen.'
         : '¿Reactivar a este barbero? Va a volver a aparecer disponible para agendar.';
-      if (!confirm(mensaje)) return;
+      if (!confirm(mensaje)) return false;
       await supabaseClient.from('barbers').update({ active: !activoActual }).eq('id', id);
       loadBarberos();
+      return true;
     }
 
     async function addBarbero() {
@@ -1927,6 +2143,12 @@
         e.returnValue = '';
       }
     });
+
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js').catch(() => { /* no es crítico si falla */ });
+      });
+    }
   </script>
 
 </body>
