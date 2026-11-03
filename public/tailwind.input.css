@@ -1,0 +1,9 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html { scroll-behavior: smooth; }
+body { font-family: 'Inter', sans-serif; }
+.font-display { font-family: 'Space Grotesk', sans-serif; letter-spacing: -0.01em; }
+.preview-slide { opacity: 0; transform: translateY(10px); transition: opacity 0.45s ease, transform 0.45s ease; }
+.preview-slide.active { opacity: 1; transform: translateY(0); }
