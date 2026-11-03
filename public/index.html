@@ -2,10 +2,11 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>CorteYa — Agenda tu corte cerca de ti</title>
-<meta name="description" content="Agenda tu corte en la barbería más cercana sin llamar ni escribir por WhatsApp. Busca, agenda y confirma en segundos. Próximamente en la Región Metropolitana, Chile.">
+<title>CorteYa — Agenda online para barberías en Chile</title>
+<meta name="description" content="Agenda online para barberías: tus clientes reservan solos, confirmación y recordatorio por WhatsApp, panel con reportes. Prueba gratis en Santiago.">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="canonical" href="https://corteya.app/">
+<link rel="preload" as="image" href="screenshots/demo-hoy-desktop.webp">
 
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="512x512" href="/icons/icon-512.png">
@@ -15,14 +16,16 @@
 <meta property="og:type" content="website">
 <meta property="og:locale" content="es_CL">
 <meta property="og:site_name" content="CorteYa">
-<meta property="og:title" content="CorteYa — Agenda tu corte cerca de ti">
-<meta property="og:description" content="Agenda tu corte en la barbería más cercana sin llamar ni escribir por WhatsApp. Busca, agenda y confirma en segundos.">
+<meta property="og:title" content="CorteYa — Agenda online para barberías en Chile">
+<meta property="og:description" content="Agenda online para barberías: tus clientes reservan solos, confirmación y recordatorio por WhatsApp, panel con reportes. Prueba gratis en Santiago.">
 <meta property="og:url" content="https://corteya.app/">
 <meta property="og:image" content="https://corteya.app/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
 
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="CorteYa — Agenda tu corte cerca de ti">
-<meta name="twitter:description" content="Agenda tu corte en la barbería más cercana sin llamar ni escribir por WhatsApp. Busca, agenda y confirma en segundos.">
+<meta name="twitter:title" content="CorteYa — Agenda online para barberías en Chile">
+<meta name="twitter:description" content="Agenda online para barberías: tus clientes reservan solos, confirmación y recordatorio por WhatsApp, panel con reportes. Prueba gratis en Santiago.">
 <meta name="twitter:image" content="https://corteya.app/og-image.jpg">
 
 <script src="https://cdn.tailwindcss.com"></script>
@@ -34,10 +37,10 @@
     theme: {
       extend: {
         colors: {
-          ink: '#0B0B0C',
+          ink: '#0A0A0A',
           panel: '#151517',
           gold: '#D9A441',
-          goldlight: '#E8C27A',
+          goldlight: '#E0A81E',
         },
         fontFamily: {
           display: ['Space Grotesk', 'sans-serif'],
@@ -56,21 +59,47 @@
   .preview-slide.active { opacity: 1; transform: translateY(0); }
 </style>
 
+<script defer data-domain="corteya.app" src="https://plausible.io/js/script.js"></script>
+<script>
+  window.plausible = window.plausible || function () { (window.plausible.q = window.plausible.q || []).push(arguments) };
+</script>
+
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "Organization",
-  "name": "CorteYa",
-  "url": "https://corteya.app/",
-  "logo": "https://corteya.app/og-image.jpg",
-  "description": "Plataforma para agendar cortes de pelo en barberías cerca de ti, sin llamadas ni esperar respuesta por WhatsApp.",
-  "areaServed": {
-    "@type": "AdministrativeArea",
-    "name": "Región Metropolitana, Chile"
-  },
-  "sameAs": [
-    "https://www.instagram.com/corteya.app/",
-    "https://www.facebook.com/profile.php?id=61593796841523"
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://corteya.app/#organization",
+      "name": "CorteYa",
+      "url": "https://corteya.app/",
+      "logo": "https://corteya.app/og-image.jpg",
+      "areaServed": { "@type": "AdministrativeArea", "name": "Región Metropolitana, Chile" },
+      "sameAs": [
+        "https://www.instagram.com/corteya.app/",
+        "https://www.facebook.com/profile.php?id=61593796841523"
+      ]
+    },
+    {
+      "@type": "SoftwareApplication",
+      "name": "CorteYa",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "Web",
+      "url": "https://corteya.app/",
+      "description": "Agenda online para barberías en Chile: reservas 24/7, confirmación y recordatorio automáticos por WhatsApp, y panel con reportes para el dueño.",
+      "offers": {
+        "@type": "Offer",
+        "priceCurrency": "CLP",
+        "price": "12000",
+        "priceSpecification": {
+          "@type": "UnitPriceSpecification",
+          "price": "12000",
+          "priceCurrency": "CLP",
+          "unitText": "MONTH"
+        }
+      },
+      "provider": { "@id": "https://corteya.app/#organization" }
+    }
   ]
 }
 </script>
@@ -82,15 +111,15 @@
     <div class="max-w-6xl mx-auto px-5 sm:px-8 h-16 flex items-center justify-between">
       <a href="#" class="font-display text-xl tracking-wide">CORTE<span class="text-gold">YA</span></a>
       <nav class="hidden md:flex items-center gap-8 text-sm text-white/80">
-        <a href="#como-funciona" class="hover:text-white transition">Cómo funciona</a>
-        <a href="#barberias" class="hover:text-white transition">Para barberías</a>
+        <a href="#funciones" class="hover:text-white transition">Funciones</a>
+        <a href="#clientes" class="hover:text-white transition">Para tus clientes</a>
         <a href="#faq" class="hover:text-white transition">Preguntas</a>
       </nav>
       <div class="flex items-center gap-3">
         <a href="dashboard-barberia.html" class="hidden sm:inline text-sm text-white/70 hover:text-white transition">
           Iniciar sesión
         </a>
-        <a href="#prueba-gratis" class="bg-gold hover:bg-goldlight text-ink text-sm font-semibold px-4 py-2 rounded-sm transition">
+        <a href="#prueba-gratis" onclick="plausible('CTA Prueba Gratis', { props: { ubicacion: 'nav' } })" class="bg-gold hover:bg-goldlight text-ink text-sm font-semibold px-4 py-2 rounded-sm transition">
           Pide tu prueba gratis
         </a>
       </div>
@@ -98,143 +127,137 @@
   </header>
 
   <!-- HERO -->
+  <main>
   <section class="max-w-6xl mx-auto px-5 sm:px-8 pt-16 pb-20 md:pt-24 md:pb-28 grid md:grid-cols-2 gap-16 items-center">
     <div>
       <p class="flex items-center gap-3 font-mono text-xs tracking-[0.15em] uppercase text-gold mb-7">
-        <span class="w-6 h-px bg-gold"></span> <span id="eyebrow-countdown">Chile — próximamente</span>
+        <span class="w-6 h-px bg-gold"></span> Santiago, Chile
       </p>
       <h1 class="font-display text-4xl sm:text-5xl md:text-6xl leading-[1.05] mb-6">
-        Encuentra tu barbería.<br>
-        Agenda al instante.<br>
-        <span class="text-gold">Todo en segundos.</span>
+        Tu agenda se llena sola.<br>
+        <span class="text-gold">Tú solo cortas.</span>
       </h1>
       <p class="text-white/70 text-lg mb-8 max-w-md">
-        Sin llamadas, sin esperar respuesta por WhatsApp. Busca la barbería más cercana, elige tu hora y agenda desde el celular.
+        Agenda online para barberías en Santiago. Tus clientes reservan desde tu Instagram o WhatsApp, reciben confirmación y recordatorio automáticos, y tú ves todo ordenado en tu panel.
       </p>
       <div class="flex flex-col sm:flex-row gap-4">
-        <a href="#prueba-gratis"
+        <a href="#prueba-gratis" onclick="plausible('CTA Prueba Gratis', { props: { ubicacion: 'hero' } })"
            class="bg-gold hover:bg-goldlight text-ink text-center font-semibold px-6 py-3.5 rounded-sm transition">
-          Tengo una barbería
+          Pide tu prueba gratis
+        </a>
+        <a href="#funciones" class="border border-white/20 hover:border-white/40 text-center font-semibold px-6 py-3.5 rounded-sm transition">
+          Ver cómo funciona
         </a>
       </div>
     </div>
-    <div class="flex justify-center md:justify-end">
-      <div class="relative w-full max-w-xs">
-        <div class="absolute -inset-10 bg-gold/15 rounded-full blur-3xl"></div>
-        <a href="app-cliente.html" class="preview-carousel relative block aspect-[375/780] rounded-[2.25rem] overflow-hidden shadow-[0_25px_60px_-15px_rgba(0,0,0,0.7)] transition">
-          <img src="screenshots/app-cliente-lista.png" alt="Vista previa de la app CorteYa" class="preview-slide active absolute inset-0 w-full h-full object-cover">
-          <img src="screenshots/app-cliente-mapa.png" alt="" class="preview-slide absolute inset-0 w-full h-full object-cover">
-          <img src="screenshots/app-cliente-detalle.png" alt="" class="preview-slide absolute inset-0 w-full h-full object-cover">
-          <img src="screenshots/app-cliente-agendar.png" alt="" class="preview-slide absolute inset-0 w-full h-full object-cover">
-          <img src="screenshots/app-cliente-confirmacion.png" alt="" class="preview-slide absolute inset-0 w-full h-full object-cover">
-        </a>
+    <div class="relative">
+      <div class="absolute -inset-10 bg-gold/10 rounded-full blur-3xl"></div>
+      <div class="relative bg-panel rounded-lg p-4 sm:p-5">
+        <div class="preview-carousel relative block border border-white/20 rounded-sm aspect-[1200/750] overflow-hidden shadow-[0_25px_60px_-15px_rgba(0,0,0,0.7)]">
+          <img src="screenshots/demo-hoy-desktop.webp" width="1200" height="750" alt="Panel de CorteYa: Hoy, con la próxima cita" fetchpriority="high" class="preview-slide active absolute inset-0 w-full h-full object-cover object-top">
+          <img src="screenshots/demo-calendario-desktop.webp" width="1200" height="750" alt="" class="preview-slide absolute inset-0 w-full h-full object-cover object-top">
+          <img src="screenshots/demo-como-pago-desktop.webp" width="1200" height="750" alt="" class="preview-slide absolute inset-0 w-full h-full object-cover object-top">
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- PROBLEMA -->
+  <!-- DOLORES DEL DUEÑO -->
   <section class="bg-panel border-y border-white/10">
     <div class="max-w-6xl mx-auto px-5 sm:px-8 py-16 md:py-20">
       <h2 class="font-display text-2xl sm:text-3xl mb-12">¿Te suena familiar?</h2>
-      <div class="grid sm:grid-cols-3 gap-10 sm:gap-8">
-        <div class="text-center sm:border-l sm:border-white/15 sm:pl-8 first:border-0 first:pl-0">
-          <span class="text-2xl block mb-4">📵</span>
-          <p class="text-white/75 font-semibold leading-relaxed">Llamas o escribes por WhatsApp y esperas media hora por respuesta.</p>
+      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-10 sm:gap-8">
+        <div class="text-center lg:border-l lg:border-white/15 lg:pl-8 lg:first:border-0 lg:first:pl-0">
+          <svg class="w-7 h-7 text-gold mx-auto mb-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-4-1l-5 1 1-5a8.5 8.5 0 0 1-1-4 8.38 8.38 0 0 1 8.5-8.5h.5a8.4 8.4 0 0 1 8 8z"/></svg>
+          <p class="text-white/75 font-semibold leading-relaxed">Revisas el WhatsApp todo el día para saber quién agendó.</p>
         </div>
-        <div class="text-center sm:border-l sm:border-white/15 sm:pl-8">
-          <span class="text-2xl block mb-4">🚶</span>
-          <p class="text-white/75 font-semibold leading-relaxed">Llegas a la barbería y está llena, o cerrada, o el barbero no está.</p>
+        <div class="text-center lg:border-l lg:border-white/15 lg:pl-8">
+          <svg class="w-7 h-7 text-gold mx-auto mb-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/><path d="M9.5 14.5l5 3M14.5 14.5l-5 3"/></svg>
+          <p class="text-white/75 font-semibold leading-relaxed">Dos clientes llegan a la misma hora porque alguien anotó mal.</p>
         </div>
-        <div class="text-center sm:border-l sm:border-white/15 sm:pl-8">
-          <span class="text-2xl block mb-4">📓</span>
-          <p class="text-white/75 font-semibold leading-relaxed">Agendaste por teléfono y nadie anotó tu hora en ninguna parte.</p>
+        <div class="text-center lg:border-l lg:border-white/15 lg:pl-8">
+          <svg class="w-7 h-7 text-gold mx-auto mb-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-5.5 6-5.5s6 2.2 6 5.5"/><path d="M16 8l4 4m0-4l-4 4"/></svg>
+          <p class="text-white/75 font-semibold leading-relaxed">El cliente no llega, y nadie le recordó.</p>
+        </div>
+        <div class="text-center lg:border-l lg:border-white/15 lg:pl-8">
+          <svg class="w-7 h-7 text-gold mx-auto mb-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.8a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.84.57 2.8.7A2 2 0 0 1 22 16.92z"/></svg>
+          <p class="text-white/75 font-semibold leading-relaxed">Confirmar a mano, uno por uno: "¿nos vemos mañana, cierto?"</p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- COMO FUNCIONA -->
-  <section id="como-funciona" class="max-w-6xl mx-auto px-5 sm:px-8 py-20 md:py-24">
-    <h2 class="font-display text-2xl sm:text-3xl mb-4">Cómo funciona</h2>
-    <p class="text-white/60 mb-14 max-w-lg">Tres pasos, menos de un minuto.</p>
-    <div class="grid sm:grid-cols-3 gap-10 sm:gap-8">
-      <div class="text-center sm:border-l sm:border-white/15 sm:pl-8 first:border-0 first:pl-0">
-        <span class="text-2xl block mb-4">📍</span>
-        <h3 class="font-display text-lg mb-2">Busca cerca de ti</h3>
-        <p class="text-white/60 leading-relaxed">Ve las barberías disponibles según tu ubicación, con horarios en tiempo real.</p>
-      </div>
-      <div class="text-center sm:border-l sm:border-white/15 sm:pl-8">
-        <span class="text-2xl block mb-4">🕐</span>
-        <h3 class="font-display text-lg mb-2">Elige tu hora</h3>
-        <p class="text-white/60 leading-relaxed">Selecciona el barbero, el servicio y el horario que más te acomode.</p>
-      </div>
-      <div class="text-center sm:border-l sm:border-white/15 sm:pl-8">
-        <span class="text-2xl block mb-4">✅</span>
-        <h3 class="font-display text-lg mb-2">Confirma y listo</h3>
-        <p class="text-white/60 leading-relaxed">Recibe tu hora confirmada al instante y agrégala a tu Google o Apple Calendar con un toque, para que no se te olvide.</p>
-      </div>
-    </div>
-  </section>
+  <!-- FUNCIONES -->
+  <section id="funciones" class="max-w-6xl mx-auto px-5 sm:px-8 py-20 md:py-24">
+    <h2 class="font-display text-2xl sm:text-3xl mb-4">Todo lo que necesitas para tu agenda</h2>
+    <p class="text-white/60 mb-14 max-w-lg">Lo que ya hace CorteYa hoy, en tu panel.</p>
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
 
-  <!-- PARA BARBERIAS -->
-  <section id="barberias" class="bg-panel border-y border-white/10">
-    <div class="max-w-6xl mx-auto px-5 sm:px-8 py-20 md:py-24 grid md:grid-cols-2 gap-16 items-center">
-      <div class="relative order-2 md:order-1">
-        <div class="absolute -inset-10 bg-gold/10 rounded-full blur-3xl"></div>
-        <div class="relative bg-ink rounded-lg p-4 sm:p-5">
-          <a href="dashboard-barberia.html" class="preview-carousel relative block border border-white/20 rounded-sm aspect-[4/3] overflow-hidden shadow-[0_25px_60px_-15px_rgba(0,0,0,0.7)] hover:border-gold/50 transition">
-            <img src="screenshots/dashboard-resumen.png" alt="Panel para barberías de CorteYa" class="preview-slide active absolute inset-0 w-full h-full object-cover">
-            <img src="screenshots/dashboard-calendario.png" alt="" class="preview-slide absolute inset-0 w-full h-full object-cover">
-            <img src="screenshots/dashboard-servicios.png" alt="" class="preview-slide absolute inset-0 w-full h-full object-cover">
-            <img src="screenshots/dashboard-barberos.png" alt="" class="preview-slide absolute inset-0 w-full h-full object-cover">
-          </a>
+      <div class="border border-white/10 rounded-sm overflow-hidden hover:border-gold/40 transition">
+        <img src="screenshots/demo-calendario-desktop.webp" width="1200" height="750" alt="" loading="lazy" class="w-full aspect-[4/3] object-cover object-top">
+        <div class="p-5">
+          <svg class="w-5 h-5 text-gold mb-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 14a4.5 4.5 0 0 0 6.4.4l2.3-2.3a4.5 4.5 0 0 0-6.4-6.4L11 7"/><path d="M14 10a4.5 4.5 0 0 0-6.4-.4L5.3 11.9a4.5 4.5 0 0 0 6.4 6.4L13 17"/></svg>
+          <h3 class="font-display text-base mb-1.5">Reservas 24/7 con tu link</h3>
+          <p class="text-white/60 text-sm leading-relaxed">Compártelo en tu Instagram o WhatsApp. Tus clientes agendan solos, sin dobles reservas.</p>
         </div>
       </div>
-      <div class="order-1 md:order-2">
-        <h2 class="font-display text-2xl sm:text-3xl mb-6">¿Tienes una barbería?</h2>
-        <ul class="space-y-4 mb-8">
-          <li class="flex gap-3 items-start">
-            <svg class="w-5 h-5 text-gold shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M5 12l4 4 10-10"/>
-            </svg>
-            <span class="text-white/80">Comparte el link de tu agenda en tu Instagram o WhatsApp y que agenden directo, sin gastar en publicidad.</span>
-          </li>
-          <li class="flex gap-3 items-start">
-            <svg class="w-5 h-5 text-gold shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M5 12l4 4 10-10"/>
-            </svg>
-            <span class="text-white/80">Agenda siempre ordenada, sin doble reserva ni cuadernos.</span>
-          </li>
-          <li class="flex gap-3 items-start">
-            <svg class="w-5 h-5 text-gold shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M5 12l4 4 10-10"/>
-            </svg>
-            <span class="text-white/80">Te llega la reserva altiro a tu panel — no dependes de revisar WhatsApp.</span>
-          </li>
-          <li class="flex gap-3 items-start">
-            <svg class="w-5 h-5 text-gold shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M5 12l4 4 10-10"/>
-            </svg>
-            <span class="text-white/80">Tu cliente recibe confirmación al agendar y recordatorio automático por WhatsApp el día de su hora — menos no-shows, sin que tengas que escribirle tú.</span>
-          </li>
-          <li class="flex gap-3 items-start">
-            <svg class="w-5 h-5 text-gold shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M5 12l4 4 10-10"/>
-            </svg>
-            <span class="text-white/80">Suma reseñas de tus clientes fácil, con un QR que les muestras después de cada corte.</span>
-          </li>
-          <li class="flex gap-3 items-start">
-            <svg class="w-5 h-5 text-gold shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M5 12l4 4 10-10"/>
-            </svg>
-            <span class="text-white/80">Reportes de cuántos cortes hiciste, cuánto facturaste y las horas que no llegaron.</span>
-          </li>
-        </ul>
-        <a href="#prueba-gratis"
-           class="inline-block bg-gold hover:bg-goldlight text-ink font-semibold px-6 py-3 rounded-sm transition">
-          Pide tu prueba gratis
-        </a>
+
+      <div class="border border-white/10 rounded-sm overflow-hidden hover:border-gold/40 transition">
+        <div class="w-full aspect-[4/3] bg-panel flex items-center justify-center">
+          <svg class="w-14 h-14 text-gold/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        </div>
+        <div class="p-5">
+          <svg class="w-5 h-5 text-gold mb-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <h3 class="font-display text-base mb-1.5">Confirmación y recordatorio automáticos</h3>
+          <p class="text-white/60 text-sm leading-relaxed">Por WhatsApp, al agendar y la mañana de la cita — sin que tengas que escribir nada.</p>
+        </div>
       </div>
+
+      <div class="border border-white/10 rounded-sm overflow-hidden hover:border-gold/40 transition">
+        <img src="screenshots/demo-nueva-cita-desktop.webp" width="1200" height="750" alt="" loading="lazy" class="w-full aspect-[4/3] object-cover object-top">
+        <div class="p-5">
+          <svg class="w-5 h-5 text-gold mb-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/><path d="M12 14v4M10 16h4"/></svg>
+          <h3 class="font-display text-base mb-1.5">"+ Nueva cita" para lo que agendan aparte</h3>
+          <p class="text-white/60 text-sm leading-relaxed">Anota en dos toques las horas que te piden por WhatsApp, teléfono o en persona.</p>
+        </div>
+      </div>
+
+      <div class="border border-white/10 rounded-sm overflow-hidden hover:border-gold/40 transition">
+        <img src="screenshots/demo-bloquear-hora-desktop.webp" width="1200" height="750" alt="" loading="lazy" class="w-full aspect-[4/3] object-cover object-top">
+        <div class="p-5">
+          <svg class="w-5 h-5 text-gold mb-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+          <h3 class="font-display text-base mb-1.5">Bloquea horas o días libres</h3>
+          <p class="text-white/60 text-sm leading-relaxed">Un trámite, un día libre, y define qué servicios hace cada barbero.</p>
+        </div>
+      </div>
+
+      <div class="border border-white/10 rounded-sm overflow-hidden hover:border-gold/40 transition">
+        <img src="screenshots/demo-como-pago-mobile.webp" width="390" height="844" alt="" loading="lazy" class="w-full aspect-[4/3] object-cover object-top">
+        <div class="p-5">
+          <svg class="w-5 h-5 text-gold mb-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 12.3l2.6 2.6L16 9.5"/></svg>
+          <h3 class="font-display text-base mb-1.5">"Llegó" / "No llegó" y cómo pagó</h3>
+          <p class="text-white/60 text-sm leading-relaxed">Marca la llegada y el método — efectivo, transferencia o tarjeta — con un toque.</p>
+        </div>
+      </div>
+
+      <div class="border border-white/10 rounded-sm overflow-hidden hover:border-gold/40 transition">
+        <img src="screenshots/demo-reportes-desktop.webp" width="1200" height="750" alt="" loading="lazy" class="w-full aspect-[4/3] object-cover object-top">
+        <div class="p-5">
+          <svg class="w-5 h-5 text-gold mb-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><rect x="7" y="12" width="3" height="6"/><rect x="13" y="8" width="3" height="10"/><rect x="19" y="5" width="0" height="13"/><path d="M19 5v13"/></svg>
+          <h3 class="font-display text-base mb-1.5">Reportes para cuadrar la caja</h3>
+          <p class="text-white/60 text-sm leading-relaxed">Cuántos cortes hiciste, cuánta plata recibiste y los no-shows del período.</p>
+        </div>
+      </div>
+
+      <div class="border border-white/10 rounded-sm overflow-hidden hover:border-gold/40 transition">
+        <img src="screenshots/demo-qr-resena-desktop.webp" width="1200" height="750" alt="" loading="lazy" class="w-full aspect-[4/3] object-cover object-top">
+        <div class="p-5">
+          <svg class="w-5 h-5 text-gold mb-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3.5v3.5M20.5 14v2M14 20.5h2.5M20.5 20.5h.01"/></svg>
+          <h3 class="font-display text-base mb-1.5">Reseñas con QR</h3>
+          <p class="text-white/60 text-sm leading-relaxed">Muéstraselo al cliente apenas termina su corte, para que deje su reseña al toque.</p>
+        </div>
+      </div>
+
     </div>
   </section>
 
@@ -252,7 +275,7 @@
           <div class="bg-[#202c33] rounded-lg rounded-tl-sm p-4">
             <p class="text-white/90 text-sm leading-relaxed">¡Hola <b>Matías Rojas</b>! Tu hora en <b>Barbería El Rincón</b> fue agendada con éxito. Tienes <b>Fade clásico</b> con <b>Nico</b>, programado para el día <b>18/10/2026</b> a las <b>17:30</b> horas. ¡Nos vemos pronto!</p>
             <div class="flex justify-end items-center gap-1 mt-2">
-              <span class="text-white/40 text-[11px]">10:22 a. m.</span>
+              <span class="text-white/60 text-[11px]">10:22 a. m.</span>
               <svg class="w-4 h-4 text-[#53bdeb]" viewBox="0 0 16 11" fill="currentColor"><path d="M11.07.653a.5.5 0 0 1 .7.07l.028.038.013.022a.5.5 0 0 1-.02.544L6.84 9.2a.5.5 0 0 1-.78.06L3.07 6.27a.5.5 0 1 1 .72-.696l2.65 2.573L10.91.8a.5.5 0 0 1 .16-.147Zm4 0a.5.5 0 0 1 .7.07l.028.038.013.022a.5.5 0 0 1-.02.544L10.84 9.2a.5.5 0 0 1-.564.195.5.5 0 0 1-.216-.135l-1.03-1.03a.5.5 0 0 1 .697-.717l.034.034.603.602 4.686-6.35A.5.5 0 0 1 15.07.654Z"/></svg>
             </div>
           </div>
@@ -263,16 +286,16 @@
           <div class="bg-[#202c33] rounded-lg rounded-tl-sm p-4">
             <p class="text-white/90 text-sm leading-relaxed">
               <b>Nueva reserva en tu agenda de CorteYa</b><br>
-              ✂️ Fade clásico<br>
-              🗓️ 18/10/2026<br>
-              ⏰ 17:30 horas<br>
-              💈 Nico<br>
-              👤 <b>Matías Rojas</b><br>
-              📞 +56912345678<br><br>
+              Fade clásico<br>
+              18/10/2026<br>
+              17:30 horas<br>
+              Nico<br>
+              <b>Matías Rojas</b><br>
+              +56912345678<br><br>
               Puedes revisar el detalle completo en tu panel de CorteYa.
             </p>
             <div class="flex justify-end items-center gap-1 mt-2">
-              <span class="text-white/40 text-[11px]">10:22 a. m.</span>
+              <span class="text-white/60 text-[11px]">10:22 a. m.</span>
               <svg class="w-4 h-4 text-[#53bdeb]" viewBox="0 0 16 11" fill="currentColor"><path d="M11.07.653a.5.5 0 0 1 .7.07l.028.038.013.022a.5.5 0 0 1-.02.544L6.84 9.2a.5.5 0 0 1-.78.06L3.07 6.27a.5.5 0 1 1 .72-.696l2.65 2.573L10.91.8a.5.5 0 0 1 .16-.147Zm4 0a.5.5 0 0 1 .7.07l.028.038.013.022a.5.5 0 0 1-.02.544L10.84 9.2a.5.5 0 0 1-.564.195.5.5 0 0 1-.216-.135l-1.03-1.03a.5.5 0 0 1 .697-.717l.034.034.603.602 4.686-6.35A.5.5 0 0 1 15.07.654Z"/></svg>
             </div>
           </div>
@@ -281,10 +304,72 @@
     </div>
   </section>
 
+  <!-- VIDEO -->
+  <section class="max-w-4xl mx-auto px-5 sm:px-8 py-20 md:py-24 text-center">
+    <h2 class="font-display text-2xl sm:text-3xl mb-10">CorteYa en 30 segundos</h2>
+    <div class="relative mx-auto max-w-xs rounded-sm overflow-hidden border border-white/15">
+      <video id="reel-video" poster="assets/video/corteya-reel-poster.jpg" muted loop playsinline preload="none" class="w-full h-auto block">
+        <source data-src="assets/video/corteya-reel.webm" type="video/webm">
+        <source data-src="assets/video/corteya-reel.mp4" type="video/mp4">
+      </video>
+    </div>
+  </section>
+
+  <!-- PARA TUS CLIENTES -->
+  <section id="clientes" class="bg-panel border-y border-white/10">
+    <div class="max-w-6xl mx-auto px-5 sm:px-8 py-20 md:py-24 grid md:grid-cols-2 gap-16 items-center">
+      <div class="flex justify-center md:order-2">
+        <div class="relative w-full max-w-xs">
+          <div class="absolute -inset-10 bg-gold/15 rounded-full blur-3xl"></div>
+          <a href="app-cliente.html" class="preview-carousel relative block aspect-[375/780] rounded-[2.25rem] overflow-hidden shadow-[0_25px_60px_-15px_rgba(0,0,0,0.7)] transition">
+            <img src="screenshots/app-cliente-lista.png" width="375" height="780" alt="Vista previa de la app CorteYa" loading="lazy" class="preview-slide active absolute inset-0 w-full h-full object-cover">
+            <img src="screenshots/app-cliente-detalle.png" width="375" height="780" alt="" loading="lazy" class="preview-slide absolute inset-0 w-full h-full object-cover">
+            <img src="screenshots/app-cliente-agendar.png" width="375" height="780" alt="" loading="lazy" class="preview-slide absolute inset-0 w-full h-full object-cover">
+            <img src="screenshots/app-cliente-confirmacion.png" width="375" height="780" alt="" loading="lazy" class="preview-slide absolute inset-0 w-full h-full object-cover">
+          </a>
+        </div>
+      </div>
+      <div class="md:order-1">
+        <h2 class="font-display text-2xl sm:text-3xl mb-4">Para tus clientes es así de fácil</h2>
+        <p class="text-white/60 mb-10 max-w-md">Tres pasos, menos de un minuto — sin llamar ni escribir por WhatsApp.</p>
+        <div class="space-y-8">
+          <div class="flex gap-4 items-start">
+            <svg class="w-6 h-6 text-gold shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+            <div>
+              <h3 class="font-display text-base mb-1">Busca tu barbería</h3>
+              <p class="text-white/60 text-sm leading-relaxed">Entra al link que compartes y ve los horarios disponibles en tiempo real.</p>
+            </div>
+          </div>
+          <div class="flex gap-4 items-start">
+            <svg class="w-6 h-6 text-gold shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+            <div>
+              <h3 class="font-display text-base mb-1">Elige tu hora</h3>
+              <p class="text-white/60 text-sm leading-relaxed">Selecciona el barbero, el servicio y el horario que más le acomode.</p>
+            </div>
+          </div>
+          <div class="flex gap-4 items-start">
+            <svg class="w-6 h-6 text-gold shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 12.3l2.6 2.6L16 9.5"/></svg>
+            <div>
+              <h3 class="font-display text-base mb-1">Confirma y listo</h3>
+              <p class="text-white/60 text-sm leading-relaxed">Recibe su hora confirmada al instante por WhatsApp, sin que tengas que escribirle tú.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BARBERIAS QUE YA LO USAN (oculta hasta tener contenido real) -->
+  <section id="social-proof" class="hidden max-w-6xl mx-auto px-5 sm:px-8 py-20 md:py-24 text-center">
+    <h2 class="font-display text-2xl sm:text-3xl mb-10">Barberías que ya lo usan</h2>
+    <div id="social-proof-logos" class="flex flex-wrap items-center justify-center gap-10 mb-14"></div>
+    <div id="social-proof-testimonios" class="grid sm:grid-cols-2 gap-6 max-w-3xl mx-auto"></div>
+  </section>
+
   <!-- COTIZA TU PLAN -->
   <section id="prueba-gratis" class="max-w-2xl mx-auto px-5 sm:px-8 py-20 md:py-24">
     <h2 class="font-display text-2xl sm:text-3xl mb-3 text-center">Pide tu prueba gratis</h2>
-    <p class="text-white/60 mb-10 text-center">Déjanos los datos de tu barbería y te contactamos por WhatsApp para activar tu cuenta — sin tarjeta, sin compromiso.</p>
+    <p class="text-white/60 mb-10 text-center">Déjanos los datos de tu barbería y te contactamos por WhatsApp para activar tu cuenta.</p>
 
     <form id="cotiza-form" action="https://formspree.io/f/xnpaegbe" method="POST" class="border border-white/15 rounded-sm p-6 sm:p-8">
       <input type="hidden" name="formulario" value="prueba-gratis">
@@ -292,7 +377,7 @@
       <div class="grid sm:grid-cols-2 gap-4 mb-4">
         <input type="text" name="nombre_barberia" placeholder="Nombre de tu barbería" required
                class="border border-white/15 rounded-sm px-4 py-3 text-sm placeholder-white/40 focus:outline-none focus:border-gold bg-transparent">
-        <input type="text" name="direccion" placeholder="Dirección completa" required
+        <input type="text" name="comuna" placeholder="Comuna" required
                class="border border-white/15 rounded-sm px-4 py-3 text-sm placeholder-white/40 focus:outline-none focus:border-gold bg-transparent">
       </div>
       <div class="grid sm:grid-cols-2 gap-4 mb-4">
@@ -301,7 +386,7 @@
           <input type="tel" id="cotiza-telefono" inputmode="numeric" placeholder="1234 5678" required maxlength="9"
                  class="w-full border border-white/15 rounded-sm px-3 py-3 text-sm placeholder-white/40 focus:outline-none focus:border-gold bg-transparent">
         </div>
-        <select name="cantidad_barberos"
+        <select name="cantidad_barberos" aria-label="Cantidad de barberos"
                 class="border border-white/15 rounded-sm px-4 py-3 text-sm text-white/80 focus:outline-none focus:border-gold bg-transparent">
           <option value="" class="bg-ink">¿Cuántos barberos trabajan ahí?</option>
           <option value="Solo yo" class="bg-ink">Solo yo</option>
@@ -310,14 +395,15 @@
           <option value="7 o más" class="bg-ink">7 o más</option>
         </select>
       </div>
-      <input type="email" name="correo" placeholder="Correo del dueño" required
+      <input type="email" name="correo" placeholder="Correo del dueño (opcional)"
              class="w-full border border-white/15 rounded-sm px-4 py-3 text-sm placeholder-white/40 focus:outline-none focus:border-gold bg-transparent mb-4">
-      <textarea name="comentario" placeholder="Cuéntanos algo más (opcional): horario en que prefieres que te contactemos, etc." rows="3"
+      <textarea name="comentario" placeholder="Cuéntanos algo más (opcional)" rows="3"
                 class="w-full border border-white/15 rounded-sm px-4 py-3 text-sm placeholder-white/40 focus:outline-none focus:border-gold bg-transparent mb-5"></textarea>
       <input type="text" name="website" tabindex="-1" autocomplete="off" class="hidden">
       <button type="submit" class="w-full bg-gold hover:bg-goldlight text-ink font-semibold px-6 py-3.5 rounded-sm transition">
         Solicitar prueba gratis
       </button>
+      <p class="text-white/50 text-xs text-center mt-4">Te escribimos por WhatsApp en menos de 24 horas para activar tu cuenta. Sin tarjeta, sin compromiso.</p>
       <p id="cotiza-error" class="hidden text-sm text-red-400 mt-3">
         Algo salió mal. Intenta de nuevo o escríbenos directo.
       </p>
@@ -327,9 +413,17 @@
         <circle cx="12" cy="12" r="9"/><path d="M8 12.3l2.6 2.6L16 9.5"/>
       </svg>
       <h3 class="font-display text-xl mb-2">¡Listo, ya tenemos tus datos!</h3>
-      <p class="text-white/60 text-sm">Te contactamos por WhatsApp o correo en las próximas horas para activar tu cuenta.</p>
+      <p class="text-white/60 text-sm">Te contactamos por WhatsApp en menos de 24 horas para activar tu cuenta.</p>
     </div>
   </section>
+
+  <!-- botón flotante de WhatsApp (solo celular) -->
+  <a href="https://wa.me/56945458039?text=Hola%2C%20tengo%20una%20barber%C3%ADa%20y%20quiero%20probar%20CorteYa"
+     target="_blank" rel="noopener" aria-label="Escríbenos por WhatsApp"
+     onclick="plausible('Clic WhatsApp flotante')"
+     class="sm:hidden fixed bottom-5 right-5 z-40 w-14 h-14 rounded-full bg-[#25D366] text-white flex items-center justify-center shadow-[0_8px_24px_-6px_rgba(0,0,0,0.6)]">
+    <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884M20.52 3.449C18.24 1.245 15.24 0 12.05 0 5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.88 11.88 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.423-8.452"/></svg>
+  </a>
 
   <script>
     const cotizaTelefonoInput = document.getElementById('cotiza-telefono');
@@ -359,6 +453,7 @@
         if (response.ok) {
           cotizaForm.classList.add('hidden');
           document.getElementById('cotiza-success').classList.remove('hidden');
+          plausible('Formulario Prueba Gratis');
         } else {
           errorEl.textContent = 'Algo salió mal. Intenta de nuevo o escríbenos directo.';
           errorEl.classList.remove('hidden');
@@ -368,22 +463,6 @@
         errorEl.classList.remove('hidden');
       }
     });
-  </script>
-
-  <script>
-    (function () {
-      const el = document.getElementById('eyebrow-countdown');
-      if (!el) return;
-      const fmt = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Santiago', year: 'numeric', month: '2-digit', day: '2-digit' });
-      const parts = fmt.formatToParts(new Date()).reduce((acc, p) => (acc[p.type] = p.value, acc), {});
-      const hoy = Date.UTC(+parts.year, +parts.month - 1, +parts.day);
-      const lanzamiento = Date.UTC(2026, 9, 1); // 1 de octubre 2026
-      const dias = Math.round((lanzamiento - hoy) / 86400000);
-      if (dias > 1) el.textContent = `Santiago — lanzamos en ${dias} días`;
-      else if (dias === 1) el.textContent = 'Santiago — lanzamos mañana';
-      else if (dias === 0) el.textContent = 'Santiago — ¡lanzamos hoy!';
-      else el.textContent = 'Santiago, Chile';
-    })();
   </script>
 
   <script>
@@ -400,6 +479,25 @@
     });
   </script>
 
+  <!-- el video no empieza a cargar (preload="none", sources sin src real)
+       hasta que la sección está cerca de verse en pantalla -->
+  <script>
+    (function () {
+      const video = document.getElementById('reel-video');
+      if (!video) return;
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (!entry.isIntersecting) return;
+          video.querySelectorAll('source').forEach(s => { s.src = s.dataset.src; });
+          video.load();
+          video.play().catch(() => {});
+          io.disconnect();
+        });
+      }, { rootMargin: '200px' });
+      io.observe(video);
+    })();
+  </script>
+
   <!-- FAQ -->
   <section id="faq" class="bg-panel border-y border-white/10">
     <div class="max-w-3xl mx-auto px-5 sm:px-8 py-20 md:py-24">
@@ -410,21 +508,21 @@
             ¿Cuánto cuesta usar CorteYa?
             <span class="text-gold group-open:rotate-45 transition shrink-0">+</span>
           </summary>
-          <p class="text-white/60 text-sm mt-3">Para clientes es gratis. Solo pagas el precio del corte al agendar.</p>
-        </details>
-        <details class="group py-5">
-          <summary class="cursor-pointer font-semibold list-none flex justify-between items-center gap-4">
-            ¿En qué ciudades va a estar disponible?
-            <span class="text-gold group-open:rotate-45 transition shrink-0">+</span>
-          </summary>
-          <p class="text-white/60 text-sm mt-3">Lanzamos primero en la Región Metropolitana, Chile, y vamos priorizando comunas según dónde se sumen más barberías.</p>
+          <p class="text-white/60 text-sm mt-3">Para tus clientes es gratis. Pagan el corte en la barbería, como siempre.</p>
         </details>
         <details class="group py-5">
           <summary class="cursor-pointer font-semibold list-none flex justify-between items-center gap-4">
             Tengo una barbería, ¿qué costo tiene?
             <span class="text-gold group-open:rotate-45 transition shrink-0">+</span>
           </summary>
-          <p class="text-white/60 text-sm mt-3">Tenemos planes desde $12.000 CLP/mes según el tamaño de tu barbería, con precio de lanzamiento para las primeras interesadas. Mientras dure el piloto puedes probarlo gratis: <a href="#prueba-gratis" class="text-gold hover:text-goldlight underline">pide tu prueba aquí</a>.</p>
+          <p class="text-white/60 text-sm mt-3">Planes desde $12.000 CLP/mes según el tamaño de tu barbería. Puedes probarlo gratis antes de decidir: <a href="#prueba-gratis" class="text-gold hover:text-goldlight underline">pide tu prueba aquí</a>.</p>
+        </details>
+        <details class="group py-5">
+          <summary class="cursor-pointer font-semibold list-none flex justify-between items-center gap-4">
+            ¿En qué ciudades está disponible?
+            <span class="text-gold group-open:rotate-45 transition shrink-0">+</span>
+          </summary>
+          <p class="text-white/60 text-sm mt-3">Por ahora en la Región Metropolitana, y vamos sumando comunas a medida que se suman más barberías.</p>
         </details>
         <details class="group py-5">
           <summary class="cursor-pointer font-semibold list-none flex justify-between items-center gap-4">
@@ -433,12 +531,56 @@
           </summary>
           <p class="text-white/60 text-sm mt-3">Sin problema. Puedes probar CorteYa en paralelo, sin dar de baja nada ni mover tus datos. Si te convence, te cambias cuando quieras.</p>
         </details>
+        <details class="group py-5">
+          <summary class="cursor-pointer font-semibold list-none flex justify-between items-center gap-4">
+            ¿Mis clientes tienen que descargar una app?
+            <span class="text-gold group-open:rotate-45 transition shrink-0">+</span>
+          </summary>
+          <p class="text-white/60 text-sm mt-3">No. Es un link que abren desde el navegador — nada que descargar ni instalar.</p>
+        </details>
+        <details class="group py-5">
+          <summary class="cursor-pointer font-semibold list-none flex justify-between items-center gap-4">
+            ¿Cuánto demora activarlo?
+            <span class="text-gold group-open:rotate-45 transition shrink-0">+</span>
+          </summary>
+          <p class="text-white/60 text-sm mt-3">Unos 15 minutos: cargamos tus servicios, tus barberos y sus horarios, y te dejamos el link listo para compartir.</p>
+        </details>
+        <details class="group py-5">
+          <summary class="cursor-pointer font-semibold list-none flex justify-between items-center gap-4">
+            ¿Puedo anotar las horas que me piden por WhatsApp o en persona?
+            <span class="text-gold group-open:rotate-45 transition shrink-0">+</span>
+          </summary>
+          <p class="text-white/60 text-sm mt-3">Sí, con el botón "+ Nueva cita" de tu panel — eliges barbero, servicio y hora, igual que si el cliente la hubiera agendado solo.</p>
+        </details>
+        <details class="group py-5">
+          <summary class="cursor-pointer font-semibold list-none flex justify-between items-center gap-4">
+            ¿Qué pasa si un cliente no llega?
+            <span class="text-gold group-open:rotate-45 transition shrink-0">+</span>
+          </summary>
+          <p class="text-white/60 text-sm mt-3">Marcas "No llegó" con un toque, y queda reflejado en tus Reportes.</p>
+        </details>
+        <details class="group py-5">
+          <summary class="cursor-pointer font-semibold list-none flex justify-between items-center gap-4">
+            ¿Qué pasa cuando termina la prueba?
+            <span class="text-gold group-open:rotate-45 transition shrink-0">+</span>
+          </summary>
+          <p class="text-white/60 text-sm mt-3">La cuenta sigue activa hasta que conversemos el plan. No se corta nada sin avisar.</p>
+        </details>
+        <details class="group py-5">
+          <summary class="cursor-pointer font-semibold list-none flex justify-between items-center gap-4">
+            ¿Mis datos y los de mis clientes están seguros?
+            <span class="text-gold group-open:rotate-45 transition shrink-0">+</span>
+          </summary>
+          <p class="text-white/60 text-sm mt-3">Sí — cada barbería solo ve sus propios datos, nunca los de otra, y los datos de tus clientes no son públicos.</p>
+        </details>
       </div>
     </div>
   </section>
 
+  </main>
+
   <!-- FOOTER -->
-  <footer class="max-w-6xl mx-auto px-5 sm:px-8 py-10 flex flex-col sm:flex-row items-center justify-between gap-4 text-white/40 text-sm">
+  <footer class="max-w-6xl mx-auto px-5 sm:px-8 py-10 flex flex-col sm:flex-row items-center justify-between gap-4 text-white/60 text-sm">
     <div class="flex items-center gap-5">
       <span class="font-display text-white/70">CORTE<span class="text-gold">YA</span></span>
       <div class="flex items-center gap-3">
@@ -448,7 +590,7 @@
         <a href="https://www.facebook.com/profile.php?id=61593796841523" target="_blank" rel="noopener" aria-label="CorteYa en Facebook" class="text-white/50 hover:text-gold transition">
           <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M22.675 0h-21.35c-.732 0-1.325.593-1.325 1.325v21.351c0 .731.593 1.324 1.325 1.324h11.495v-9.294h-3.128v-3.622h3.128v-2.671c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.795.143v3.24l-1.918.001c-1.504 0-1.795.715-1.795 1.763v2.313h3.587l-.467 3.622h-3.12v9.293h6.116c.73 0 1.323-.593 1.323-1.324v-21.35c0-.732-.593-1.325-1.325-1.325z"/></svg>
         </a>
-        <a href="https://wa.me/56945458039?text=Hola%2C%20vi%20CorteYa%20y%20quiero%20saber%20m%C3%A1s%20sobre%20la%20agenda%20online%20gratis" target="_blank" rel="noopener" aria-label="CorteYa en WhatsApp" class="text-white/50 hover:text-gold transition">
+        <a href="https://wa.me/56945458039?text=Hola%2C%20vi%20CorteYa%20y%20quiero%20saber%20m%C3%A1s%20sobre%20la%20agenda%20online%20gratis" target="_blank" rel="noopener" aria-label="CorteYa en WhatsApp" onclick="plausible('Clic WhatsApp flotante', { props: { ubicacion: 'footer' } })" class="text-white/50 hover:text-gold transition">
           <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884M20.52 3.449C18.24 1.245 15.24 0 12.05 0 5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.88 11.88 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.423-8.452"/></svg>
         </a>
       </div>
@@ -456,7 +598,7 @@
     <div class="flex items-center gap-5">
       <a href="/legal.html#privacidad" class="hover:text-white transition">Privacidad</a>
       <a href="/legal.html#terminos" class="hover:text-white transition">Términos</a>
-      <span>&copy; 2026 CorteYa SpA. Proyecto en validación.</span>
+      <span>&copy; 2026 CorteYa SpA.</span>
     </div>
   </footer>
 
