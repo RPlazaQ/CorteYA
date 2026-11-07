@@ -31,7 +31,7 @@
 <link rel="stylesheet" href="styles.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@300;400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 
 <script defer data-domain="corteya.app" src="https://plausible.io/js/script.js"></script>
 <script>
@@ -81,19 +81,19 @@
 <body class="bg-ink text-white font-body overflow-x-hidden">
 
   <!-- NAV -->
-  <header class="sticky top-0 z-50 bg-ink/90 backdrop-blur border-b border-white/10">
+  <header id="site-nav" class="sticky top-0 z-50 border-b border-transparent">
     <div class="max-w-6xl mx-auto px-5 sm:px-8 h-16 flex items-center justify-between">
-      <a href="#" class="font-display text-xl tracking-wide">CORTE<span class="text-gold">YA</span></a>
-      <nav class="hidden md:flex items-center gap-8 text-sm text-white/80">
+      <a href="#" class="font-bold text-xl tracking-wide">CORTE<span class="text-gold">YA</span></a>
+      <nav class="hidden md:flex items-center gap-8 text-sm text-mute">
         <a href="#funciones" class="hover:text-white transition">Funciones</a>
         <a href="#clientes" class="hover:text-white transition">Para tus clientes</a>
         <a href="#faq" class="hover:text-white transition">Preguntas</a>
       </nav>
       <div class="flex items-center gap-2 sm:gap-3">
-        <a href="dashboard-barberia.html" class="text-xs sm:text-sm text-white/70 hover:text-white transition whitespace-nowrap">
+        <a href="dashboard-barberia.html" class="text-xs sm:text-sm text-mute hover:text-white transition whitespace-nowrap">
           Iniciar sesión
         </a>
-        <a href="#prueba-gratis" onclick="plausible('CTA Prueba Gratis', { props: { ubicacion: 'nav' } })" class="bg-gold hover:bg-goldlight text-ink text-xs sm:text-sm font-semibold px-3 sm:px-4 py-2 rounded-sm transition whitespace-nowrap">
+        <a href="#prueba-gratis" onclick="plausible('CTA Prueba Gratis', { props: { ubicacion: 'nav' } })" class="btn-shine bg-gold hover:bg-goldlight text-ink text-xs sm:text-sm font-semibold px-3 sm:px-4 py-2 rounded-sm transition whitespace-nowrap">
           Pide tu prueba gratis
         </a>
       </div>
@@ -104,19 +104,19 @@
   <main>
   <section class="max-w-6xl mx-auto px-5 sm:px-8 pt-16 pb-20 md:pt-24 md:pb-28 grid md:grid-cols-2 gap-16 items-center">
     <div>
-      <p class="flex items-center gap-3 font-mono text-xs tracking-[0.15em] uppercase text-gold mb-7">
+      <p class="rv flex items-center gap-3 font-mono text-xs tracking-[0.15em] uppercase text-gold mb-7">
         <span class="w-6 h-px bg-gold"></span> Santiago, Chile
       </p>
-      <h1 class="font-display text-4xl sm:text-5xl md:text-6xl leading-[1.05] mb-6">
+      <h1 class="rv font-display text-4xl sm:text-5xl md:text-6xl leading-[1.05] mb-6" style="--rd:.08s">
         Tu agenda se llena sola.<br>
         <span class="text-gold">Tú solo cortas.</span>
       </h1>
-      <p class="text-white/70 text-lg mb-8 max-w-md">
+      <p class="rv text-mute text-lg mb-8 max-w-md" style="--rd:.16s">
         Agenda online para barberías en Santiago. Tus clientes reservan desde tu Instagram o WhatsApp, reciben confirmación y recordatorio automáticos, y tú ves todo ordenado en tu panel.
       </p>
-      <div class="flex flex-col sm:flex-row gap-4">
+      <div class="rv flex flex-col sm:flex-row gap-4" style="--rd:.24s">
         <a href="#prueba-gratis" onclick="plausible('CTA Prueba Gratis', { props: { ubicacion: 'hero' } })"
-           class="bg-gold hover:bg-goldlight text-ink text-center font-semibold px-6 py-3.5 rounded-sm transition">
+           class="btn-shine bg-gold hover:bg-goldlight text-ink text-center font-semibold px-6 py-3.5 rounded-sm transition">
           Pide tu prueba gratis
         </a>
         <a href="#funciones" class="border border-white/20 hover:border-white/40 text-center font-semibold px-6 py-3.5 rounded-sm transition">
@@ -124,38 +124,48 @@
         </a>
       </div>
     </div>
-    <div class="relative">
-      <div class="absolute -inset-10 bg-gold/10 rounded-full blur-3xl"></div>
-      <div class="relative bg-panel rounded-lg p-4 sm:p-5">
-        <div class="preview-carousel relative block border border-white/20 rounded-sm aspect-[1200/750] overflow-hidden shadow-[0_25px_60px_-15px_rgba(0,0,0,0.7)]">
-          <img src="screenshots/demo-hoy-desktop.webp" width="1200" height="750" alt="Panel de CorteYa: Hoy, con la próxima cita" fetchpriority="high" class="preview-slide active absolute inset-0 w-full h-full object-cover object-top">
-          <img src="screenshots/demo-calendario-desktop.webp" width="1200" height="750" alt="" class="preview-slide absolute inset-0 w-full h-full object-cover object-top">
-          <img src="screenshots/demo-como-pago-desktop.webp" width="1200" height="750" alt="" class="preview-slide absolute inset-0 w-full h-full object-cover object-top">
+    <div class="relative hero-visual">
+      <div class="eclipse" aria-hidden="true" style="width:600px;left:50%;top:40%;transform:translate(-50%,-50%)"><div class="glow"></div><div class="corona"></div><div class="ring"></div><div class="moon"></div></div>
+      <div class="stage">
+        <div class="panel-tilt relative bg-panel rounded-lg p-4 sm:p-5" id="hero-panel">
+          <div class="preview-carousel relative block border border-white/20 rounded-sm aspect-[1200/750] overflow-hidden shadow-[0_25px_60px_-15px_rgba(0,0,0,0.7)]">
+            <img src="screenshots/demo-hoy-desktop.webp" width="1200" height="750" alt="Panel de CorteYa: Hoy, con la próxima cita" fetchpriority="high" class="preview-slide active absolute inset-0 w-full h-full object-cover object-top">
+            <img src="screenshots/demo-calendario-desktop.webp" width="1200" height="750" alt="" class="preview-slide absolute inset-0 w-full h-full object-cover object-top">
+            <img src="screenshots/demo-como-pago-desktop.webp" width="1200" height="750" alt="" class="preview-slide absolute inset-0 w-full h-full object-cover object-top">
+          </div>
         </div>
+        <div class="float f-wa" data-delay="900" aria-hidden="true"><div class="fcard">¡Hola <b>Matías</b>! Tu hora en <b>Barbería Central</b> quedó agendada: Fade con Nico, 18/10 a las 17:30. ¡Nos vemos!<small>10:22 &#10003;&#10003;</small></div></div>
+        <div class="float f-toast" data-delay="1200" aria-hidden="true"><div class="fcard"><div class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M20 4 8.1 15.9M14.5 14.5 20 20M8.1 8.1 12 12"/></svg></div><div><b>Nueva reserva</b><span class="mono">Javiera Castro &middot; 12:00 &middot; con Tom&aacute;s</span></div></div></div>
+        <div class="float f-pay" data-delay="1500" aria-hidden="true"><div class="fcard"><h4>&iquest;C&oacute;mo pag&oacute;?</h4><div class="sub">Franco Herrera</div><div class="opt">Efectivo</div><div class="opt on">Transferencia</div><div class="opt">Tarjeta</div></div></div>
       </div>
     </div>
   </section>
 
+  <!-- MARQUEE -->
+  <div class="marquee" aria-hidden="true"><div class="track">
+    <span>Reservas 24/7<i>&#10022;</i></span><span>Confirmaci&oacute;n por WhatsApp<i>&#10022;</i></span><span>Recordatorio autom&aacute;tico<i>&#10022;</i></span><span>Cero dobles reservas<i>&#10022;</i></span><span>Reportes para cuadrar la caja<i>&#10022;</i></span><span>Rese&ntilde;as con QR<i>&#10022;</i></span><span>Reservas 24/7<i>&#10022;</i></span><span>Confirmaci&oacute;n por WhatsApp<i>&#10022;</i></span><span>Recordatorio autom&aacute;tico<i>&#10022;</i></span><span>Cero dobles reservas<i>&#10022;</i></span><span>Reportes para cuadrar la caja<i>&#10022;</i></span><span>Rese&ntilde;as con QR<i>&#10022;</i></span>
+  </div></div>
+
   <!-- DOLORES DEL DUEÑO -->
   <section class="bg-panel border-y border-white/10">
     <div class="max-w-6xl mx-auto px-5 sm:px-8 py-16 md:py-20">
-      <h2 class="font-display text-2xl sm:text-3xl mb-12">¿Te suena familiar?</h2>
-      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-10 sm:gap-8">
+      <h2 class="font-display text-2xl sm:text-3xl mb-12 rv">¿Te suena<br><span class="text-gold">familiar?</span></h2>
+      <div class="rv grid sm:grid-cols-2 lg:grid-cols-4 gap-10 sm:gap-8" style="--rd:.06s">
         <div class="text-center lg:border-l lg:border-white/15 lg:pl-8 lg:first:border-0 lg:first:pl-0">
           <svg class="w-7 h-7 text-gold mx-auto mb-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-4-1l-5 1 1-5a8.5 8.5 0 0 1-1-4 8.38 8.38 0 0 1 8.5-8.5h.5a8.4 8.4 0 0 1 8 8z"/></svg>
-          <p class="text-white/75 font-semibold leading-relaxed">Revisas el WhatsApp todo el día para saber quién agendó.</p>
+          <p class="text-mute font-semibold leading-relaxed">Revisas el WhatsApp todo el día para saber quién agendó.</p>
         </div>
         <div class="text-center lg:border-l lg:border-white/15 lg:pl-8">
           <svg class="w-7 h-7 text-gold mx-auto mb-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/><path d="M9.5 14.5l5 3M14.5 14.5l-5 3"/></svg>
-          <p class="text-white/75 font-semibold leading-relaxed">Dos clientes llegan a la misma hora porque alguien anotó mal.</p>
+          <p class="text-mute font-semibold leading-relaxed">Dos clientes llegan a la misma hora porque alguien anotó mal.</p>
         </div>
         <div class="text-center lg:border-l lg:border-white/15 lg:pl-8">
           <svg class="w-7 h-7 text-gold mx-auto mb-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-5.5 6-5.5s6 2.2 6 5.5"/><path d="M16 8l4 4m0-4l-4 4"/></svg>
-          <p class="text-white/75 font-semibold leading-relaxed">El cliente no llega, y nadie le recordó.</p>
+          <p class="text-mute font-semibold leading-relaxed">El cliente no llega, y nadie le recordó.</p>
         </div>
         <div class="text-center lg:border-l lg:border-white/15 lg:pl-8">
           <svg class="w-7 h-7 text-gold mx-auto mb-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.8a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.84.57 2.8.7A2 2 0 0 1 22 16.92z"/></svg>
-          <p class="text-white/75 font-semibold leading-relaxed">Confirmar a mano, uno por uno: "¿nos vemos mañana, cierto?"</p>
+          <p class="text-mute font-semibold leading-relaxed">Confirmar a mano, uno por uno: "¿nos vemos mañana, cierto?"</p>
         </div>
       </div>
     </div>
@@ -163,87 +173,89 @@
 
   <!-- FUNCIONES -->
   <section id="funciones" class="max-w-6xl mx-auto px-5 sm:px-8 py-20 md:py-24">
-    <h2 class="font-display text-2xl sm:text-3xl mb-4">Todo lo que necesitas para tu agenda</h2>
-    <p class="text-white/60 mb-14 max-w-lg">Lo que ya hace CorteYa hoy, en tu panel.</p>
+    <h2 class="font-display text-2xl sm:text-3xl mb-4 rv">Todo lo que necesitas<br><span class="text-gold">para tu agenda.</span></h2>
+    <p class="rv text-mute mb-14 max-w-lg" style="--rd:.06s">Lo que ya hace CorteYa hoy, en tu panel.</p>
     <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
 
-      <div class="border border-white/10 rounded-sm overflow-hidden hover:border-gold/40 transition">
+      <div class="tile-spot rv border border-white/10 rounded-sm overflow-hidden hover:border-gold/40 transition">
         <img src="screenshots/card-reservas247.webp" width="800" height="609" alt="" loading="lazy" class="w-full aspect-[4/3] object-cover object-top">
         <div class="p-5">
           <svg class="w-5 h-5 text-gold mb-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 14a4.5 4.5 0 0 0 6.4.4l2.3-2.3a4.5 4.5 0 0 0-6.4-6.4L11 7"/><path d="M14 10a4.5 4.5 0 0 0-6.4-.4L5.3 11.9a4.5 4.5 0 0 0 6.4 6.4L13 17"/></svg>
-          <h3 class="font-display text-base mb-1.5">Reservas 24/7 con tu link</h3>
-          <p class="text-white/60 text-sm leading-relaxed">Compártelo en tu Instagram o WhatsApp. Tus clientes agendan solos, sin dobles reservas.</p>
+          <h3 class="font-bold text-base mb-1.5">Reservas 24/7 con tu link</h3>
+          <p class="text-mute text-sm leading-relaxed">Compártelo en tu Instagram o WhatsApp. Tus clientes agendan solos, sin dobles reservas.</p>
         </div>
       </div>
 
-      <div class="border border-white/10 rounded-sm overflow-hidden hover:border-gold/40 transition">
+      <div class="tile-spot rv border border-white/10 rounded-sm overflow-hidden hover:border-gold/40 transition">
         <div class="w-full aspect-[4/3] bg-panel flex items-center justify-center p-4">
           <div class="bg-[#202c33] rounded-lg rounded-tl-sm p-3 max-w-[230px] w-full">
             <p class="text-white/90 text-[11px] leading-relaxed">¡Hola <b>Matías Rojas</b>! Tu hora en <b>Barbería Central</b> fue agendada con éxito. Tienes <b>Fade</b> con <b>Nico</b>, programado para el día <b>18/10/2026</b> a las <b>17:30</b> horas. ¡Nos vemos pronto!</p>
             <div class="flex justify-end items-center gap-1 mt-1.5">
-              <span class="text-white/60 text-[9px]">10:22 a. m.</span>
+              <span class="text-mute text-[9px]">10:22 a. m.</span>
               <svg class="w-3 h-3 text-[#53bdeb]" viewBox="0 0 16 11" fill="currentColor"><path d="M11.07.653a.5.5 0 0 1 .7.07l.028.038.013.022a.5.5 0 0 1-.02.544L6.84 9.2a.5.5 0 0 1-.78.06L3.07 6.27a.5.5 0 1 1 .72-.696l2.65 2.573L10.91.8a.5.5 0 0 1 .16-.147Zm4 0a.5.5 0 0 1 .7.07l.028.038.013.022a.5.5 0 0 1-.02.544L10.84 9.2a.5.5 0 0 1-.564.195.5.5 0 0 1-.216-.135l-1.03-1.03a.5.5 0 0 1 .697-.717l.034.034.603.602 4.686-6.35A.5.5 0 0 1 15.07.654Z"/></svg>
             </div>
           </div>
         </div>
         <div class="p-5">
           <svg class="w-5 h-5 text-gold mb-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-          <h3 class="font-display text-base mb-1.5">Confirmación y recordatorio automáticos</h3>
-          <p class="text-white/60 text-sm leading-relaxed">Por WhatsApp, al agendar y la mañana de la cita — sin que tengas que escribir nada.</p>
+          <h3 class="font-bold text-base mb-1.5">Confirmación y recordatorio automáticos</h3>
+          <p class="text-mute text-sm leading-relaxed">Por WhatsApp, al agendar y la mañana de la cita — sin que tengas que escribir nada.</p>
         </div>
       </div>
 
-      <div class="border border-white/10 rounded-sm overflow-hidden hover:border-gold/40 transition">
+      <div class="tile-spot rv border border-white/10 rounded-sm overflow-hidden hover:border-gold/40 transition">
         <img src="screenshots/card-nueva-cita.webp" width="800" height="600" alt="" loading="lazy" class="w-full aspect-[4/3] object-cover object-top">
         <div class="p-5">
           <svg class="w-5 h-5 text-gold mb-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/><path d="M12 14v4M10 16h4"/></svg>
-          <h3 class="font-display text-base mb-1.5">“+ Nueva cita” para lo que agendan aparte</h3>
-          <p class="text-white/60 text-sm leading-relaxed">Anota en dos toques las horas que te piden por WhatsApp, teléfono o en persona.</p>
+          <h3 class="font-bold text-base mb-1.5">“+ Nueva cita” para lo que agendan aparte</h3>
+          <p class="text-mute text-sm leading-relaxed">Anota en dos toques las horas que te piden por WhatsApp, teléfono o en persona.</p>
         </div>
       </div>
 
-      <div class="border border-white/10 rounded-sm overflow-hidden hover:border-gold/40 transition">
+      <div class="tile-spot rv border border-white/10 rounded-sm overflow-hidden hover:border-gold/40 transition">
         <img src="screenshots/card-bloquear-hora.webp" width="800" height="600" alt="" loading="lazy" class="w-full aspect-[4/3] object-cover object-top">
         <div class="p-5">
           <svg class="w-5 h-5 text-gold mb-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
-          <h3 class="font-display text-base mb-1.5">Bloquea horas o días libres</h3>
-          <p class="text-white/60 text-sm leading-relaxed">Un trámite, un día libre, y define qué servicios hace cada barbero.</p>
+          <h3 class="font-bold text-base mb-1.5">Bloquea horas o días libres</h3>
+          <p class="text-mute text-sm leading-relaxed">Un trámite, un día libre, y define qué servicios hace cada barbero.</p>
         </div>
       </div>
 
-      <div class="border border-white/10 rounded-sm overflow-hidden hover:border-gold/40 transition">
+      <div class="tile-spot rv border border-white/10 rounded-sm overflow-hidden hover:border-gold/40 transition">
         <img src="screenshots/card-como-pago.webp" width="800" height="601" alt="" loading="lazy" class="w-full aspect-[4/3] object-cover object-top">
         <div class="p-5">
           <svg class="w-5 h-5 text-gold mb-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 12.3l2.6 2.6L16 9.5"/></svg>
-          <h3 class="font-display text-base mb-1.5">“Llegó” / “No llegó” y cómo pagó</h3>
-          <p class="text-white/60 text-sm leading-relaxed">Marca la llegada y el método — efectivo, transferencia o tarjeta — con un toque.</p>
+          <h3 class="font-bold text-base mb-1.5">“Llegó” / “No llegó” y cómo pagó</h3>
+          <p class="text-mute text-sm leading-relaxed">Marca la llegada y el método — efectivo, transferencia o tarjeta — con un toque.</p>
+          <div class="pay-row-mini" id="payrow-mini"><span>Efectivo</span><span class="on">Transferencia</span><span>Tarjeta</span></div>
         </div>
       </div>
 
-      <div class="border border-white/10 rounded-sm overflow-hidden hover:border-gold/40 transition">
+      <div class="tile-spot rv border border-white/10 rounded-sm overflow-hidden hover:border-gold/40 transition">
         <img src="screenshots/card-reportes.webp" width="800" height="600" alt="" loading="lazy" class="w-full aspect-[4/3] object-cover object-top">
         <div class="p-5">
           <svg class="w-5 h-5 text-gold mb-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><rect x="7" y="12" width="3" height="6"/><rect x="13" y="8" width="3" height="10"/><rect x="19" y="5" width="0" height="13"/><path d="M19 5v13"/></svg>
-          <h3 class="font-display text-base mb-1.5">Reportes para cuadrar la caja</h3>
-          <p class="text-white/60 text-sm leading-relaxed">Cuántos cortes hiciste, cuánta plata recibiste y los no-shows del período.</p>
+          <h3 class="font-bold text-base mb-1.5">Reportes para cuadrar la caja</h3>
+          <p class="text-mute text-sm leading-relaxed">Cuántos cortes hiciste, cuánta plata recibiste y los no-shows del período.</p>
+          <div class="num-count" data-count="174000">$0</div>
         </div>
       </div>
 
-      <div class="border border-white/10 rounded-sm overflow-hidden hover:border-gold/40 transition">
+      <div class="tile-spot rv border border-white/10 rounded-sm overflow-hidden hover:border-gold/40 transition">
         <img src="screenshots/card-qr.webp" width="800" height="800" alt="" loading="lazy" class="w-full aspect-[4/3] object-cover object-top">
         <div class="p-5">
           <svg class="w-5 h-5 text-gold mb-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3.5v3.5M20.5 14v2M14 20.5h2.5M20.5 20.5h.01"/></svg>
-          <h3 class="font-display text-base mb-1.5">Reseñas con QR</h3>
-          <p class="text-white/60 text-sm leading-relaxed">Muéstraselo al cliente apenas termina su corte, para que deje su reseña al toque.</p>
+          <h3 class="font-bold text-base mb-1.5">Reseñas con QR</h3>
+          <p class="text-mute text-sm leading-relaxed">Muéstraselo al cliente apenas termina su corte, para que deje su reseña al toque.</p>
         </div>
       </div>
 
-      <div class="border border-white/10 rounded-sm overflow-hidden hover:border-gold/40 transition">
+      <div class="tile-spot rv border border-white/10 rounded-sm overflow-hidden hover:border-gold/40 transition">
         <img src="screenshots/card-filtro-barbero.webp" width="800" height="583" alt="" loading="lazy" class="w-full aspect-[4/3] object-cover object-top">
         <div class="p-5">
           <svg class="w-5 h-5 text-gold mb-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M7 12h10M10 18h4"/></svg>
-          <h3 class="font-display text-base mb-1.5">Filtra la agenda por barbero</h3>
-          <p class="text-white/60 text-sm leading-relaxed">En el Calendario o en Hoy, muestra solo las citas del barbero que te interesa ver.</p>
+          <h3 class="font-bold text-base mb-1.5">Filtra la agenda por barbero</h3>
+          <p class="text-mute text-sm leading-relaxed">En el Calendario o en Hoy, muestra solo las citas del barbero que te interesa ver.</p>
         </div>
       </div>
     </div>
@@ -253,17 +265,17 @@
   <section id="whatsapp-automatico" class="bg-panel border-y border-white/10">
     <div class="max-w-6xl mx-auto px-5 sm:px-8 py-20 md:py-24">
       <div class="text-center max-w-2xl mx-auto mb-14">
-        <h2 class="font-display text-2xl sm:text-3xl mb-6">Confirmación y recordatorio, automáticos</h2>
-        <p class="text-white/70 leading-relaxed">Apenas tu cliente agenda, le llega la confirmación por WhatsApp al tiro. La mañana de su hora, recibe un recordatorio automático — y a ti también te avisamos, sin que escribas nada.</p>
+        <h2 class="font-display text-2xl sm:text-3xl mb-6 rv">Confirmación y recordatorio,<br><span class="text-gold">automáticos.</span></h2>
+        <p class="text-mute leading-relaxed">Apenas tu cliente agenda, le llega la confirmación por WhatsApp al tiro. La mañana de su hora, recibe un recordatorio automático — y a ti también te avisamos, sin que escribas nada.</p>
       </div>
-      <div class="grid md:grid-cols-2 gap-6 md:gap-8 max-w-4xl mx-auto">
+      <div class="rv grid md:grid-cols-2 gap-6 md:gap-8 max-w-4xl mx-auto" style="--rd:.08s">
         <!-- Para tu cliente -->
         <div class="bg-ink border border-white/10 rounded-lg p-6 sm:p-7">
           <p class="text-gold text-xs tracking-widest uppercase mb-5 font-semibold">Para tu cliente</p>
           <div class="bg-[#202c33] rounded-lg rounded-tl-sm p-4">
             <p class="text-white/90 text-sm leading-relaxed">¡Hola <b>Matías Rojas</b>! Tu hora en <b>Barbería Central</b> fue agendada con éxito. Tienes <b>Fade</b> con <b>Nico</b>, programado para el día <b>18/10/2026</b> a las <b>17:30</b> horas. ¡Nos vemos pronto!</p>
             <div class="flex justify-end items-center gap-1 mt-2">
-              <span class="text-white/60 text-[11px]">10:22 a. m.</span>
+              <span class="text-mute text-[11px]">10:22 a. m.</span>
               <svg class="w-4 h-4 text-[#53bdeb]" viewBox="0 0 16 11" fill="currentColor"><path d="M11.07.653a.5.5 0 0 1 .7.07l.028.038.013.022a.5.5 0 0 1-.02.544L6.84 9.2a.5.5 0 0 1-.78.06L3.07 6.27a.5.5 0 1 1 .72-.696l2.65 2.573L10.91.8a.5.5 0 0 1 .16-.147Zm4 0a.5.5 0 0 1 .7.07l.028.038.013.022a.5.5 0 0 1-.02.544L10.84 9.2a.5.5 0 0 1-.564.195.5.5 0 0 1-.216-.135l-1.03-1.03a.5.5 0 0 1 .697-.717l.034.034.603.602 4.686-6.35A.5.5 0 0 1 15.07.654Z"/></svg>
             </div>
           </div>
@@ -283,7 +295,7 @@
               Puedes revisar el detalle completo en tu panel de CorteYa.
             </p>
             <div class="flex justify-end items-center gap-1 mt-2">
-              <span class="text-white/60 text-[11px]">10:22 a. m.</span>
+              <span class="text-mute text-[11px]">10:22 a. m.</span>
               <svg class="w-4 h-4 text-[#53bdeb]" viewBox="0 0 16 11" fill="currentColor"><path d="M11.07.653a.5.5 0 0 1 .7.07l.028.038.013.022a.5.5 0 0 1-.02.544L6.84 9.2a.5.5 0 0 1-.78.06L3.07 6.27a.5.5 0 1 1 .72-.696l2.65 2.573L10.91.8a.5.5 0 0 1 .16-.147Zm4 0a.5.5 0 0 1 .7.07l.028.038.013.022a.5.5 0 0 1-.02.544L10.84 9.2a.5.5 0 0 1-.564.195.5.5 0 0 1-.216-.135l-1.03-1.03a.5.5 0 0 1 .697-.717l.034.034.603.602 4.686-6.35A.5.5 0 0 1 15.07.654Z"/></svg>
             </div>
           </div>
@@ -304,24 +316,24 @@
         </div>
       </div>
       <div class="text-center md:text-left md:order-1">
-        <h2 class="font-display text-2xl sm:text-3xl mb-5">CorteYa en 40 segundos</h2>
-        <p class="text-white/60 mb-7 max-w-sm mx-auto md:mx-0">Así se ve el panel en el día a día de una barbería real.</p>
+        <h2 class="font-display text-2xl sm:text-3xl mb-5 rv">CorteYa en<br><span class="text-gold">40 segundos.</span></h2>
+        <p class="text-mute mb-7 max-w-sm mx-auto md:mx-0">Así se ve el panel en el día a día de una barbería real.</p>
         <ul class="space-y-4 mb-8 text-left max-w-sm mx-auto md:mx-0">
           <li class="flex gap-3 items-start">
             <svg class="w-5 h-5 text-gold shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 12.3l2.6 2.6L16 9.5"/></svg>
-            <span class="text-white/75 text-sm leading-relaxed">Reservas que llegan solas, sin que escribas nada</span>
+            <span class="text-mute text-sm leading-relaxed">Reservas que llegan solas, sin que escribas nada</span>
           </li>
           <li class="flex gap-3 items-start">
             <svg class="w-5 h-5 text-gold shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 12.3l2.6 2.6L16 9.5"/></svg>
-            <span class="text-white/75 text-sm leading-relaxed">Marca llegada y forma de pago con un toque</span>
+            <span class="text-mute text-sm leading-relaxed">Marca llegada y forma de pago con un toque</span>
           </li>
           <li class="flex gap-3 items-start">
             <svg class="w-5 h-5 text-gold shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 12.3l2.6 2.6L16 9.5"/></svg>
-            <span class="text-white/75 text-sm leading-relaxed">Reportes listos para cuadrar la caja al cierre</span>
+            <span class="text-mute text-sm leading-relaxed">Reportes listos para cuadrar la caja al cierre</span>
           </li>
         </ul>
         <a href="#prueba-gratis" onclick="plausible('CTA Prueba Gratis', { props: { ubicacion: 'video' } })"
-           class="inline-block bg-gold hover:bg-goldlight text-ink text-center font-semibold px-6 py-3.5 rounded-sm transition">
+           class="btn-shine inline-block bg-gold hover:bg-goldlight text-ink text-center font-semibold px-6 py-3.5 rounded-sm transition">
           Pide tu prueba gratis
         </a>
       </div>
@@ -343,28 +355,28 @@
         </div>
       </div>
       <div class="md:order-1">
-        <h2 class="font-display text-2xl sm:text-3xl mb-4">Para tus clientes es así de fácil</h2>
-        <p class="text-white/60 mb-10 max-w-md">Tres pasos, menos de un minuto — sin llamar ni escribir por WhatsApp.</p>
-        <div class="space-y-8">
+        <h2 class="font-display text-2xl sm:text-3xl mb-4 rv">Para tus clientes<br><span class="text-gold">es así de fácil.</span></h2>
+        <p class="text-mute mb-10 max-w-md">Tres pasos, menos de un minuto — sin llamar ni escribir por WhatsApp.</p>
+        <div class="rv space-y-8" style="--rd:.08s">
           <div class="flex gap-4 items-start">
             <svg class="w-6 h-6 text-gold shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
             <div>
-              <h3 class="font-display text-base mb-1">Busca tu barbería</h3>
-              <p class="text-white/60 text-sm leading-relaxed">Entra al link que compartes y ve los horarios disponibles en tiempo real.</p>
+              <h3 class="font-bold text-base mb-1">Busca tu barbería</h3>
+              <p class="text-mute text-sm leading-relaxed">Entra al link que compartes y ve los horarios disponibles en tiempo real.</p>
             </div>
           </div>
           <div class="flex gap-4 items-start">
             <svg class="w-6 h-6 text-gold shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
             <div>
-              <h3 class="font-display text-base mb-1">Elige tu hora</h3>
-              <p class="text-white/60 text-sm leading-relaxed">Selecciona el barbero, el servicio y el horario que más le acomode.</p>
+              <h3 class="font-bold text-base mb-1">Elige tu hora</h3>
+              <p class="text-mute text-sm leading-relaxed">Selecciona el barbero, el servicio y el horario que más le acomode.</p>
             </div>
           </div>
           <div class="flex gap-4 items-start">
             <svg class="w-6 h-6 text-gold shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 12.3l2.6 2.6L16 9.5"/></svg>
             <div>
-              <h3 class="font-display text-base mb-1">Confirma y listo</h3>
-              <p class="text-white/60 text-sm leading-relaxed">Recibe su hora confirmada al instante por WhatsApp, sin que tengas que escribirle tú.</p>
+              <h3 class="font-bold text-base mb-1">Confirma y listo</h3>
+              <p class="text-mute text-sm leading-relaxed">Recibe su hora confirmada al instante por WhatsApp, sin que tengas que escribirle tú.</p>
             </div>
           </div>
         </div>
@@ -380,11 +392,12 @@
   </section>
 
   <!-- COTIZA TU PLAN -->
-  <section id="prueba-gratis" class="max-w-2xl mx-auto px-5 sm:px-8 py-20 md:py-24">
-    <h2 class="font-display text-2xl sm:text-3xl mb-3 text-center">Pide tu prueba gratis</h2>
-    <p class="text-white/60 mb-10 text-center">Déjanos los datos de tu barbería y te contactamos por WhatsApp para activar tu cuenta.</p>
+  <section id="prueba-gratis" class="relative isolate max-w-2xl mx-auto px-5 sm:px-8 py-20 md:py-24 overflow-hidden">
+    <div class="eclipse eclipse-soft" aria-hidden="true" style="width:460px;left:50%;top:58%;transform:translate(-50%,-50%)"><div class="glow"></div><div class="corona"></div><div class="ring"></div><div class="moon"></div></div>
+    <h2 class="font-display text-2xl sm:text-3xl mb-3 text-center rv">Pide tu<br><span class="text-gold">prueba gratis.</span></h2>
+    <p class="rv text-mute mb-10 text-center" style="--rd:.06s">Déjanos los datos de tu barbería y te contactamos por WhatsApp para activar tu cuenta.</p>
 
-    <form id="cotiza-form" action="https://formspree.io/f/xnpaegbe" method="POST" class="border border-white/15 rounded-sm p-6 sm:p-8">
+    <form id="cotiza-form" action="https://formspree.io/f/xnpaegbe" method="POST" class="rv relative border border-white/15 rounded-sm p-6 sm:p-8 bg-ink" style="--rd:.12s">
       <input type="hidden" name="formulario" value="prueba-gratis">
       <input type="hidden" name="telefono_completo" id="cotiza-telefono-completo">
       <div class="grid sm:grid-cols-2 gap-4 mb-4">
@@ -395,12 +408,12 @@
       </div>
       <div class="grid sm:grid-cols-2 gap-4 mb-4">
         <div class="flex gap-2">
-          <span class="shrink-0 flex items-center px-3 border border-white/15 rounded-sm text-sm text-white/60 bg-white/5">+56 9</span>
+          <span class="shrink-0 flex items-center px-3 border border-white/15 rounded-sm text-sm text-mute bg-white/5">+56 9</span>
           <input type="tel" id="cotiza-telefono" inputmode="numeric" placeholder="1234 5678" required maxlength="9"
                  class="w-full border border-white/15 rounded-sm px-3 py-3 text-sm placeholder-white/40 focus:outline-none focus:border-gold bg-transparent">
         </div>
         <select name="cantidad_barberos" aria-label="Cantidad de barberos"
-                class="border border-white/15 rounded-sm px-4 py-3 text-sm text-white/80 focus:outline-none focus:border-gold bg-transparent">
+                class="border border-white/15 rounded-sm px-4 py-3 text-sm text-mute focus:outline-none focus:border-gold bg-transparent">
           <option value="" class="bg-ink">¿Cuántos barberos trabajan ahí?</option>
           <option value="Solo yo" class="bg-ink">Solo yo</option>
           <option value="2-3" class="bg-ink">2-3</option>
@@ -413,10 +426,10 @@
       <textarea name="comentario" placeholder="Cuéntanos algo más (opcional)" rows="3"
                 class="w-full border border-white/15 rounded-sm px-4 py-3 text-sm placeholder-white/40 focus:outline-none focus:border-gold bg-transparent mb-5"></textarea>
       <input type="text" name="website" tabindex="-1" autocomplete="off" class="hidden">
-      <button type="submit" class="w-full bg-gold hover:bg-goldlight text-ink font-semibold px-6 py-3.5 rounded-sm transition">
+      <button type="submit" class="btn-shine w-full bg-gold hover:bg-goldlight text-ink font-semibold px-6 py-3.5 rounded-sm transition">
         Solicitar prueba gratis
       </button>
-      <p class="text-white/50 text-xs text-center mt-4">Te escribimos por WhatsApp en menos de 24 horas para activar tu cuenta. Sin tarjeta, sin compromiso.</p>
+      <p class="text-mute text-xs text-center mt-4">Te escribimos por WhatsApp en menos de 24 horas para activar tu cuenta. Sin tarjeta, sin compromiso.</p>
       <p id="cotiza-error" class="hidden text-sm text-red-400 mt-3">
         Algo salió mal. Intenta de nuevo o escríbenos directo.
       </p>
@@ -425,8 +438,8 @@
       <svg class="w-8 h-8 text-gold mx-auto mb-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
         <circle cx="12" cy="12" r="9"/><path d="M8 12.3l2.6 2.6L16 9.5"/>
       </svg>
-      <h3 class="font-display text-xl mb-2">¡Listo, ya tenemos tus datos!</h3>
-      <p class="text-white/60 text-sm">Te contactamos por WhatsApp en menos de 24 horas para activar tu cuenta.</p>
+      <h3 class="font-bold text-xl mb-2">¡Listo, ya tenemos tus datos!</h3>
+      <p class="text-mute text-sm">Te contactamos por WhatsApp en menos de 24 horas para activar tu cuenta.</p>
     </div>
   </section>
 
@@ -527,79 +540,50 @@
   </script>
 
   <!-- FAQ -->
-  <section id="faq" class="bg-panel border-y border-white/10">
-    <div class="max-w-3xl mx-auto px-5 sm:px-8 py-20 md:py-24">
-      <h2 class="font-display text-2xl sm:text-3xl mb-12">Preguntas frecuentes</h2>
-      <div class="divide-y divide-white/10 border-t border-b border-white/10">
-        <details class="group py-5">
-          <summary class="cursor-pointer font-semibold list-none flex justify-between items-center gap-4">
-            ¿Cuánto cuesta usar CorteYa?
-            <span class="text-gold group-open:rotate-45 transition shrink-0">+</span>
-          </summary>
-          <p class="text-white/60 text-sm mt-3">Para tus clientes es gratis. Pagan el corte en la barbería, como siempre.</p>
+  <section id="faq" class="faq-wrap">
+    <canvas id="faq-halftone" aria-hidden="true"></canvas>
+    <div class="faq-inner max-w-3xl mx-auto px-5 sm:px-8 py-20 md:py-24">
+      <h2 class="font-display text-2xl sm:text-3xl mb-12 text-center rv">Preguntas<br><span class="text-gold">frecuentes.</span></h2>
+      <div class="acc rv" style="--rd:.12s">
+        <details>
+          <summary>¿Cuánto cuesta usar CorteYa?<span class="pl"></span></summary>
+          <div class="ans"><p>Para tus clientes es gratis. Pagan el corte en la barbería, como siempre.</p></div>
         </details>
-        <details class="group py-5">
-          <summary class="cursor-pointer font-semibold list-none flex justify-between items-center gap-4">
-            Tengo una barbería, ¿qué costo tiene?
-            <span class="text-gold group-open:rotate-45 transition shrink-0">+</span>
-          </summary>
-          <p class="text-white/60 text-sm mt-3">Planes desde $12.000 CLP/mes según el tamaño de tu barbería. Puedes probarlo gratis antes de decidir: <a href="#prueba-gratis" class="text-gold hover:text-goldlight underline">pide tu prueba aquí</a>.</p>
+        <details>
+          <summary>Tengo una barbería, ¿qué costo tiene?<span class="pl"></span></summary>
+          <div class="ans"><p>Planes desde $12.000 CLP/mes según el tamaño de tu barbería. Puedes probarlo gratis antes de decidir: <a href="#prueba-gratis" class="text-gold hover:text-goldlight underline">pide tu prueba aquí</a>.</p></div>
         </details>
-        <details class="group py-5">
-          <summary class="cursor-pointer font-semibold list-none flex justify-between items-center gap-4">
-            ¿En qué ciudades está disponible?
-            <span class="text-gold group-open:rotate-45 transition shrink-0">+</span>
-          </summary>
-          <p class="text-white/60 text-sm mt-3">Por ahora en la Región Metropolitana, y vamos sumando comunas a medida que se suman más barberías.</p>
+        <details>
+          <summary>¿En qué ciudades está disponible?<span class="pl"></span></summary>
+          <div class="ans"><p>Por ahora en la Región Metropolitana, y vamos sumando comunas a medida que se suman más barberías.</p></div>
         </details>
-        <details class="group py-5">
-          <summary class="cursor-pointer font-semibold list-none flex justify-between items-center gap-4">
-            ¿Ya tengo agenda o uso otro sistema, puedo probar igual?
-            <span class="text-gold group-open:rotate-45 transition shrink-0">+</span>
-          </summary>
-          <p class="text-white/60 text-sm mt-3">Sin problema. Puedes probar CorteYa en paralelo, sin dar de baja nada ni mover tus datos. Si te convence, te cambias cuando quieras.</p>
+        <details>
+          <summary>¿Ya tengo agenda o uso otro sistema, puedo probar igual?<span class="pl"></span></summary>
+          <div class="ans"><p>Sin problema. Puedes probar CorteYa en paralelo, sin dar de baja nada ni mover tus datos. Si te convence, te cambias cuando quieras.</p></div>
         </details>
-        <details class="group py-5">
-          <summary class="cursor-pointer font-semibold list-none flex justify-between items-center gap-4">
-            ¿Mis clientes tienen que descargar una app?
-            <span class="text-gold group-open:rotate-45 transition shrink-0">+</span>
-          </summary>
-          <p class="text-white/60 text-sm mt-3">No. Es un link que abren desde el navegador — nada que descargar ni instalar.</p>
+        <details>
+          <summary>¿Mis clientes tienen que descargar una app?<span class="pl"></span></summary>
+          <div class="ans"><p>No. Es un link que abren desde el navegador — nada que descargar ni instalar.</p></div>
         </details>
-        <details class="group py-5">
-          <summary class="cursor-pointer font-semibold list-none flex justify-between items-center gap-4">
-            ¿Cuánto demora activarlo?
-            <span class="text-gold group-open:rotate-45 transition shrink-0">+</span>
-          </summary>
-          <p class="text-white/60 text-sm mt-3">Unos 15 minutos: cargamos tus servicios, tus barberos y sus horarios, y te dejamos el link listo para compartir.</p>
+        <details>
+          <summary>¿Cuánto demora activarlo?<span class="pl"></span></summary>
+          <div class="ans"><p>Unos 15 minutos: cargamos tus servicios, tus barberos y sus horarios, y te dejamos el link listo para compartir.</p></div>
         </details>
-        <details class="group py-5">
-          <summary class="cursor-pointer font-semibold list-none flex justify-between items-center gap-4">
-            ¿Puedo anotar las horas que me piden por WhatsApp o en persona?
-            <span class="text-gold group-open:rotate-45 transition shrink-0">+</span>
-          </summary>
-          <p class="text-white/60 text-sm mt-3">Sí, con el botón "+ Nueva cita" de tu panel — eliges barbero, servicio y hora, igual que si el cliente la hubiera agendado solo.</p>
+        <details>
+          <summary>¿Puedo anotar las horas que me piden por WhatsApp o en persona?<span class="pl"></span></summary>
+          <div class="ans"><p>Sí, con el botón “+ Nueva cita” de tu panel — eliges barbero, servicio y hora, igual que si el cliente la hubiera agendado solo.</p></div>
         </details>
-        <details class="group py-5">
-          <summary class="cursor-pointer font-semibold list-none flex justify-between items-center gap-4">
-            ¿Qué pasa si un cliente no llega?
-            <span class="text-gold group-open:rotate-45 transition shrink-0">+</span>
-          </summary>
-          <p class="text-white/60 text-sm mt-3">Marcas "No llegó" con un toque, y queda reflejado en tus Reportes.</p>
+        <details>
+          <summary>¿Qué pasa si un cliente no llega?<span class="pl"></span></summary>
+          <div class="ans"><p>Marcas “No llegó” con un toque, y queda reflejado en tus Reportes.</p></div>
         </details>
-        <details class="group py-5">
-          <summary class="cursor-pointer font-semibold list-none flex justify-between items-center gap-4">
-            ¿Qué pasa cuando termina la prueba?
-            <span class="text-gold group-open:rotate-45 transition shrink-0">+</span>
-          </summary>
-          <p class="text-white/60 text-sm mt-3">La cuenta sigue activa hasta que conversemos el plan. No se corta nada sin avisar.</p>
+        <details>
+          <summary>¿Qué pasa cuando termina la prueba?<span class="pl"></span></summary>
+          <div class="ans"><p>La cuenta sigue activa hasta que conversemos el plan. No se corta nada sin avisar.</p></div>
         </details>
-        <details class="group py-5">
-          <summary class="cursor-pointer font-semibold list-none flex justify-between items-center gap-4">
-            ¿Mis datos y los de mis clientes están seguros?
-            <span class="text-gold group-open:rotate-45 transition shrink-0">+</span>
-          </summary>
-          <p class="text-white/60 text-sm mt-3">Sí — cada barbería solo ve sus propios datos, nunca los de otra, y los datos de tus clientes no son públicos.</p>
+        <details>
+          <summary>¿Mis datos y los de mis clientes están seguros?<span class="pl"></span></summary>
+          <div class="ans"><p>Sí — cada barbería solo ve sus propios datos, nunca los de otra, y los datos de tus clientes no son públicos.</p></div>
         </details>
       </div>
     </div>
@@ -608,17 +592,17 @@
   </main>
 
   <!-- FOOTER -->
-  <footer class="max-w-6xl mx-auto px-5 sm:px-8 py-10 flex flex-col sm:flex-row items-center justify-between gap-4 text-white/60 text-sm">
+  <footer class="max-w-6xl mx-auto px-5 sm:px-8 py-10 flex flex-col sm:flex-row items-center justify-between gap-4 text-mute text-sm">
     <div class="flex items-center gap-5">
-      <span class="font-display text-white/70">CORTE<span class="text-gold">YA</span></span>
+      <span class="font-bold">CORTE<span class="text-gold">YA</span></span>
       <div class="flex items-center gap-3">
-        <a href="https://www.instagram.com/corteya.app/" target="_blank" rel="noopener" aria-label="CorteYa en Instagram" class="text-white/50 hover:text-gold transition">
+        <a href="https://www.instagram.com/corteya.app/" target="_blank" rel="noopener" aria-label="CorteYa en Instagram" class="text-mute hover:text-gold transition">
           <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 0C8.74 0 8.333.015 7.053.072 5.775.132 4.905.333 4.14.63c-.789.306-1.459.717-2.126 1.384S.935 3.35.63 4.14C.333 4.905.131 5.775.072 7.053.012 8.333 0 8.74 0 12s.015 3.667.072 4.947c.06 1.277.261 2.148.558 2.913.306.788.717 1.459 1.384 2.126.667.666 1.336 1.079 2.126 1.384.766.296 1.636.499 2.913.558C8.333 23.988 8.74 24 12 24s3.667-.015 4.947-.072c1.277-.06 2.148-.262 2.913-.558.788-.306 1.459-.718 2.126-1.384.666-.667 1.079-1.335 1.384-2.126.296-.765.499-1.636.558-2.913.06-1.28.072-1.687.072-4.947s-.015-3.667-.072-4.947c-.06-1.277-.262-2.149-.558-2.913-.306-.789-.718-1.459-1.384-2.126C21.319 1.347 20.651.935 19.86.63c-.765-.297-1.636-.499-2.913-.558C15.667.012 15.26 0 12 0zm0 2.16c3.203 0 3.585.016 4.85.071 1.17.055 1.805.249 2.227.415.562.217.96.477 1.382.896.419.42.679.819.896 1.381.164.422.36 1.057.413 2.227.057 1.266.07 1.646.07 4.85s-.015 3.585-.074 4.85c-.061 1.17-.256 1.805-.421 2.227-.224.562-.479.96-.899 1.382-.419.419-.824.679-1.38.896-.42.164-1.065.36-2.235.413-1.274.057-1.649.07-4.859.07-3.211 0-3.586-.015-4.859-.074-1.171-.061-1.816-.256-2.236-.421-.569-.224-.96-.479-1.379-.899-.421-.419-.69-.824-.9-1.38-.165-.42-.359-1.065-.42-2.235-.045-1.26-.061-1.649-.061-4.844 0-3.196.016-3.586.061-4.861.061-1.17.255-1.814.42-2.234.21-.57.479-.96.9-1.381.419-.419.81-.689 1.379-.898.42-.166 1.051-.361 2.221-.421 1.275-.045 1.65-.06 4.859-.06l.045.03zm0 3.678c-3.405 0-6.162 2.76-6.162 6.162 0 3.405 2.76 6.162 6.162 6.162 3.405 0 6.162-2.76 6.162-6.162 0-3.405-2.76-6.162-6.162-6.162zM12 16c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4zm7.846-10.405c0 .795-.646 1.44-1.44 1.44-.795 0-1.44-.646-1.44-1.44 0-.794.646-1.439 1.44-1.439.793-.001 1.44.645 1.44 1.439z"/></svg>
         </a>
-        <a href="https://www.facebook.com/profile.php?id=61593796841523" target="_blank" rel="noopener" aria-label="CorteYa en Facebook" class="text-white/50 hover:text-gold transition">
+        <a href="https://www.facebook.com/profile.php?id=61593796841523" target="_blank" rel="noopener" aria-label="CorteYa en Facebook" class="text-mute hover:text-gold transition">
           <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M22.675 0h-21.35c-.732 0-1.325.593-1.325 1.325v21.351c0 .731.593 1.324 1.325 1.324h11.495v-9.294h-3.128v-3.622h3.128v-2.671c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.795.143v3.24l-1.918.001c-1.504 0-1.795.715-1.795 1.763v2.313h3.587l-.467 3.622h-3.12v9.293h6.116c.73 0 1.323-.593 1.323-1.324v-21.35c0-.732-.593-1.325-1.325-1.325z"/></svg>
         </a>
-        <a href="https://wa.me/56945458039?text=Hola%2C%20vi%20CorteYa%20y%20quiero%20saber%20m%C3%A1s%20sobre%20la%20agenda%20online%20gratis" target="_blank" rel="noopener" aria-label="CorteYa en WhatsApp" onclick="plausible('Clic WhatsApp flotante', { props: { ubicacion: 'footer' } })" class="text-white/50 hover:text-gold transition">
+        <a href="https://wa.me/56945458039?text=Hola%2C%20vi%20CorteYa%20y%20quiero%20saber%20m%C3%A1s%20sobre%20la%20agenda%20online%20gratis" target="_blank" rel="noopener" aria-label="CorteYa en WhatsApp" onclick="plausible('Clic WhatsApp flotante', { props: { ubicacion: 'footer' } })" class="text-mute hover:text-gold transition">
           <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884M20.52 3.449C18.24 1.245 15.24 0 12.05 0 5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.88 11.88 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.423-8.452"/></svg>
         </a>
       </div>
@@ -629,6 +613,146 @@
       <span>&copy; 2026 CorteYa SpA.</span>
     </div>
   </footer>
+
+  <!-- Efectos visuales: nav con blur al scroll, panel que se endereza, tarjetas
+       flotantes con parallax, spotlight en tarjetas de Funciones, contador y
+       método de pago animados, FAQ con trama de puntos y acordeón animado,
+       scroll reveal. Todo vanilla JS, respeta prefers-reduced-motion. -->
+  <script>
+  (() => {
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const fine = matchMedia('(hover:hover) and (pointer:fine)').matches;
+    const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+
+    /* Nav: fondo + blur solo después de hacer scroll */
+    const nav = $('#site-nav');
+    if (nav) {
+      const onNavScroll = () => {
+        nav.classList.toggle('bg-ink/90', scrollY > 20);
+        nav.classList.toggle('backdrop-blur', scrollY > 20);
+        nav.classList.toggle('border-white/10', scrollY > 20);
+      };
+      onNavScroll();
+      addEventListener('scroll', onNavScroll, { passive: true });
+    }
+
+    /* [B] Panel: se endereza con el scroll (rotateX 16° → 0°, scale .94 → 1) */
+    const panel = $('#hero-panel'), stage = $('.stage');
+    if (panel && stage) {
+      let ticking = false;
+      const updPanel = () => {
+        ticking = false;
+        const r = stage.getBoundingClientRect(), vh = innerHeight;
+        const p = Math.min(1, Math.max(0, (vh - r.top) / (vh * 0.85)));
+        const e = 1 - Math.pow(1 - p, 3);
+        panel.style.setProperty('--rx', (16 * (1 - e)).toFixed(2) + 'deg');
+        panel.style.setProperty('--s', (0.94 + 0.06 * e).toFixed(4));
+      };
+      if (!reduce) {
+        updPanel();
+        addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(updPanel); } }, { passive: true });
+        addEventListener('resize', updPanel);
+      }
+    }
+
+    /* [C] Tarjetas flotantes: entrada escalonada + parallax con el mouse */
+    $$('.float').forEach(f => setTimeout(() => f.classList.add('in'), reduce ? 0 : +f.dataset.delay));
+    if (fine && !reduce) {
+      const heroVisual = $('.stage');
+      const heroSection = heroVisual ? heroVisual.closest('section') : null;
+      if (heroSection) {
+        heroSection.addEventListener('pointermove', e => {
+          const mx = (e.clientX / innerWidth - .5) * 2, my = (e.clientY / innerHeight - .5) * 2;
+          $$('.float').forEach(f => { f.style.setProperty('--mx', mx.toFixed(3)); f.style.setProperty('--my', my.toFixed(3)); });
+        });
+        heroSection.addEventListener('pointerleave', () => $$('.float').forEach(f => { f.style.setProperty('--mx', 0); f.style.setProperty('--my', 0); }));
+      }
+    }
+
+    /* [E] Spotlight que sigue al cursor, en las tarjetas de Funciones */
+    if (fine) $$('.tile-spot').forEach(t => t.addEventListener('pointermove', e => {
+      const r = t.getBoundingClientRect();
+      t.style.setProperty('--x', (e.clientX - r.left) + 'px');
+      t.style.setProperty('--y', (e.clientY - r.top) + 'px');
+    }));
+
+    /* Método de pago cambiando solo, en la tarjeta "Llegó/No llegó" */
+    if (!reduce) {
+      const ps = $$('#payrow-mini span');
+      if (ps.length) { let k = 1; setInterval(() => { ps.forEach(s => s.classList.remove('on')); k = (k + 1) % ps.length; ps[k].classList.add('on'); }, 1800); }
+    }
+
+    /* [G] Scroll reveal + contador animado del monto de Reportes */
+    const countUp = el => {
+      const target = +el.dataset.count, t0 = performance.now(), dur = reduce ? 0 : 1400;
+      const fmt = n => '$' + Math.round(n).toLocaleString('es-CL');
+      const step = now => {
+        const p = dur ? Math.min(1, (now - t0) / dur) : 1;
+        el.textContent = fmt(target * (1 - Math.pow(1 - p, 3)));
+        if (p < 1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    };
+    const rvIo = new IntersectionObserver(es => es.forEach(en => {
+      if (!en.isIntersecting) return;
+      en.target.classList.add('on');
+      const n = en.target.querySelector('[data-count]');
+      if (n && !n.dataset.done) { n.dataset.done = '1'; countUp(n); }
+      rvIo.unobserve(en.target);
+    }), { threshold: .15, rootMargin: '0px 0px -40px 0px' });
+    $$('.rv').forEach(el => rvIo.observe(el));
+
+    /* FAQ: acordeón con altura animada (reemplaza el toggle nativo) */
+    $$('.acc details').forEach(d => {
+      const ans = d.querySelector('.ans'), sum = d.querySelector('summary');
+      sum.addEventListener('click', e => {
+        e.preventDefault();
+        if (d.open) {
+          ans.style.height = ans.scrollHeight + 'px';
+          requestAnimationFrame(() => ans.style.height = '0px');
+          ans.addEventListener('transitionend', () => d.open = false, { once: true });
+        } else {
+          d.open = true;
+          ans.style.height = '0px';
+          requestAnimationFrame(() => ans.style.height = ans.scrollHeight + 'px');
+          ans.addEventListener('transitionend', () => ans.style.height = 'auto', { once: true });
+        }
+      });
+    });
+
+    /* [F] Trama de puntos (halftone) ámbar que ondula — canvas, ~30 fps, pausado fuera de pantalla */
+    const cv = $('#faq-halftone'), faqSec = $('#faq');
+    if (cv && faqSec) {
+      const ctx = cv.getContext('2d');
+      let W, H, dpr, running = false, last = 0, t = 0;
+      const GAP = 14;
+      const size = () => {
+        dpr = Math.min(1.5, devicePixelRatio || 1);
+        W = faqSec.clientWidth; H = faqSec.clientHeight;
+        cv.width = W * dpr; cv.height = H * dpr;
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        draw();
+      };
+      const draw = () => {
+        ctx.clearRect(0, 0, W, H);
+        const cx = W / 2, cy = H * 0.5, maxD = Math.hypot(W, H) * 0.72;
+        for (let y = GAP / 2; y < H; y += GAP) for (let x = GAP / 2; x < W; x += GAP) {
+          const d = Math.hypot(x - cx, (y - cy) * 1.25);
+          const fall = Math.max(0, 1 - d / maxD);
+          if (fall <= 0.02) continue;
+          const wave = 0.5 + 0.5 * Math.sin(d * 0.022 - t * 1.4 + Math.sin(x * 0.01 + t * 0.5) * 0.8);
+          const r = (0.7 + 3.6 * wave) * (0.25 + 0.75 * fall);
+          if (r < 0.35) continue;
+          ctx.fillStyle = `rgba(224,${150 + Math.round(25 * wave)},51,${Math.min(1, (0.28 + 0.65 * wave) * (0.35 + fall))})`;
+          ctx.beginPath(); ctx.arc(x, y, r, 0, 6.2832); ctx.fill();
+        }
+      };
+      const loop = now => { if (!running) return; if (now - last > 33) { t += (now - last) / 1000; last = now; draw(); } requestAnimationFrame(loop); };
+      size(); addEventListener('resize', size);
+      if (!reduce) new IntersectionObserver(([en]) => { running = en.isIntersecting; if (running) { last = performance.now(); requestAnimationFrame(loop); } }).observe(faqSec);
+    }
+  })();
+  </script>
 
 </body>
 </html>
