@@ -94,6 +94,9 @@
         <button data-owner-only onclick="showView('reportes', this)" class="nav-item text-white/60 flex-1 flex flex-col items-center justify-center gap-0.5 text-xs md:flex-none md:flex-row md:items-center md:justify-start md:gap-3 md:px-3 md:py-2.5 md:text-sm rounded-sm font-medium transition md:w-full md:text-left">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="w-[18px] h-[18px] shrink-0"><path d="M4 20V10M12 20V4M20 20v-7"/><path d="M2 20h20"/></svg> Reportes
         </button>
+        <button data-owner-only onclick="showView('clientes', this)" class="nav-item text-white/60 flex-1 flex flex-col items-center justify-center gap-0.5 text-xs md:flex-none md:flex-row md:items-center md:justify-start md:gap-3 md:px-3 md:py-2.5 md:text-sm rounded-sm font-medium transition md:w-full md:text-left">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="w-[18px] h-[18px] shrink-0"><path d="M17 20v-1.5a3.5 3.5 0 0 0-3.5-3.5h-5A3.5 3.5 0 0 0 5 18.5V20"/><circle cx="9.5" cy="8" r="3.5"/><path d="M16 9.5a3.5 3.5 0 0 0 0-6.8"/><path d="M19 20v-1.5c0-1.5-.9-2.8-2.2-3.3"/></svg> Clientes
+        </button>
         <button id="nav-btn-mibarberia" onclick="showView('mibarberia', this)" class="nav-item text-white/60 flex-1 flex flex-col items-center justify-center gap-0.5 text-xs md:flex-none md:flex-row md:items-center md:justify-start md:gap-3 md:px-3 md:py-2.5 md:text-sm rounded-sm font-medium transition md:w-full md:text-left">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="w-[18px] h-[18px] shrink-0"><path d="M3 9.5 4.5 4h15L21 9.5"/><path d="M3 9.5h18v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-10Z"/><path d="M9 20v-6h6v6"/></svg> Mi barbería
         </button>
@@ -372,6 +375,17 @@
           </div>
         </section>
 
+        <!-- CLIENTES -->
+        <section id="view-clientes" class="view">
+          <h1 class="font-display text-2xl mb-6">Clientes</h1>
+          <div id="clientes-bloqueado" class="hidden border border-white/10 rounded-sm p-10 text-center max-w-md">
+            <p class="text-white/50 text-sm">Los datos de clientes no están incluidos en tu plan actual.</p>
+          </div>
+          <div id="clientes-lista" class="border border-white/10 rounded-sm divide-y divide-white/10">
+            <p class="px-4 py-6 text-sm text-white/50 text-center">Cargando…</p>
+          </div>
+        </section>
+
       </div>
     </main>
   </div>
@@ -559,6 +573,11 @@
     // no se puede automatizar, y un correo sin confirmar a mano por cada
     // barbero no escala mientras se sumen más barberías al piloto.
     const PLANES_CON_LOGIN_BARBERO = ['multisucursal', 'local_independiente'];
+
+    // la sección "Clientes" (nombres y teléfonos de quienes han reservado)
+    // es solo para planes pagados — en 'piloto' queda bloqueada con el
+    // mismo tipo de aviso que otras funciones fuera del plan actual.
+    const PLANES_CON_CLIENTES = ['barbero_independiente', 'multisucursal', 'local_independiente'];
 
     // ---------- utilidades ----------
     function santiagoDateParts(offsetDays) {
@@ -1023,6 +1042,55 @@
       `).join('');
     }
 
+    // ---------- clientes (derivado de bookings, sin tabla propia) ----------
+    async function loadClientes() {
+      const bloqueado = !PLANES_CON_CLIENTES.includes(state.barbershopPlan);
+      document.getElementById('clientes-bloqueado').classList.toggle('hidden', !bloqueado);
+      document.getElementById('clientes-lista').classList.toggle('hidden', bloqueado);
+      if (bloqueado) return;
+
+      const vacio = (texto) => { document.getElementById('clientes-lista').innerHTML = `<p class="px-4 py-6 text-sm text-white/50 text-center">${texto}</p>`; };
+
+      const { data: barbers } = await supabaseClient.from('barbers').select('id').eq('barbershop_id', state.barbershopId);
+      const barberIds = (barbers || []).map(b => b.id);
+      if (!barberIds.length) { vacio('Agrega barberos para ver clientes.'); return; }
+
+      const { data: bookings, error } = await supabaseClient
+        .from('bookings')
+        .select('customer_name,customer_phone,booking_date')
+        .in('barber_id', barberIds)
+        .order('booking_date', { ascending: false });
+
+      if (error) {
+        console.error(error);
+        vacio('Error al cargar los clientes.');
+        return;
+      }
+      if (!bookings || !bookings.length) { vacio('Todavía no hay reservas.'); return; }
+
+      // bookings viene ordenado por fecha descendente, así que la primera
+      // vez que aparece un teléfono ya trae su nombre y visita más reciente
+      const porTelefono = new Map();
+      bookings.forEach(b => {
+        const existente = porTelefono.get(b.customer_phone);
+        if (existente) existente.visitas++;
+        else porTelefono.set(b.customer_phone, { nombre: b.customer_name, telefono: b.customer_phone, visitas: 1, ultimaVisita: b.booking_date });
+      });
+
+      document.getElementById('clientes-lista').innerHTML = [...porTelefono.values()].map(c => `
+        <div class="px-4 py-3 flex items-center justify-between gap-3 text-sm">
+          <div class="min-w-0">
+            <p class="font-medium truncate">${escapeHtml(c.nombre)}</p>
+            <p class="text-xs text-white/50 truncate">${escapeHtml(c.telefono)}</p>
+          </div>
+          <div class="text-right shrink-0">
+            <p class="text-xs text-white/60">${c.visitas} ${c.visitas === 1 ? 'visita' : 'visitas'}</p>
+            <p class="text-xs text-white/50">Última: ${formatFechaCorta(c.ultimaVisita)}</p>
+          </div>
+        </div>
+      `).join('');
+    }
+
     // ---------- compartir link de agendamiento ----------
     async function compartirAgenda() {
       const link = `https://corteya.app/agenda/${encodeURIComponent(state.barbershopSlug)}`;
@@ -1370,6 +1438,7 @@
         resumen: loadResumen,
         calendario: loadCalendario,
         reportes: loadReportes,
+        clientes: loadClientes,
         mibarberia: () => showSubtabMiBarberia(state.subtabMiBarberia || (state.role === 'owner' ? 'servicios' : 'info')),
       };
       loaders[name]?.();
